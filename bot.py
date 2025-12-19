@@ -35,9 +35,18 @@ logger = logging.getLogger(__name__)
 # --- GSPREAD SETUP ---
 def get_sheet_db():
     try:
+        if not GOOGLE_JSON:
+            logger.error("❌ CRITICAL: GOOGLE_CREDENTIALS Env Var is missing or empty!")
+            return None
+            
         scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
         # Load credentials from the Environment Variable String
-        creds_dict = json.loads(GOOGLE_JSON)
+        try:
+            creds_dict = json.loads(GOOGLE_JSON)
+        except json.JSONDecodeError as je:
+             logger.error(f"❌ JSON Decode Error in params: {je}")
+             return None
+             
         creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
         client = gspread.authorize(creds)
         
@@ -45,7 +54,9 @@ def get_sheet_db():
         sheet = client.open_by_key(SHEET_ID).sheet1
         return sheet
     except Exception as e:
+        import traceback
         logger.error(f"DB Connection Error: {e}")
+        logger.error(traceback.format_exc())
         return None
 
 # --- FLOW HANDLERS ---
