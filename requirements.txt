@@ -1,4 +1,4 @@
 python-telegram-bot
 aiohttp
 gspread
-google-auth
+google-auth==2.41.0
