@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: eligible-stem-bot
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot.py
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.0
+      - key: PORT
+        value: 10000
+      - key: TELEGRAM_TOKEN
+        sync: false  # User must input this in Dashboard
+      - key: SHEET_ID
+        sync: false  # User must input this in Dashboard
+      - key: GOOGLE_CREDENTIALS
+        sync: false  # User must input this in Dashboard
