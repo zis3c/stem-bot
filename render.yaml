@@ -8,9 +8,11 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.6
-      - key: PORT
-        value: 10000
-      - key: TELEGRAM_TOKEN
+      - key: SHEET_ID
+        sync: false
+      - key: GOOGLE_CREDENTIALS
+        sync: false
+      - key: ADMIN_IDS
         sync: false  # User must input this in Dashboard
       - key: SHEET_ID
         sync: false  # User must input this in Dashboard
