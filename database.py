@@ -120,12 +120,15 @@ class Database:
     # --- USER TRACKING FOR BROADCAST ---
     def get_users_sheet(self):
         try:
-             client = self.get_sheet().client # Hack to get client from the main sheet object
+             main_sheet = self.get_sheet()
+             if not main_sheet: return None
+             
+             spreadsheet = main_sheet.spreadsheet
              try:
-                 return client.open_by_key(self.sheet_id).worksheet("Users")
+                 return spreadsheet.worksheet("Users")
              except gspread.WorksheetNotFound:
                  # Create if missing
-                 sheet = client.open_by_key(self.sheet_id).add_worksheet(title="Users", rows=1000, cols=3)
+                 sheet = spreadsheet.add_worksheet(title="Users", rows=1000, cols=3)
                  sheet.append_row(["User ID", "Name", "Joined Date"])
                  return sheet
         except Exception as e:
