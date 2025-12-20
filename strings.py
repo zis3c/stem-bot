@@ -206,6 +206,10 @@ STRINGS = {
         'BTN_ADMIN_STATS': "Statistik",
         'BTN_ADMIN_EXIT': "Keluar Admin",
         
+        'BTN_SA_MAINTENANCE': "Mod Penyelenggaraan 🚧",
+        'BTN_SA_ADMINS': "Urus Admin 👮",
+        'BTN_SA_HEALTH': "Kesihatan Sistem 🩺",
+        
         'BTN_CONFIRM_YES': "Sahkan Hantar",
         'BTN_CONFIRM_NO': "Batal",
         
@@ -232,4 +236,4 @@ def get(key, lang='EN'):
 
 def get_all(key):
     """Get a list of values for a key across all languages (for Filters)"""
-    return [STRINGS[l].get(key) for l in STRINGS]
+    return [STRINGS[l].get(key) for l in STRINGS if STRINGS[l].get(key)]
