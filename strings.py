@@ -33,8 +33,8 @@ STRINGS = {
         'ERR_CANCEL': "Oh okay cancelled.",
         'ERR_ACCESS_DENIED': "*Access Denied*\nYou are not an admin.",
         
-        'STATUS_PENDING': "MEMBERSHIP Pending ⏳",
-        'STATUS_REJECT': "MEMBERSHIP Reject 🚫",
+        'STATUS_PENDING': "*MEMBERSHIP PENDING* ⏳",
+        'STATUS_REJECT': "*MEMBERSHIP REJECTED* 🚫",
         'NOTIFY_NEW_REG': "🚨 *New Registration*\n\nName: {name}\nMatric: {matric}\nResit: {resit}",
         'BTN_APPROVE': "Approve ✅",
         'BTN_REJECT': "Reject 🚫",
@@ -135,8 +135,8 @@ STRINGS = {
         'ERR_CANCEL': "Oh okay dibatalkan.",
         'ERR_ACCESS_DENIED': "*Akses Ditolak*\nAnda bukan admin.",
         
-        'STATUS_PENDING': "KEAHLIAN Sedang Diproses ⏳",
-        'STATUS_REJECT': "KEAHLIAN Ditolak 🚫",
+        'STATUS_PENDING': "*KEAHLIAN SEDANG DIPROSES* ⏳",
+        'STATUS_REJECT': "*KEAHLIAN DITOLAK* 🚫",
         'NOTIFY_NEW_REG': "🚨 *Pendaftaran Baru*\n\nNama: {name}\nMatrik: {matric}\nResit: {resit}",
         'BTN_APPROVE': "Luluskan ✅",
         'BTN_REJECT': "Tolak 🚫",
