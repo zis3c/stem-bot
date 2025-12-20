@@ -62,9 +62,16 @@ STRINGS = {
         'ADMIN_SAVING': "Saving...",
         'ADMIN_SEARCHING': "Searching...",
         'ADMIN_EXIT': "Exiting Admin Mode.",
+        'ADMIN_LIST_HEADER': "*Member List* (Top {limit}):\n\n{items}",
+        'ADMIN_LIST_EMPTY': "No members found.",
+        'ADMIN_SEARCH_PROMPT': "Enter *Name*, *Matric*, or *IC* to search:",
+        'ADMIN_SEARCH_RESULT': "*Search Results* for '{query}':\n\n{items}",
+        'ADMIN_SEARCH_EMPTY': "No matches found for '{query}'.",
         
         'BTN_ADMIN_ADD': "Add Member",
         'BTN_ADMIN_DEL': "Delete Member",
+        'BTN_ADMIN_LIST': "List Members",
+        'BTN_ADMIN_SEARCH': "Search Member",
         'BTN_ADMIN_STATS': "Stats",
         'BTN_ADMIN_EXIT': "Exit Admin",
         
@@ -137,9 +144,16 @@ STRINGS = {
         'ADMIN_SAVING': "Menyimpan...",
         'ADMIN_SEARCHING': "Mencari...",
         'ADMIN_EXIT': "Keluar Mod Admin.",
+        'ADMIN_LIST_HEADER': "*Senarai Ahli* (Top {limit}):\n\n{items}",
+        'ADMIN_LIST_EMPTY': "Tiada ahli dijumpai.",
+        'ADMIN_SEARCH_PROMPT': "Masukkan *Nama*, *Matrik*, atau *IC* untuk carian:",
+        'ADMIN_SEARCH_RESULT': "*Keputusan Carian* untuk '{query}':\n\n{items}",
+        'ADMIN_SEARCH_EMPTY': "Tiada padanan untuk '{query}'.",
         
         'BTN_ADMIN_ADD': "Tambah Ahli",
         'BTN_ADMIN_DEL': "Padam Ahli",
+        'BTN_ADMIN_LIST': "Senarai Ahli",
+        'BTN_ADMIN_SEARCH': "Cari Ahli",
         'BTN_ADMIN_STATS': "Statistik",
         'BTN_ADMIN_EXIT': "Keluar Admin",
         

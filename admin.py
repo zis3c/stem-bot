@@ -40,6 +40,77 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         await update.message.reply_text(strings.get('ERR_DB_CONNECTION', lang))
     return states.ADMIN_MENU
 
+# --- LIST MEMBERS ---
+async def list_members(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
+    loading = await update.message.reply_text(strings.get('ADMIN_SEARCHING', lang))
+    
+    try:
+        members = db.get_members(limit=30) # Safe limit for message size
+        
+        if not members:
+            await loading.edit_text(strings.get('ADMIN_LIST_EMPTY', lang), parse_mode="Markdown")
+        else:
+            items = []
+            for i, row in enumerate(members, 1):
+                # row[2]=Name, row[3]=Matric
+                name = row[2] if len(row) > 2 else "Unknown"
+                matric = row[3] if len(row) > 3 else "Unknown"
+                items.append(f"{i}. *{name}* (`{matric}`)")
+            
+            msg_text = strings.get('ADMIN_LIST_HEADER', lang).format(limit=len(members), items="\n".join(items))
+            await loading.edit_text(msg_text, parse_mode="Markdown")
+
+    except Exception as e:
+        logger.error(e)
+        await loading.edit_text(strings.get('ERR_DB_CONNECTION', lang))
+
+    return states.ADMIN_MENU
+
+# --- SEARCH MEMBERS ---
+async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
+    await update.message.reply_text(
+        strings.get('ADMIN_SEARCH_PROMPT', lang), 
+        parse_mode="Markdown", 
+        reply_markup=keyboards.get_cancel_menu(lang)
+    )
+    return states.SEARCH_QUERY
+
+async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
+    query = update.message.text.strip()
+    
+    if query in strings.get_all('BTN_CANCEL') or query == "CANCEL": 
+        return await back(update, context)
+
+    loading = await update.message.reply_text(strings.get('ADMIN_SEARCHING', lang))
+
+    try:
+        results = db.search_members(query)
+        
+        if not results:
+            await loading.edit_text(strings.get('ADMIN_SEARCH_EMPTY', lang).format(query=query), parse_mode="Markdown")
+        else:
+            items = []
+            # Limit results to avoid overflow if query is too broad
+            for i, row in enumerate(results[:20], 1):
+                name = row[2] if len(row) > 2 else "Unknown"
+                matric = row[3] if len(row) > 3 else "Unknown"
+                prog = row[5] if len(row) > 5 else ""
+                items.append(f"{i}. *{name}* (`{matric}`) - {prog}")
+
+            msg_text = strings.get('ADMIN_SEARCH_RESULT', lang).format(query=query, items="\n".join(items))
+            await loading.edit_text(msg_text, parse_mode="Markdown")
+
+    except Exception as e:
+        logger.error(e)
+        await loading.edit_text(strings.get('ERR_DB_CONNECTION', lang))
+    
+    await update.message.reply_text("Returning...", reply_markup=keyboards.get_admin_menu(lang))
+    return states.ADMIN_MENU
+
+
 # --- ADD MEMBER FLOW ---
 async def add_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)

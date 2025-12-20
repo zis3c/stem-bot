@@ -69,6 +69,8 @@ async def main():
     # Admin Filters (Usually Admin is one lang, but we support all just in case)
     filter_admin_add = build_filter('BTN_ADMIN_ADD')
     filter_admin_del = build_filter('BTN_ADMIN_DEL')
+    filter_admin_list = build_filter('BTN_ADMIN_LIST')
+    filter_admin_search = build_filter('BTN_ADMIN_SEARCH')
     filter_admin_stats = build_filter('BTN_ADMIN_STATS')
     filter_admin_exit = build_filter('BTN_ADMIN_EXIT')
 
@@ -95,6 +97,8 @@ async def main():
             states.ADMIN_MENU: [
                 MessageHandler(filter_admin_add, admin.add_start),
                 MessageHandler(filter_admin_del, admin.del_start),
+                MessageHandler(filter_admin_list, admin.list_members),
+                MessageHandler(filter_admin_search, admin.search_start),
                 MessageHandler(filter_admin_stats, admin.stats),
                 MessageHandler(filter_admin_exit, admin.exit)
             ],
@@ -103,6 +107,7 @@ async def main():
             states.ADD_IC: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_ic)],
             states.ADD_PROG: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_prog)],
             states.DEL_MATRIC: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.del_matric)],
+            states.SEARCH_QUERY: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.search_perform)],
         },
         fallbacks=[CommandHandler("cancel", admin.exit)],
     )

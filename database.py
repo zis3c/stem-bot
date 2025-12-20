@@ -72,6 +72,41 @@ class Database:
             return True
         return False
 
+    def get_members(self, limit=50):
+        sheet = self.get_sheet()
+        if not sheet: return []
+        try:
+            # Get all values (skip header)
+            all_values = sheet.get_all_values()[1:] 
+            # Reverse to show newest first, take top 'limit'
+            return all_values[::-1][:limit]
+        except Exception as e:
+            logger.error(f"Get Members Error: {e}")
+            return []
+
+    def search_members(self, query):
+        sheet = self.get_sheet()
+        if not sheet: return []
+        try:
+            all_values = sheet.get_all_values()[1:]
+            query = query.lower()
+            matches = []
+            for row in all_values:
+                # Row Structure: [Timestamp, Email, Name, Matric, IC, Program]
+                # Check Name(2), Matric(3), IC(4) - adjust indices if needed based on previous code
+                # In find_member, Matric is col 4 (index 3). Name is col 3 (index 2). IC is col 5 (index 4).
+                if len(row) > 4:
+                    name = row[2].lower()
+                    matric = row[3].lower()
+                    ic = str(row[4]).lower()
+                    
+                    if query in name or query in matric or query in ic:
+                        matches.append(row)
+            return matches
+        except Exception as e:
+            logger.error(f"Search Error: {e}")
+            return []
+
     def delete_member(self, matric):
         sheet = self.get_sheet()
         if sheet:

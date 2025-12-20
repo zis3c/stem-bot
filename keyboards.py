@@ -38,6 +38,7 @@ def get_admin_menu(lang='EN'):
     return ReplyKeyboardMarkup(
         [
             [strings.get('BTN_ADMIN_ADD', lang), strings.get('BTN_ADMIN_DEL', lang)],
+            [strings.get('BTN_ADMIN_LIST', lang), strings.get('BTN_ADMIN_SEARCH', lang)],
             [strings.get('BTN_ADMIN_STATS', lang), strings.get('BTN_ADMIN_EXIT', lang)]
         ],
         resize_keyboard=True
