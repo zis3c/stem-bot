@@ -56,7 +56,7 @@ def build_filter(key):
 
 # --- WEBHOOK & MAIN ---
 async def main():
-    application = Application.builder().token(TOKEN).build()
+    application = ApplicationBuilder().token(TOKEN).build()
 
     # Dynamic Filters (Multi-Language)
     filter_check = build_filter('BTN_CHECK')
