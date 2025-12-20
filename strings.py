@@ -22,8 +22,8 @@ STRINGS = {
             "*MEMBERSHIP VERIFIED* 🎉\n\n"
             "*Name*: *{name}*\n"
             "*Matric*: *{matric}*\n"
-            "*Program*: *{program}*\n\n"
-            "{timestamp}"
+            "*Program*: *{program}*\n"
+            "*Register time*: *{timestamp}*"
         ),
         
         'ERR_INVALID_MATRIC': "*Invalid Matric Format!*\nPlease try again (e.g. `I24107504`)",
@@ -32,6 +32,14 @@ STRINGS = {
         'ERR_NOT_FOUND': "*Not Found*\nMatric Number not in records.",
         'ERR_CANCEL': "Oh okay cancelled.",
         'ERR_ACCESS_DENIED': "*Access Denied*\nYou are not an admin.",
+        
+        'STATUS_PENDING': "MEMBERSHIP Pending ⏳",
+        'STATUS_REJECT': "MEMBERSHIP Reject 🚫",
+        'NOTIFY_NEW_REG': "🚨 *New Registration*\n\nName: {name}\nMatric: {matric}\nResit: {resit}",
+        'BTN_APPROVE': "Approve ✅",
+        'BTN_REJECT': "Reject 🚫",
+        'MSG_APPROVED': "✅ Approved {name}.",
+        'MSG_REJECTED': "🚫 Rejected {name}.",
         
         # Buttons
         'BTN_CHECK': "Check Membership",
@@ -117,7 +125,7 @@ STRINGS = {
             "*Nama*: *{name}*\n"
             "*Matrik*: *{matric}*\n"
             "*Program*: *{program}*\n\n"
-            "{timestamp}"
+            "Masa Daftar: {timestamp}"
         ),
         
         'ERR_INVALID_MATRIC': "*Format Matrik Tidak Sah!*\nSila cuba lagi (cth. `I24107504`)",
@@ -126,6 +134,14 @@ STRINGS = {
         'ERR_NOT_FOUND': "*Tidak Dijumpai*\nNombor Matrik tiada dalam rekod.",
         'ERR_CANCEL': "Oh okay dibatalkan.",
         'ERR_ACCESS_DENIED': "*Akses Ditolak*\nAnda bukan admin.",
+        
+        'STATUS_PENDING': "KEAHLIAN Sedang Diproses ⏳",
+        'STATUS_REJECT': "KEAHLIAN Ditolak 🚫",
+        'NOTIFY_NEW_REG': "🚨 *Pendaftaran Baru*\n\nNama: {name}\nMatrik: {matric}\nResit: {resit}",
+        'BTN_APPROVE': "Luluskan ✅",
+        'BTN_REJECT': "Tolak 🚫",
+        'MSG_APPROVED': "✅ Diluluskan {name}.",
+        'MSG_REJECTED': "🚫 Ditolak {name}.",
         
         # Buttons
         'BTN_CHECK': "Semak Keahlian",

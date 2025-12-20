@@ -162,5 +162,47 @@ class Database:
     def is_admin(self, user_id):
         return user_id in self.admin_ids
 
+    # --- APPROVAL WORKFLOW ---
+    def get_unprocessed_registrations(self):
+        """Finds rows where Resit (Col 8) is present but Status (Col 9) is Empty."""
+        sheet = self.get_sheet()
+        if not sheet: return []
+        try:
+            all_values = sheet.get_all_values()
+            unprocessed = []
+            
+            # Start from row 2 (index 1) to skip header
+            for i, row in enumerate(all_values[1:], start=2):
+                # Ensure row has enough cols. Gspread might cut off empty trailing cols.
+                # We need Col H (index 7).
+                if len(row) <= 7: continue 
+                
+                resit = row[7].strip()
+                # Status is Col I (index 8). If row doesn't have index 8, it's empty.
+                status = row[8].strip() if len(row) > 8 else ""
+                
+                if resit and not status:
+                    # Valid registration needing approval
+                    unprocessed.append({
+                        'row': i,
+                        'data': row
+                    })
+            return unprocessed
+        except Exception as e:
+            logger.error(f"Get Unprocessed Error: {e}")
+            return []
+
+    def update_status(self, row_index, status):
+        """Updates Column I (9) with status."""
+        sheet = self.get_sheet()
+        if not sheet: return False
+        try:
+            # Update Cell (Row, Col 9)
+            sheet.update_cell(row_index, 9, status)
+            return True
+        except Exception as e:
+            logger.error(f"Update Status Error: {e}")
+            return False
+
 # Singleton instance
 db = Database()

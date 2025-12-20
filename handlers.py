@@ -1,4 +1,4 @@
-from telegram import Update
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ConversationHandler, ContextTypes
 import strings
 import keyboards
@@ -191,20 +191,28 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
                 db_name = row_values[2] 
                 db_ic = str(row_values[4]).strip().replace(" ", "")
                 db_prog = row_values[5]
+                # Col I (index 8) is Status
+                db_status = str(row_values[8]).strip().title() if len(row_values) > 8 else "Approved" # Default to Approved if missing (legacy data)
                 
                 if db_ic.endswith(user_ic_last4):
-                    msg = strings.get('VERIFICATION_SUCCESS', lang).format(
-                        name=db_name,
-                        matric=user_matric,
-                        program=db_prog,
-                        timestamp=db_timestamp
-                    )
+                    if db_status == "Approved" or db_status not in ["Pending", "Rejected", "Approve", "Reject"]: 
+                         # Treating anything NOT explicitly Pending/Rejected as Approved for backward compat
+                        msg = strings.get('VERIFICATION_SUCCESS', lang).format(
+                            name=db_name,
+                            matric=user_matric,
+                            program=db_prog,
+                            timestamp=db_timestamp
+                        )
+                    elif db_status == "Pending":
+                        msg = strings.get('STATUS_PENDING', lang)
+                    elif db_status == "Rejected":
+                         msg = strings.get('STATUS_REJECT', lang)
+                    else:
+                         msg = strings.get('STATUS_PENDING', lang) # Fallback
                 else:
-                    # Specific localized error construction if needed, or simple string
-                    msg = "*Verification Failed*\nMatric found, but IC digits do not match." 
-                    # Ideally this should be in strings.py too, but for speed keeping logic here
-                    # FIX: Making it properly localized manually or just English logic for now
-                    if lang == 'MS': msg = "*Pengesahan Gagal*\nMatrik dijumpai, tetapi digit IC tidak sepadan."
+                     # Specific localized error construction if needed, or simple string
+                     msg = "*Verification Failed*\nMatric found, but IC digits do not match." 
+                     if lang == 'MS': msg = "*Pengesahan Gagal*\nMatrik dijumpai, tetapi digit IC tidak sepadan."
             else:
                     msg = "Record found but data is incomplete."
                     if lang == 'MS': msg = "Rekod dijumpai tetapi data tidak lengkap."

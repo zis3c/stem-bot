@@ -5,11 +5,13 @@ import re
 from aiohttp import web, ClientSession
 from telegram import Update
 from telegram.ext import (
-    Application,
-    CommandHandler,
-    MessageHandler,
+    ApplicationBuilder, 
+    CommandHandler, 
+    MessageHandler, 
     ConversationHandler,
     filters,
+    ContextTypes,
+    CallbackQueryHandler
 )
 
 # Import Modules
@@ -125,8 +127,14 @@ async def main():
     )
 
     # General Handlers
+    application.add_handler(admin_conv)
+    application.add_handler(user_conv)
     application.add_handler(CommandHandler("start", handlers.start))
     application.add_handler(CommandHandler("settings", handlers.settings_menu))
+    
+    # Callback Handler (Inline Buttons)
+    application.add_handler(CallbackQueryHandler(handlers.handle_approval_callback))
+
     application.add_handler(MessageHandler(filter_help, handlers.help_command))
     application.add_handler(MessageHandler(filter_settings, handlers.settings_menu))
     application.add_handler(MessageHandler(filter_languages, handlers.languages_menu))
@@ -134,8 +142,10 @@ async def main():
     application.add_handler(MessageHandler(filter_lang_en, handlers.set_lang_en))
     application.add_handler(MessageHandler(filter_lang_ms, handlers.set_lang_ms))
     application.add_handler(MessageHandler(filter_back, handlers.start)) # Back goes to main menu
-    application.add_handler(user_conv)
-    application.add_handler(admin_conv)
+    
+    # Job Queue
+    if application.job_queue:
+        application.job_queue.run_repeating(handlers.check_registrations, interval=60, first=10)
     
     webhook_path = f"{WEBHOOK_URL}/telegram"
     await application.bot.set_webhook(webhook_path)
