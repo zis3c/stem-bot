@@ -44,23 +44,33 @@ async def self_pinger():
              except Exception as e:
                  logger.error(f"⚠️ Self-Ping Failed: {e}")
 
+# --- HELPER FOR FILTERS ---
+def build_filter(key):
+    """Builds a Regex filter that matches ANY language variation of a button"""
+    options = strings.get_all(key)
+    # Escape all options and join with OR (|)
+    pattern = "^(" + "|".join([re.escape(opt) for opt in options]) + ")$"
+    return filters.Regex(pattern)
+
 # --- WEBHOOK & MAIN ---
 async def main():
     application = Application.builder().token(TOKEN).build()
 
-    # Filters
-    filter_check = filters.Regex(f"^{re.escape(strings.BTN_CHECK)}$")
-    filter_help = filters.Regex(f"^{re.escape(strings.BTN_HELP)}$")
-    filter_settings = filters.Regex(f"^{re.escape(strings.BTN_SETTINGS)}$")
-    filter_clear = filters.Regex(f"^{re.escape(strings.BTN_CLEAR_HISTORY)}$")
-    filter_back = filters.Regex(f"^{re.escape(strings.BTN_BACK)}$")
-    filter_cancel = filters.Regex(f"^{re.escape(strings.BTN_CANCEL)}$")
+    # Dynamic Filters (Multi-Language)
+    filter_check = build_filter('BTN_CHECK')
+    filter_help = build_filter('BTN_HELP')
+    filter_settings = build_filter('BTN_SETTINGS')
+    filter_clear = build_filter('BTN_CLEAR_HISTORY')
+    filter_back = build_filter('BTN_BACK')
+    filter_cancel = build_filter('BTN_CANCEL')
+    filter_lang_en = build_filter('BTN_LANG_EN')
+    filter_lang_ms = build_filter('BTN_LANG_MS')
     
-    # Admin Filters
-    filter_admin_add = filters.Regex(f"^{re.escape(strings.BTN_ADMIN_ADD)}$")
-    filter_admin_del = filters.Regex(f"^{re.escape(strings.BTN_ADMIN_DEL)}$")
-    filter_admin_stats = filters.Regex(f"^{re.escape(strings.BTN_ADMIN_STATS)}$")
-    filter_admin_exit = filters.Regex(f"^{re.escape(strings.BTN_ADMIN_EXIT)}$")
+    # Admin Filters (Usually Admin is one lang, but we support all just in case)
+    filter_admin_add = build_filter('BTN_ADMIN_ADD')
+    filter_admin_del = build_filter('BTN_ADMIN_DEL')
+    filter_admin_stats = build_filter('BTN_ADMIN_STATS')
+    filter_admin_exit = build_filter('BTN_ADMIN_EXIT')
 
     # User Config
     user_conv = ConversationHandler(
@@ -102,6 +112,8 @@ async def main():
     application.add_handler(MessageHandler(filter_help, handlers.help_command))
     application.add_handler(MessageHandler(filter_settings, handlers.settings_menu))
     application.add_handler(MessageHandler(filter_clear, handlers.clear_history))
+    application.add_handler(MessageHandler(filter_lang_en, handlers.set_lang_en))
+    application.add_handler(MessageHandler(filter_lang_ms, handlers.set_lang_ms))
     application.add_handler(MessageHandler(filter_back, handlers.start)) # Back goes to main menu
     application.add_handler(user_conv)
     application.add_handler(admin_conv)

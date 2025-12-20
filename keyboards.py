@@ -1,40 +1,58 @@
 from telegram import ReplyKeyboardMarkup
 import strings
 
-def get_main_menu():
+def get_main_menu(lang='EN'):
     return ReplyKeyboardMarkup(
         [
-            [strings.BTN_CHECK],
-            [strings.BTN_HELP, strings.BTN_SETTINGS]
+            [strings.get('BTN_CHECK', lang)],
+            [strings.get('BTN_HELP', lang), strings.get('BTN_SETTINGS', lang)]
         ], 
         resize_keyboard=True
     )
 
-def get_settings_menu():
+def get_settings_menu(lang='EN'):
     return ReplyKeyboardMarkup(
-        [[strings.BTN_CLEAR_HISTORY], [strings.BTN_BACK]],
+        [
+            [strings.get('BTN_LANG_EN'), strings.get('BTN_LANG_MS')], # Language buttons usually static or localized names
+            [strings.get('BTN_CLEAR_HISTORY', lang)], 
+            [strings.get('BTN_BACK', lang)]
+        ],
         resize_keyboard=True
     )
 
-def get_cancel_menu():
+def get_cancel_menu(lang='EN'):
     return ReplyKeyboardMarkup(
-        [[strings.BTN_CANCEL]], 
+        [[strings.get('BTN_CANCEL', lang)]], 
         resize_keyboard=True, 
         one_time_keyboard=True
     )
 
-def get_retry_menu():
+def get_retry_menu(lang='EN'):
     return ReplyKeyboardMarkup(
-        [[strings.BTN_TRY_AGAIN, strings.BTN_CANCEL]], 
+        [[strings.get('BTN_TRY_AGAIN', lang), strings.get('BTN_CANCEL', lang)]], 
         resize_keyboard=True, 
         one_time_keyboard=True
     )
 
-def get_admin_menu():
+def get_admin_menu(lang='EN'):
     return ReplyKeyboardMarkup(
         [
-            [strings.BTN_ADMIN_ADD, strings.BTN_ADMIN_DEL],
-            [strings.BTN_ADMIN_STATS, strings.BTN_ADMIN_EXIT]
+            [strings.get('BTN_ADMIN_ADD', lang), strings.get('BTN_ADMIN_DEL', lang)],
+            [strings.get('BTN_ADMIN_STATS', lang), strings.get('BTN_ADMIN_EXIT', lang)]
+        ],
+        resize_keyboard=True
+    )
+
+def get_program_menu(lang='EN'):
+    return ReplyKeyboardMarkup(
+        [
+            [strings.get('BTN_PROG_IT', lang)],
+            [strings.get('BTN_PROG_MM', lang)],
+            [strings.get('BTN_PROG_CS', lang)],
+            [strings.get('BTN_PROG_MD', lang)],
+            [strings.get('BTN_PROG_AG', lang)],
+            [strings.get('BTN_PROG_LA', lang)],
+            [strings.get('BTN_CANCEL', lang)]
         ],
         resize_keyboard=True
     )

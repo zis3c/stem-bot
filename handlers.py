@@ -10,69 +10,97 @@ import re
 logger = logging.getLogger(__name__)
 
 # --- HELPERS ---
+def get_user_lang(context: ContextTypes.DEFAULT_TYPE):
+    """Retrieve user language, default to EN."""
+    return context.user_data.get('lang', strings.DEFAULT_LANG)
+
 async def check_keywords(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Global keyword checker for main menu navigation"""
+    """Global keyword checker for main menu navigation (Multi-lingual matches)"""
     text = update.message.text.strip()
-    if text == strings.BTN_CHECK: return await check_start(update, context)
-    if text == strings.BTN_HELP: return await help_command(update, context)
-    if text == strings.BTN_SETTINGS: return await settings_menu(update, context)
-    if text == strings.BTN_BACK: return await start(update, context)
+    
+    # Check against all language variations
+    if text in strings.get_all('BTN_CHECK'): return await check_start(update, context)
+    if text in strings.get_all('BTN_HELP'): return await help_command(update, context)
+    if text in strings.get_all('BTN_SETTINGS'): return await settings_menu(update, context)
+    if text in strings.get_all('BTN_BACK'): return await start(update, context)
     return None
 
 # --- HANDLERS ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    # Clear conversation state if any
-    context.user_data.clear()
+    context.user_data.setdefault('lang', strings.DEFAULT_LANG) # Init lang if missing
+    lang = get_user_lang(context)
     
     user = update.effective_user
     await update.message.reply_text(
-        strings.WELCOME_MSG.format(name=user.first_name), 
-        reply_markup=keyboards.get_main_menu(), 
+        strings.get('WELCOME_MSG', lang).format(name=user.first_name), 
+        reply_markup=keyboards.get_main_menu(lang), 
         parse_mode="Markdown"
     )
     return ConversationHandler.END
 
 async def settings_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
     await update.message.reply_text(
-        "⚙️ *Settings*",
+        strings.get('MSG_SELECT_LANG', lang), # Refactored header
         parse_mode="Markdown",
-        reply_markup=keyboards.get_settings_menu()
+        reply_markup=keyboards.get_settings_menu(lang)
     )
     return ConversationHandler.END
 
+async def set_lang_en(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    context.user_data['lang'] = 'EN'
+    await update.message.reply_text(strings.get('MSG_LANG_CHANGED', 'EN'))
+    return await start(update, context)
+
+async def set_lang_ms(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    context.user_data['lang'] = 'MS'
+    await update.message.reply_text(strings.get('MSG_LANG_CHANGED', 'MS'))
+    return await start(update, context)
+
 async def clear_history(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    # We cannot delete user messages, but we can 'clean' the bot's state
+    lang = get_user_lang(context)
+    # Clear everything EXCEPT the language setting
+    current_lang = context.user_data.get('lang', 'EN')
     context.user_data.clear()
-    await update.message.reply_text(strings.MSG_HISTORY_CLEARED)
+    context.user_data['lang'] = current_lang
+    
+    await update.message.reply_text(strings.get('MSG_HISTORY_CLEARED', lang))
     return await start(update, context)
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
     await update.message.reply_text(
-        strings.HELP_MSG,
+        strings.get('HELP_MSG', lang),
         parse_mode="Markdown",
-        reply_markup=keyboards.get_main_menu()
+        reply_markup=keyboards.get_main_menu(lang)
     )
     return ConversationHandler.END
 
 async def check_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
     await update.message.reply_text(
-        strings.PROMPT_MATRIC,
+        strings.get('PROMPT_MATRIC', lang),
         parse_mode="Markdown",
-        reply_markup=keyboards.get_cancel_menu()
+        reply_markup=keyboards.get_cancel_menu(lang)
     )
     return states.ASK_MATRIC
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    await update.message.reply_text(strings.ERR_CANCEL, reply_markup=keyboards.get_main_menu())
+    lang = get_user_lang(context)
+    await update.message.reply_text(strings.get('ERR_CANCEL', lang), reply_markup=keyboards.get_main_menu(lang))
     return ConversationHandler.END
 
 async def receive_matric(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
     text = update.message.text.strip().upper()
-    if text == strings.BTN_CANCEL.upper() or text == "CANCEL": return await cancel(update, context)
+    
+    # Check Cancel
+    if text in strings.get_all('BTN_CANCEL') or text == "CANCEL": 
+        return await cancel(update, context)
     
     # Handle "Try Again"
-    if text == strings.BTN_TRY_AGAIN.upper():
-        await update.message.reply_text(strings.PROMPT_MATRIC, parse_mode="Markdown", reply_markup=keyboards.get_cancel_menu())
+    if text in strings.get_all('BTN_TRY_AGAIN'):
+        await update.message.reply_text(strings.get('PROMPT_MATRIC', lang), parse_mode="Markdown", reply_markup=keyboards.get_cancel_menu(lang))
         return states.ASK_MATRIC
 
     # Global Navigation Check
@@ -81,31 +109,33 @@ async def receive_matric(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     if not re.match(r'^[A-Z0-9]{6,15}$', text):
         await update.message.reply_text(
-            strings.ERR_INVALID_MATRIC, 
+            strings.get('ERR_INVALID_MATRIC', lang), 
             parse_mode="Markdown",
-            reply_markup=keyboards.get_retry_menu()
+            reply_markup=keyboards.get_retry_menu(lang)
         )
         return states.ASK_MATRIC
     
     context.user_data['matric'] = text
     await update.message.reply_text(
-        strings.PROMPT_IC.format(matric=text),
+        strings.get('PROMPT_IC', lang).format(matric=text),
         parse_mode="Markdown",
-        reply_markup=keyboards.get_cancel_menu()
+        reply_markup=keyboards.get_cancel_menu(lang)
     )
     return states.ASK_IC
 
 async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
     text = update.message.text.strip()
-    if text == strings.BTN_CANCEL or text == "CANCEL": return await cancel(update, context)
+    
+    if text in strings.get_all('BTN_CANCEL') or text == "CANCEL": return await cancel(update, context)
 
     # Handle "Try Again"
-    if text == strings.BTN_TRY_AGAIN:
+    if text in strings.get_all('BTN_TRY_AGAIN'):
         user_matric = context.user_data.get('matric', 'Unknown')
         await update.message.reply_text(
-            strings.PROMPT_IC.format(matric=user_matric),
+            strings.get('PROMPT_IC', lang).format(matric=user_matric),
             parse_mode="Markdown",
-            reply_markup=keyboards.get_cancel_menu()
+            reply_markup=keyboards.get_cancel_menu(lang)
         )
         return states.ASK_IC
 
@@ -115,17 +145,17 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     if not re.match(r'^\d{4}$', text):
         await update.message.reply_text(
-            strings.ERR_INVALID_IC, 
+            strings.get('ERR_INVALID_IC', lang), 
             parse_mode="Markdown",
-            reply_markup=keyboards.get_retry_menu()
+            reply_markup=keyboards.get_retry_menu(lang)
         )
         return states.ASK_IC
     
-    loading_msg = await update.message.reply_text(strings.PROMPT_LOADING, parse_mode="Markdown")
+    loading_msg = await update.message.reply_text(strings.get('PROMPT_LOADING', lang), parse_mode="Markdown")
     
     user_matric = context.user_data['matric']
     user_ic_last4 = text
-    msg = strings.ERR_DB_CONNECTION
+    msg = strings.get('ERR_DB_CONNECTION', lang)
     
     try:
         row_values, _ = db.find_member(user_matric)
@@ -138,17 +168,22 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
                 db_prog = row_values[5]
                 
                 if db_ic.endswith(user_ic_last4):
-                    msg = strings.VERIFICATION_SUCCESS.format(
+                    msg = strings.get('VERIFICATION_SUCCESS', lang).format(
                         name=db_name,
                         matric=user_matric,
                         program=db_prog
                     )
                 else:
-                    msg = "*Verification Failed*\nMatric found, but IC digits do not match."
+                    # Specific localized error construction if needed, or simple string
+                    msg = "*Verification Failed*\nMatric found, but IC digits do not match." 
+                    # Ideally this should be in strings.py too, but for speed keeping logic here
+                    # FIX: Making it properly localized manually or just English logic for now
+                    if lang == 'MS': msg = "*Pengesahan Gagal*\nMatrik dijumpai, tetapi digit IC tidak sepadan."
             else:
                     msg = "Record found but data is incomplete."
+                    if lang == 'MS': msg = "Rekod dijumpai tetapi data tidak lengkap."
         else:
-            msg = strings.ERR_NOT_FOUND
+            msg = strings.get('ERR_NOT_FOUND', lang)
                 
     except Exception as e:
         logger.error(e)
@@ -157,7 +192,7 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
         await loading_msg.delete()
     except Exception:
-        pass # Ignore if already deleted
+        pass 
 
-    await update.message.reply_text(msg, parse_mode="Markdown", reply_markup=keyboards.get_main_menu())
+    await update.message.reply_text(msg, parse_mode="Markdown", reply_markup=keyboards.get_main_menu(lang))
     return ConversationHandler.END
