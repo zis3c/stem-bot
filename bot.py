@@ -117,20 +117,12 @@ async def main():
                 CommandHandler("admin", admin.start) # Allow refresh
             ],
             states.ADMIN_MANAGE: [
-                MessageHandler(filter_admin_status, admin.status_start), # New Entry
                 MessageHandler(filter_admin_add, admin.add_start),
                 MessageHandler(filter_admin_del, admin.del_start),
                 MessageHandler(filter_admin_list, admin.list_members),
                 MessageHandler(filter_admin_search, admin.search_start),
                 MessageHandler(filter_back, admin.back_to_admin),
                 CommandHandler("admin", admin.back_to_admin) # Refresh to main admin
-            ],
-            states.ADMIN_STATUS: [
-                MessageHandler(filter_status_verified, admin.list_verified),
-                MessageHandler(filter_status_pending, admin.list_pending),
-                MessageHandler(filter_status_rejected, admin.list_rejected),
-                MessageHandler(filter_back, admin.back_to_manage),
-                CommandHandler("admin", admin.start)
             ],
             states.ADD_MATRIC: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_matric)],
             states.ADD_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_name)],
@@ -152,9 +144,6 @@ async def main():
     application.add_handler(CommandHandler("settings", handlers.settings_menu))
     application.add_handler(CommandHandler("check_pending", handlers.check_pending_now)) # Manual Trigger
     
-    # Callback Handler (Inline Buttons)
-    application.add_handler(CallbackQueryHandler(handlers.handle_approval_callback))
-
     application.add_handler(MessageHandler(filter_help, handlers.help_command))
     application.add_handler(MessageHandler(filter_settings, handlers.settings_menu))
     application.add_handler(MessageHandler(filter_languages, handlers.languages_menu))

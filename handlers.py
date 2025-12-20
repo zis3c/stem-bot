@@ -287,50 +287,15 @@ async def check_registrations(context: ContextTypes.DEFAULT_TYPE):
             # Immediately mark Pending to avoid double notification on next poll
             db.update_status(row_idx, "Pending")
             
-            # Send to all admins
+            # Send to all admins (Text Only, No Buttons)
             admin_ids = db.admin_ids
-            buttons = [
-                [
-                    InlineKeyboardButton(strings.get('BTN_APPROVE', 'EN'), callback_data=f"approve_{row_idx}"),
-                    InlineKeyboardButton(strings.get('BTN_REJECT', 'EN'), callback_data=f"reject_{row_idx}")
-                ]
-            ]
-            markup = InlineKeyboardMarkup(buttons)
             text = strings.get('NOTIFY_NEW_REG', 'EN').format(name=name, matric=matric, resit=resit)
             
             for admin_id in admin_ids:
                 try:
-                    await context.bot.send_message(chat_id=admin_id, text=text, reply_markup=markup, parse_mode="Markdown")
+                    await context.bot.send_message(chat_id=admin_id, text=text, parse_mode="Markdown")
                 except Exception as e:
                     logger.error(f"Failed to notify admin {admin_id}: {e}")
                     
     except Exception as e:
         logger.error(f"Check Job Error: {e}")
-
-async def handle_approval_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handle Approve/Reject inline buttons."""
-    query = update.callback_query
-    await query.answer()
-    
-    user_id = query.from_user.id
-    if not db.is_admin(user_id):
-        await query.message.reply_text("Access Denied.")
-        return
-
-    data = query.data
-    action, row_idx = data.split("_")
-    row_idx = int(row_idx)
-    
-    status = "Approved" if action == "approve" else "Rejected"
-    
-    # Update DB
-    if db.update_status(row_idx, status):
-        # Update Message
-        text_lines = query.message.text.split('\n')
-        name_line = next((line for line in text_lines if "Name:" in line or "Nama:" in line), "User")
-        name = name_line.split(":", 1)[1].strip() if ":" in name_line else "User"
-        
-        result_msg = strings.get('MSG_APPROVED' if status == "Approved" else 'MSG_REJECTED', 'EN').format(name=name)
-        await query.edit_message_text(f"{query.message.text}\n\n{result_msg}")
-    else:
-        await query.edit_message_text(f"{query.message.text}\n\n❌ Database Error.")
