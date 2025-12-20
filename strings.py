@@ -15,7 +15,7 @@ HELP_MSG = (
 
 # Prompts
 PROMPT_MATRIC = "Step 1/2\n\nPlease type your *Matric Number*:\n(Example: `I24107504`)"
-PROMPT_IC = "Matric: `{matric}`\n\nStep 2/2\nNow enter the *Last 4 Digits* of your IC:"
+PROMPT_IC = "Matric: `{matric}`\n\nStep 2/2\nNow enter the *Last 4 Digits* of your IC:\n(Example: `********1807`)"
 PROMPT_LOADING = "*Verifying...*"
 
 VERIFICATION_SUCCESS = (
