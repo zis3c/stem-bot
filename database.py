@@ -131,15 +131,19 @@ class Database:
             logger.error(f"Del Admin Error: {e}")
             return False
 
-    def log_user(self, user_id, first_name):
-        sheet = self.get_sheet()
+    def find_member(self, matric):
+        sheet = self.get_sheet("Registrations")
         if not sheet: return None, None
         
         # Search Col D (Matric)
-        cell = sheet.find(matric, in_column=4)
-        if cell:
-            return sheet.row_values(cell.row), cell.row
-        return None, None
+        try:
+            cell = sheet.find(matric, in_column=4)
+            if cell:
+                return sheet.row_values(cell.row), cell.row
+            return None, None
+        except Exception:
+            return None, None
+
 
     def get_stats(self):
         sheet = self.get_sheet("Registrations")
