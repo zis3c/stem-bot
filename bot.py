@@ -51,6 +51,9 @@ async def main():
     # Filters
     filter_check = filters.Regex(f"^{re.escape(strings.BTN_CHECK)}$")
     filter_help = filters.Regex(f"^{re.escape(strings.BTN_HELP)}$")
+    filter_settings = filters.Regex(f"^{re.escape(strings.BTN_SETTINGS)}$")
+    filter_clear = filters.Regex(f"^{re.escape(strings.BTN_CLEAR_HISTORY)}$")
+    filter_back = filters.Regex(f"^{re.escape(strings.BTN_BACK)}$")
     filter_cancel = filters.Regex(f"^{re.escape(strings.BTN_CANCEL)}$")
     
     # Admin Filters
@@ -61,35 +64,26 @@ async def main():
 
     # User Config
     user_conv = ConversationHandler(
-        entry_points=[MessageHandler(filter_check, handlers.check_start)],
+        entry_points=[
+            MessageHandler(filter_check, handlers.check_start),
+            MessageHandler(filter_settings, handlers.settings_menu)
+        ],
         states={
             states.ASK_MATRIC: [MessageHandler(filters.TEXT & ~filters.COMMAND & ~filter_cancel, handlers.receive_matric)],
             states.ASK_IC: [MessageHandler(filters.TEXT & ~filters.COMMAND & ~filter_cancel, handlers.receive_ic)],
         },
-        fallbacks=[MessageHandler(filter_cancel | filters.COMMAND, handlers.cancel)],
+        fallbacks=[
+            MessageHandler(filter_cancel | filters.COMMAND, handlers.cancel),
+            MessageHandler(filter_settings, handlers.settings_menu) # Allow settings from anywhere
+        ],
     )
 
-    # Admin Config
-    admin_conv = ConversationHandler(
-        entry_points=[CommandHandler("admin", admin.start)],
-        states={
-            states.ADMIN_MENU: [
-                MessageHandler(filter_admin_add, admin.add_start),
-                MessageHandler(filter_admin_del, admin.del_start),
-                MessageHandler(filter_admin_stats, admin.stats),
-                MessageHandler(filter_admin_exit, admin.exit)
-            ],
-            states.ADD_MATRIC: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_matric)],
-            states.ADD_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_name)],
-            states.ADD_IC: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_ic)],
-            states.ADD_PROG: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_prog)],
-            states.DEL_MATRIC: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.del_matric)],
-        },
-        fallbacks=[CommandHandler("cancel", admin.exit)],
-    )
-
+    # General Handlers
     application.add_handler(CommandHandler("start", handlers.start))
     application.add_handler(MessageHandler(filter_help, handlers.help_command))
+    application.add_handler(MessageHandler(filter_settings, handlers.settings_menu))
+    application.add_handler(MessageHandler(filter_clear, handlers.clear_history))
+    application.add_handler(MessageHandler(filter_back, handlers.start)) # Back goes to main menu
     application.add_handler(user_conv)
     application.add_handler(admin_conv)
     

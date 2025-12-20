@@ -9,20 +9,50 @@ import re
 
 logger = logging.getLogger(__name__)
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+# --- HELPERS ---
+async def check_keywords(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Global keyword checker for main menu navigation"""
+    text = update.message.text.strip()
+    if text == strings.BTN_CHECK: return await check_start(update, context)
+    if text == strings.BTN_HELP: return await help_command(update, context)
+    if text == strings.BTN_SETTINGS: return await settings_menu(update, context)
+    if text == strings.BTN_BACK: return await start(update, context)
+    return None
+
+# --- HANDLERS ---
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    # Clear conversation state if any
+    context.user_data.clear()
+    
     user = update.effective_user
     await update.message.reply_text(
         strings.WELCOME_MSG.format(name=user.first_name), 
         reply_markup=keyboards.get_main_menu(), 
         parse_mode="Markdown"
     )
+    return ConversationHandler.END
 
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def settings_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    await update.message.reply_text(
+        "⚙️ *Settings*",
+        parse_mode="Markdown",
+        reply_markup=keyboards.get_settings_menu()
+    )
+    return ConversationHandler.END
+
+async def clear_history(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    # We cannot delete user messages, but we can 'clean' the bot's state
+    context.user_data.clear()
+    await update.message.reply_text(strings.MSG_HISTORY_CLEARED)
+    return await start(update, context)
+
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text(
         strings.HELP_MSG,
         parse_mode="Markdown",
         reply_markup=keyboards.get_main_menu()
     )
+    return ConversationHandler.END
 
 async def check_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text(
@@ -40,22 +70,20 @@ async def receive_matric(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     text = update.message.text.strip().upper()
     if text == strings.BTN_CANCEL.upper() or text == "CANCEL": return await cancel(update, context)
     
-    # Handle "Try Again" - just re-prompt
+    # Handle "Try Again"
     if text == strings.BTN_TRY_AGAIN.upper():
         await update.message.reply_text(strings.PROMPT_MATRIC, parse_mode="Markdown", reply_markup=keyboards.get_cancel_menu())
         return states.ASK_MATRIC
 
-    # Handle Main Menu Buttons if they are clicked
-    if text == strings.BTN_CHECK.upper(): return await check_start(update, context)
-    if text == strings.BTN_HELP.upper(): 
-        await help_command(update, context)
-        return ConversationHandler.END
+    # Global Navigation Check
+    nav = await check_keywords(update, context)
+    if nav is not None: return nav
 
     if not re.match(r'^[A-Z0-9]{6,15}$', text):
         await update.message.reply_text(
             strings.ERR_INVALID_MATRIC, 
             parse_mode="Markdown",
-            reply_markup=keyboards.get_retry_menu() # Show Retry Menu on error
+            reply_markup=keyboards.get_retry_menu()
         )
         return states.ASK_MATRIC
     
@@ -81,25 +109,22 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         )
         return states.ASK_IC
 
-    # Handle Main Menu Buttons
-    if text == strings.BTN_CHECK: return await check_start(update, context)
-    if text == strings.BTN_HELP: 
-        await help_command(update, context)
-        return ConversationHandler.END
+    # Global Navigation Check
+    nav = await check_keywords(update, context)
+    if nav is not None: return nav
 
     if not re.match(r'^\d{4}$', text):
         await update.message.reply_text(
             strings.ERR_INVALID_IC, 
             parse_mode="Markdown",
-            reply_markup=keyboards.get_retry_menu() # Show Retry Menu on error
+            reply_markup=keyboards.get_retry_menu()
         )
         return states.ASK_IC
     
-    await update.message.reply_text(strings.PROMPT_LOADING, parse_mode="Markdown")
+    loading_msg = await update.message.reply_text(strings.PROMPT_LOADING, parse_mode="Markdown")
     
     user_matric = context.user_data['matric']
     user_ic_last4 = text
-    
     msg = strings.ERR_DB_CONNECTION
     
     try:
@@ -127,6 +152,12 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
                 
     except Exception as e:
         logger.error(e)
+
+    # AUTO DELETE LOADING MESSAGE
+    try:
+        await loading_msg.delete()
+    except Exception:
+        pass # Ignore if already deleted
 
     await update.message.reply_text(msg, parse_mode="Markdown", reply_markup=keyboards.get_main_menu())
     return ConversationHandler.END

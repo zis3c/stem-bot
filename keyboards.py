@@ -3,7 +3,16 @@ import strings
 
 def get_main_menu():
     return ReplyKeyboardMarkup(
-        [[strings.BTN_CHECK, strings.BTN_HELP]], 
+        [
+            [strings.BTN_CHECK],
+            [strings.BTN_HELP, strings.BTN_SETTINGS]
+        ], 
+        resize_keyboard=True
+    )
+
+def get_settings_menu():
+    return ReplyKeyboardMarkup(
+        [[strings.BTN_CLEAR_HISTORY], [strings.BTN_BACK]],
         resize_keyboard=True
     )
 

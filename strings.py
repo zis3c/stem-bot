@@ -23,7 +23,6 @@ VERIFICATION_SUCCESS = (
     "*Name*: *{name}*\n"
     "*Matric*: *{matric}*\n"
     "*Program*: *{program}*\n\n"
-    "*Status: ACTIVE*"
 )
 
 # Errors
@@ -52,8 +51,13 @@ ADMIN_EXIT = "Exiting Admin Mode."
 # Buttons
 BTN_CHECK = "Check Membership"
 BTN_HELP = "Help / Info"
+BTN_SETTINGS = "Settings"
 BTN_CANCEL = "Cancel"
 BTN_TRY_AGAIN = "Try Again"
+BTN_BACK = "Back"
+
+BTN_CLEAR_HISTORY = "Clear Chat History"
+MSG_HISTORY_CLEARED = "Chat history cleared (session reset)."
 
 BTN_ADMIN_ADD = "Add Member"
 BTN_ADMIN_DEL = "Delete Member"
