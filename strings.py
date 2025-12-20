@@ -88,9 +88,9 @@ STRINGS = {
         'BTN_ADMIN_CHECK_PENDING': "Check Pending ⏳",
         'BTN_ADMIN_DEL': "Delete Member",
         
-        'BTN_SA_MAINTENANCE': "Maintenance Mode 🚧",
-        'BTN_SA_ADMINS': "Manage Admins 👮",
-        'BTN_SA_HEALTH': "System Health 🩺",
+        'BTN_SA_MAINTENANCE': "Maintenance Mode",
+        'BTN_SA_ADMINS': "Manage Admins",
+        'BTN_SA_HEALTH': "System Health",
         
         'BTN_ADMIN_LIST': "List Members",
         'BTN_ADMIN_SEARCH': "Search Member",
@@ -206,9 +206,9 @@ STRINGS = {
         'BTN_ADMIN_STATS': "Statistik",
         'BTN_ADMIN_EXIT': "Keluar Admin",
         
-        'BTN_SA_MAINTENANCE': "Mod Penyelenggaraan 🚧",
-        'BTN_SA_ADMINS': "Urus Admin 👮",
-        'BTN_SA_HEALTH': "Kesihatan Sistem 🩺",
+        'BTN_SA_MAINTENANCE': "Mod Penyelenggaraan",
+        'BTN_SA_ADMINS': "Urus Admin",
+        'BTN_SA_HEALTH': "Kesihatan Sistem",
         
         'BTN_CONFIRM_YES': "Sahkan Hantar",
         'BTN_CONFIRM_NO': "Batal",
