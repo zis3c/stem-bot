@@ -19,6 +19,7 @@ import strings
 import states
 import handlers
 import admin
+import superadmin
 
 # --- CONFIGURATION ---
 TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -79,6 +80,11 @@ async def main():
     filter_admin_check_pending = build_filter('BTN_ADMIN_CHECK_PENDING') # Keeping for backward compat logic if needed
     
     filter_admin_exit = build_filter('BTN_ADMIN_EXIT')
+    
+    # Superadmin Filters
+    filter_sa_maint = build_filter('BTN_SA_MAINTENANCE')
+    filter_sa_admins = build_filter('BTN_SA_ADMINS')
+    filter_sa_health = build_filter('BTN_SA_HEALTH')
 
     # User Config
     user_conv = ConversationHandler(
@@ -96,6 +102,19 @@ async def main():
             MessageHandler(filter_settings, handlers.settings_menu),
             MessageHandler(filter_languages, handlers.languages_menu)
         ],
+    )
+    
+    super_conv = ConversationHandler(
+        entry_points=[CommandHandler("superadmin", superadmin.start)],
+        states={
+            states.SUPER_MENU: [
+                MessageHandler(filter_sa_maint, superadmin.toggle_maintenance),
+                MessageHandler(filter_sa_health, superadmin.check_health),
+                MessageHandler(filter_sa_admins, superadmin.manage_admins),
+                MessageHandler(filter_admin_exit, superadmin.exit)
+            ]
+        },
+        fallbacks=[CommandHandler("cancel", superadmin.exit)]
     )
 
     # Admin Config
@@ -126,6 +145,7 @@ async def main():
     )
 
     # General Handlers
+    application.add_handler(super_conv)
     application.add_handler(admin_conv)
     application.add_handler(user_conv)
     application.add_handler(CommandHandler("start", handlers.start))
