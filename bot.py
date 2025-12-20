@@ -77,6 +77,7 @@ async def main():
     filter_admin_search = build_filter('BTN_ADMIN_SEARCH')
     filter_admin_broadcast = build_filter('BTN_ADMIN_BROADCAST')
     filter_admin_stats = build_filter('BTN_ADMIN_STATS')
+    filter_admin_check_pending = build_filter('BTN_ADMIN_CHECK_PENDING')
     filter_admin_exit = build_filter('BTN_ADMIN_EXIT')
 
     # User Config
@@ -104,6 +105,7 @@ async def main():
             states.ADMIN_MENU: [
                 MessageHandler(filter_admin_manage, admin.manage_menu),
                 MessageHandler(filter_admin_broadcast, admin.broadcast_start),
+                MessageHandler(filter_admin_check_pending, admin.check_pending_click),
                 MessageHandler(filter_admin_stats, admin.stats),
                 MessageHandler(filter_admin_exit, admin.exit)
             ],

@@ -3,6 +3,7 @@ from telegram.ext import ConversationHandler, ContextTypes
 import strings
 import keyboards
 import states
+import handlers
 from database import db
 import logging
 
@@ -38,6 +39,18 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     except Exception as e:
         logger.error(e)
         await update.message.reply_text(strings.get('ERR_DB_CONNECTION', lang))
+        await update.message.reply_text(strings.get('ERR_DB_CONNECTION', lang))
+    return states.ADMIN_MENU
+
+async def check_pending_click(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Manual check triggered from Admin Menu button."""
+    lang = get_user_lang(context)
+    await update.message.reply_text("🔎 " + strings.get('ADMIN_SEARCHING', lang)) # Reuse searching text or just 'Checking...'
+    
+    # Call the logic from handlers
+    await handlers.check_registrations(context)
+    
+    await update.message.reply_text("✅ " + strings.get('BTN_ADMIN_CHECK_PENDING', lang) + " Done.", reply_markup=keyboards.get_admin_menu(lang))
     return states.ADMIN_MENU
 
 # --- MANAGE MEMBERS MENU ---

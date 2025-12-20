@@ -44,14 +44,12 @@ def get_retry_menu(lang='EN'):
     )
 
 def get_admin_menu(lang='EN'):
-    return ReplyKeyboardMarkup(
-        [
-            [strings.get('BTN_ADMIN_MANAGE', lang)],
-            [strings.get('BTN_ADMIN_BROADCAST', lang), strings.get('BTN_ADMIN_STATS', lang)],
-            [strings.get('BTN_ADMIN_EXIT', lang)]
-        ],
-        resize_keyboard=True
-    )
+    return ReplyKeyboardMarkup([
+        [strings.get('BTN_ADMIN_MANAGE', lang)],
+        [strings.get('BTN_ADMIN_CHECK_PENDING', lang)],
+        [strings.get('BTN_ADMIN_BROADCAST', lang), strings.get('BTN_ADMIN_STATS', lang)],
+        [strings.get('BTN_ADMIN_EXIT', lang)]
+    ], resize_keyboard=True, one_time_keyboard=False)
 
 def get_admin_manage_menu(lang='EN'):
     return ReplyKeyboardMarkup(
