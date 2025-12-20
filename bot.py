@@ -117,17 +117,12 @@ async def main():
                 CommandHandler("admin", admin.start) # Allow refresh
             ],
             states.ADMIN_MANAGE: [
-                MessageHandler(filter_admin_add, admin.add_start),
                 MessageHandler(filter_admin_del, admin.del_start),
                 MessageHandler(filter_admin_list, admin.list_members),
                 MessageHandler(filter_admin_search, admin.search_start),
                 MessageHandler(filter_back, admin.back_to_admin),
                 CommandHandler("admin", admin.back_to_admin) # Refresh to main admin
             ],
-            states.ADD_MATRIC: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_matric)],
-            states.ADD_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_name)],
-            states.ADD_IC: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_ic)],
-            states.ADD_PROG: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_prog)],
             states.DEL_MATRIC: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.del_matric)],
             states.SEARCH_QUERY: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.search_perform)],
             states.BROADCAST_MSG: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.broadcast_confirm)],

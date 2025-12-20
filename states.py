@@ -4,13 +4,10 @@
     ASK_IC,
     ADMIN_MENU,
     ADMIN_MANAGE,
-    ADD_MATRIC,
-    ADD_NAME,
-    ADD_IC,
-    ADD_PROG,
+    ADMIN_MANAGE,
     DEL_MATRIC,
     SEARCH_QUERY,
     BROADCAST_MSG,
     BROADCAST_CONFIRM,
     ADMIN_STATUS
-) = range(13)
+) = range(9)
