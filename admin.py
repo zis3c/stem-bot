@@ -131,7 +131,7 @@ async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         logger.error(e)
         await loading.edit_text(strings.get('ERR_DB_CONNECTION', lang))
     
-    await update.message.reply_text("Returning...", reply_markup=keyboards.get_admin_manage_menu(lang))
+    await update.message.reply_text(strings.get('BTN_ADMIN_MANAGE', lang), reply_markup=keyboards.get_admin_manage_menu(lang))
     return states.ADMIN_MANAGE
 
 
@@ -187,7 +187,7 @@ async def add_prog(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         logger.error(e)
         await loading.edit_text(strings.get('ERR_DB_CONNECTION', lang), parse_mode="Markdown")
         
-    await update.message.reply_text("Returning...", reply_markup=keyboards.get_admin_manage_menu(lang))
+    await update.message.reply_text(strings.get('BTN_ADMIN_MANAGE', lang), reply_markup=keyboards.get_admin_manage_menu(lang))
     return states.ADMIN_MANAGE
 
 # --- DELETE MEMBER FLOW ---
@@ -213,7 +213,7 @@ async def del_matric(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         logger.error(e)
         await loading.edit_text(strings.get('ERR_DB_CONNECTION', lang), parse_mode="Markdown")
         
-    await update.message.reply_text("Returning...", reply_markup=keyboards.get_admin_manage_menu(lang))
+    await update.message.reply_text(strings.get('BTN_ADMIN_MANAGE', lang), reply_markup=keyboards.get_admin_manage_menu(lang))
     return states.ADMIN_MANAGE
 
 async def back(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -284,7 +284,7 @@ async def broadcast_send(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         parse_mode="Markdown"
     )
     
-    await update.message.reply_text("Returning...", reply_markup=keyboards.get_admin_menu(lang))
+    await update.message.reply_text(strings.get('ADMIN_DASHBOARD', lang), reply_markup=keyboards.get_admin_menu(lang), parse_mode="Markdown")
     return states.ADMIN_MENU
 
 async def exit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
