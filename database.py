@@ -117,6 +117,45 @@ class Database:
             return False, None
         return None, None
 
+    # --- USER TRACKING FOR BROADCAST ---
+    def get_users_sheet(self):
+        try:
+             client = self.get_sheet().client # Hack to get client from the main sheet object
+             try:
+                 return client.open_by_key(self.sheet_id).worksheet("Users")
+             except gspread.WorksheetNotFound:
+                 # Create if missing
+                 sheet = client.open_by_key(self.sheet_id).add_worksheet(title="Users", rows=1000, cols=3)
+                 sheet.append_row(["User ID", "Name", "Joined Date"])
+                 return sheet
+        except Exception as e:
+            logger.error(f"Users Sheet Error: {e}")
+            return None
+
+    def log_user(self, user_id, name):
+        # Optimized: In real app, cache this. For now, check if exists to avoid dupes.
+        sheet = self.get_users_sheet()
+        if not sheet: return
+        try:
+            # Check if ID exists (Col 1)
+            cell = sheet.find(str(user_id), in_column=1)
+            if not cell:
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                sheet.append_row([str(user_id), name, timestamp])
+        except Exception as e:
+            logger.error(f"Log User Error: {e}")
+
+    def get_all_users(self):
+        sheet = self.get_users_sheet()
+        if not sheet: return []
+        try:
+            # Return list of user_ids (Col 1), skip header
+            vals = sheet.col_values(1)[1:] 
+            return [int(x) for x in vals if x.isdigit()]
+        except Exception as e:
+            logger.error(f"Get Users Error: {e}")
+            return []
+
     def is_admin(self, user_id):
         return user_id in self.admin_ids
 

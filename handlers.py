@@ -22,7 +22,8 @@ async def check_keywords(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if text in strings.get_all('BTN_CHECK'): return await check_start(update, context)
     if text in strings.get_all('BTN_HELP'): return await help_command(update, context)
     if text in strings.get_all('BTN_SETTINGS'): return await settings_menu(update, context)
-    if text in strings.get_all('BTN_BACK'): return await start(update, context)
+    if text in strings.get_all('BTN_LANGUAGES'): return await languages_menu(update, context)
+    if text in strings.get_all('BTN_BACK'): return await start(update, context) # Default back to main, but sub-menus might handle back differently
     return None
 
 # --- HANDLERS ---
@@ -31,6 +32,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)
     
     user = update.effective_user
+    # Log user for broadcast
+    try:
+        db.log_user(user.id, user.first_name)
+    except Exception as e:
+        logger.error(f"Log user fail: {e}")
+
     await update.message.reply_text(
         strings.get('WELCOME_MSG', lang).format(name=user.first_name), 
         reply_markup=keyboards.get_main_menu(lang), 
@@ -41,21 +48,38 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def settings_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)
     await update.message.reply_text(
-        strings.get('MSG_SELECT_LANG', lang), # Refactored header
+        "⚙️ *Settings*", # Header
         parse_mode="Markdown",
         reply_markup=keyboards.get_settings_menu(lang)
     )
     return ConversationHandler.END
 
+async def languages_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
+    await update.message.reply_text(
+        strings.get('MSG_SELECT_LANG', lang),
+        parse_mode="Markdown",
+        reply_markup=keyboards.get_language_menu(lang)
+    )
+    return ConversationHandler.END
+
 async def set_lang_en(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data['lang'] = 'EN'
-    await update.message.reply_text(strings.get('MSG_LANG_CHANGED', 'EN'))
-    return await start(update, context)
+    # Return to Settings Menu to show context
+    await update.message.reply_text(
+        strings.get('MSG_LANG_CHANGED', 'EN'),
+        reply_markup=keyboards.get_settings_menu('EN')
+    )
+    return ConversationHandler.END
 
 async def set_lang_ms(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data['lang'] = 'MS'
-    await update.message.reply_text(strings.get('MSG_LANG_CHANGED', 'MS'))
-    return await start(update, context)
+    # Return to Settings Menu to show context
+    await update.message.reply_text(
+        strings.get('MSG_LANG_CHANGED', 'MS'),
+        reply_markup=keyboards.get_settings_menu('MS')
+    )
+    return ConversationHandler.END
 
 async def clear_history(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)

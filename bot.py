@@ -60,6 +60,7 @@ async def main():
     filter_check = build_filter('BTN_CHECK')
     filter_help = build_filter('BTN_HELP')
     filter_settings = build_filter('BTN_SETTINGS')
+    filter_languages = build_filter('BTN_LANGUAGES')
     filter_clear = build_filter('BTN_CLEAR_HISTORY')
     filter_back = build_filter('BTN_BACK')
     filter_cancel = build_filter('BTN_CANCEL')
@@ -71,6 +72,7 @@ async def main():
     filter_admin_del = build_filter('BTN_ADMIN_DEL')
     filter_admin_list = build_filter('BTN_ADMIN_LIST')
     filter_admin_search = build_filter('BTN_ADMIN_SEARCH')
+    filter_admin_broadcast = build_filter('BTN_ADMIN_BROADCAST')
     filter_admin_stats = build_filter('BTN_ADMIN_STATS')
     filter_admin_exit = build_filter('BTN_ADMIN_EXIT')
 
@@ -78,7 +80,8 @@ async def main():
     user_conv = ConversationHandler(
         entry_points=[
             MessageHandler(filter_check, handlers.check_start),
-            MessageHandler(filter_settings, handlers.settings_menu)
+            MessageHandler(filter_settings, handlers.settings_menu),
+            MessageHandler(filter_languages, handlers.languages_menu)
         ],
         states={
             states.ASK_MATRIC: [MessageHandler(filters.TEXT & ~filters.COMMAND & ~filter_cancel, handlers.receive_matric)],
@@ -86,7 +89,8 @@ async def main():
         },
         fallbacks=[
             MessageHandler(filter_cancel | filters.COMMAND, handlers.cancel),
-            MessageHandler(filter_settings, handlers.settings_menu) # Allow settings from anywhere
+            MessageHandler(filter_settings, handlers.settings_menu),
+            MessageHandler(filter_languages, handlers.languages_menu)
         ],
     )
 
@@ -99,6 +103,7 @@ async def main():
                 MessageHandler(filter_admin_del, admin.del_start),
                 MessageHandler(filter_admin_list, admin.list_members),
                 MessageHandler(filter_admin_search, admin.search_start),
+                MessageHandler(filter_admin_broadcast, admin.broadcast_start),
                 MessageHandler(filter_admin_stats, admin.stats),
                 MessageHandler(filter_admin_exit, admin.exit)
             ],
@@ -108,6 +113,8 @@ async def main():
             states.ADD_PROG: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_prog)],
             states.DEL_MATRIC: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.del_matric)],
             states.SEARCH_QUERY: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.search_perform)],
+            states.BROADCAST_MSG: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.broadcast_confirm)],
+            states.BROADCAST_CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.broadcast_send)],
         },
         fallbacks=[CommandHandler("cancel", admin.exit)],
     )
@@ -117,6 +124,7 @@ async def main():
     application.add_handler(CommandHandler("settings", handlers.settings_menu))
     application.add_handler(MessageHandler(filter_help, handlers.help_command))
     application.add_handler(MessageHandler(filter_settings, handlers.settings_menu))
+    application.add_handler(MessageHandler(filter_languages, handlers.languages_menu))
     application.add_handler(MessageHandler(filter_clear, handlers.clear_history))
     application.add_handler(MessageHandler(filter_lang_en, handlers.set_lang_en))
     application.add_handler(MessageHandler(filter_lang_ms, handlers.set_lang_ms))

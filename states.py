@@ -8,5 +8,7 @@
     ADD_IC,
     ADD_PROG,
     DEL_MATRIC,
-    SEARCH_QUERY
-) = range(9)
+    SEARCH_QUERY,
+    BROADCAST_MSG,
+    BROADCAST_CONFIRM
+) = range(11)

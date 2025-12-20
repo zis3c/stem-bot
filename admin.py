@@ -197,6 +197,72 @@ async def back(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text(strings.get('ERR_CANCEL', lang), reply_markup=keyboards.get_admin_menu(lang))
     return states.ADMIN_MENU
 
+# --- BROADCAST FLOW ---
+async def broadcast_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
+    await update.message.reply_text(
+        strings.get('ADMIN_BROADCAST_PROMPT', lang), 
+        parse_mode="Markdown", 
+        reply_markup=keyboards.get_cancel_menu(lang)
+    )
+    return states.BROADCAST_MSG
+
+async def broadcast_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
+    text = update.message.text
+    
+    if text in strings.get_all('BTN_CANCEL') or text == "CANCEL": 
+        return await back(update, context)
+
+    context.user_data['broadcast_msg'] = text
+    
+    # Get user count preview
+    users = db.get_all_users()
+    count = len(users)
+    
+    await update.message.reply_text(
+        strings.get('ADMIN_BROADCAST_CONFIRM', lang).format(msg=text, count=count),
+        parse_mode="Markdown",
+        reply_markup=keyboards.get_confirm_menu(lang)
+    )
+    return states.BROADCAST_CONFIRM
+
+async def broadcast_send(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
+    text = update.message.text
+    
+    if text in strings.get_all('BTN_CONFIRM_NO'):
+        return await back(update, context)
+        
+    if text not in strings.get_all('BTN_CONFIRM_YES'):
+        # Invalid input, ask again or cancel? Let's assume cancel or re-ask.
+        # Simplest: cancel
+        return await back(update, context)
+
+    msg = context.user_data.get('broadcast_msg')
+    if not msg: return await back(update, context)
+
+    status_msg = await update.message.reply_text(strings.get('ADMIN_BROADCAST_START', lang))
+    
+    users = db.get_all_users()
+    success = 0
+    failed = 0
+    
+    for uid in users:
+        try:
+            await context.bot.send_message(chat_id=uid, text=msg)
+            success += 1
+        except Exception:
+            failed += 1
+            
+    await status_msg.edit_text(
+        strings.get('ADMIN_BROADCAST_DONE', lang).format(success=success, failed=failed), 
+        parse_mode="Markdown"
+    )
+    
+    await update.message.reply_text("Returning...", reply_markup=keyboards.get_admin_menu(lang))
+    return states.ADMIN_MENU
+
 async def exit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)
     await update.message.reply_text(strings.get('ADMIN_EXIT', lang), reply_markup=keyboards.get_main_menu(lang))

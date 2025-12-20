@@ -43,6 +43,7 @@ STRINGS = {
         'BTN_CLEAR_HISTORY': "Clear Chat History",
         'MSG_HISTORY_CLEARED': "Chat history cleared (session reset).",
         
+        'BTN_LANGUAGES': "Languages",
         'BTN_LANG_EN': "🇬🇧 English",
         'BTN_LANG_MS': "🇲🇾 Bahasa Melayu",
         'MSG_LANG_CHANGED': "Language changed to English! 🇬🇧",
@@ -72,8 +73,17 @@ STRINGS = {
         'BTN_ADMIN_DEL': "Delete Member",
         'BTN_ADMIN_LIST': "List Members",
         'BTN_ADMIN_SEARCH': "Search Member",
+        'BTN_ADMIN_BROADCAST': "Broadcast",
         'BTN_ADMIN_STATS': "Stats",
         'BTN_ADMIN_EXIT': "Exit Admin",
+        
+        'BTN_CONFIRM_YES': "Confirm Send",
+        'BTN_CONFIRM_NO': "Cancel",
+        
+        'ADMIN_BROADCAST_PROMPT': "Enter message to broadcast to all users:",
+        'ADMIN_BROADCAST_CONFIRM': "Preview:\n\n{msg}\n\n*Send to {count} users?*",
+        'ADMIN_BROADCAST_START': "Sending...",
+        'ADMIN_BROADCAST_DONE': "*Broadcast Complete* 📢\n\n✅ Success: {success}\n❌ Blocked/Failed: {failed}",
         
         # Programs
         'BTN_PROG_IT': "DIPLOMA TEKNOLOGI MAKLUMAT",
@@ -125,6 +135,7 @@ STRINGS = {
         'BTN_CLEAR_HISTORY': "Padam Sejarah Sembang",
         'MSG_HISTORY_CLEARED': "Sejarah sembang dipadam (sesi reset).",
         
+        'BTN_LANGUAGES': "Bahasa",
         'BTN_LANG_EN': "🇬🇧 English",
         'BTN_LANG_MS': "🇲🇾 Bahasa Melayu",
         'MSG_LANG_CHANGED': "Bahasa ditukar kepada Bahasa Melayu! 🇲🇾",
@@ -154,8 +165,17 @@ STRINGS = {
         'BTN_ADMIN_DEL': "Padam Ahli",
         'BTN_ADMIN_LIST': "Senarai Ahli",
         'BTN_ADMIN_SEARCH': "Cari Ahli",
+        'BTN_ADMIN_BROADCAST': "Hebahan",
         'BTN_ADMIN_STATS': "Statistik",
         'BTN_ADMIN_EXIT': "Keluar Admin",
+        
+        'BTN_CONFIRM_YES': "Sahkan Hantar",
+        'BTN_CONFIRM_NO': "Batal",
+        
+        'ADMIN_BROADCAST_PROMPT': "Masukkan mesej untuk hebahan kepada semua:",
+        'ADMIN_BROADCAST_CONFIRM': "Pratonton:\n\n{msg}\n\n*Hantar kepada {count} pengguna?*",
+        'ADMIN_BROADCAST_START': "Sedang menghantar...",
+        'ADMIN_BROADCAST_DONE': "*Hebahan Selesai* 📢\n\n✅ Berjaya: {success}\n❌ Gagal: {failed}",
         
         # Programs (Same for both languages usually, or translate if needed)
         'BTN_PROG_IT': "DIPLOMA TEKNOLOGI MAKLUMAT",

@@ -13,8 +13,17 @@ def get_main_menu(lang='EN'):
 def get_settings_menu(lang='EN'):
     return ReplyKeyboardMarkup(
         [
-            [strings.get('BTN_LANG_EN'), strings.get('BTN_LANG_MS')], # Language buttons usually static or localized names
+            [strings.get('BTN_LANGUAGES', lang)],
             [strings.get('BTN_CLEAR_HISTORY', lang)], 
+            [strings.get('BTN_BACK', lang)]
+        ],
+        resize_keyboard=True
+    )
+
+def get_language_menu(lang='EN'):
+    return ReplyKeyboardMarkup(
+        [
+            [strings.get('BTN_LANG_EN'), strings.get('BTN_LANG_MS')],
             [strings.get('BTN_BACK', lang)]
         ],
         resize_keyboard=True
@@ -39,9 +48,19 @@ def get_admin_menu(lang='EN'):
         [
             [strings.get('BTN_ADMIN_ADD', lang), strings.get('BTN_ADMIN_DEL', lang)],
             [strings.get('BTN_ADMIN_LIST', lang), strings.get('BTN_ADMIN_SEARCH', lang)],
-            [strings.get('BTN_ADMIN_STATS', lang), strings.get('BTN_ADMIN_EXIT', lang)]
+            [strings.get('BTN_ADMIN_BROADCAST', lang), strings.get('BTN_ADMIN_STATS', lang)],
+            [strings.get('BTN_ADMIN_EXIT', lang)]
         ],
         resize_keyboard=True
+    )
+
+def get_confirm_menu(lang='EN'):
+    return ReplyKeyboardMarkup(
+        [
+            [strings.get('BTN_CONFIRM_YES', lang), strings.get('BTN_CONFIRM_NO', lang)]
+        ],
+        resize_keyboard=True,
+        one_time_keyboard=True
     )
 
 def get_program_menu(lang='EN'):
