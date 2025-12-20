@@ -79,11 +79,16 @@ STRINGS = {
         'ADMIN_SEARCH_EMPTY': "No matches found for '{query}'.",
         
         'BTN_ADMIN_MANAGE': "Manage Members",
+        'BTN_ADMIN_STATUS': "Status Members",
+        'BTN_STATUS_VERIFIED': "Verified",
+        'BTN_STATUS_PENDING': "Pending",
+        'BTN_STATUS_REJECTED': "Rejected",
+        'BTN_ADMIN_CHECK_PENDING': "Check Pending ⏳", # Legacy/Direct check if needed
         'BTN_ADMIN_ADD': "Add Member",
         'BTN_ADMIN_DEL': "Delete Member",
         'BTN_ADMIN_LIST': "List Members",
         'BTN_ADMIN_SEARCH': "Search Member",
-        'BTN_ADMIN_CHECK_PENDING': "Check Pending ⏳",
+        'BTN_ADMIN_CHECK_PENDING': "Check Pending",
         'BTN_ADMIN_BROADCAST': "Broadcast",
         'BTN_ADMIN_STATS': "Stats",
         'BTN_ADMIN_EXIT': "Exit Admin",
@@ -182,6 +187,10 @@ STRINGS = {
         'ADMIN_SEARCH_EMPTY': "Tiada padanan untuk '{query}'.",
         
         'BTN_ADMIN_MANAGE': "Urus Ahli",
+        'BTN_ADMIN_STATUS': "Status Ahli",
+        'BTN_STATUS_VERIFIED': "Disahkan",
+        'BTN_STATUS_PENDING': "Sedang Diproses",
+        'BTN_STATUS_REJECTED': "Ditolak",
         'BTN_ADMIN_ADD': "Tambah Ahli",
         'BTN_ADMIN_DEL': "Padam Ahli",
         'BTN_ADMIN_LIST': "Senarai Ahli",

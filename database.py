@@ -190,7 +190,36 @@ class Database:
                     })
             return unprocessed
         except Exception as e:
-            logger.error(f"Get Unprocessed Error: {e}")
+            logger.error(f"Error fetching members: {e}")
+            return []
+
+    def get_members_by_filter(self, status_filter):
+        """Get members filtered by Status (Col I)."""
+        sheet = self.get_sheet()
+        if not sheet: return []
+        
+        try:
+            rows = sheet.get_all_values()
+            filtered = []
+            # Skip header (row 1)
+            for i, row in enumerate(rows[1:], start=2):
+                # Ensure row has enough columns (Col I is index 8)
+                status = row[8].strip().title() if len(row) > 8 else "Approved"
+                # Normalize "Approved"
+                if status not in ["Pending", "Rejected", "Approve", "Reject"]: status = "Approved"
+                
+                if status == status_filter:
+                    filtered.append({
+                        'row': i,
+                        'name': row[2] if len(row) > 2 else "Unknown",
+                        'matric': row[3] if len(row) > 3 else "Unknown",
+                        'ic': row[4] if len(row) > 4 else "Unknown",
+                        'prog': row[5] if len(row) > 5 else "Unknown",
+                        'status': status
+                    })
+            return filtered
+        except Exception as e:
+            logger.error(f"Error filtering members: {e}")
             return []
 
     def update_status(self, row_index, status):

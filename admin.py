@@ -70,8 +70,46 @@ async def back_to_admin(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 async def back(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     # Used for "Cancel" inside Add/Del flows -> returns to Manage Menu now
     lang = get_user_lang(context)
-    await update.message.reply_text(strings.get('ERR_CANCEL', lang), reply_markup=keyboards.get_admin_manage_menu(lang))
     return states.ADMIN_MANAGE
+
+# --- STATUS MEMBERS MENU ---
+async def status_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
+    await update.message.reply_text(
+        strings.get('ADMIN_DASHBOARD', lang), # Or a specific header for Status
+        reply_markup=keyboards.get_status_menu(lang)
+    )
+    return states.ADMIN_STATUS
+
+async def list_verified(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    return await list_by_status(update, context, "Approved", "Verified")
+
+async def list_pending(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    return await list_by_status(update, context, "Pending", "Pending")
+
+async def list_rejected(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    return await list_by_status(update, context, "Rejected", "Rejected")
+
+async def list_by_status(update: Update, context: ContextTypes.DEFAULT_TYPE, db_status, title) -> int:
+    lang = get_user_lang(context)
+    await update.message.reply_text(strings.get('ADMIN_SEARCHING', lang))
+    
+    members = db.get_members_by_filter(db_status)
+    
+    if members:
+        items = ""
+        for m in members[:40]: # Limit 40
+            items += f"• {m['name']} ({m['matric']}) - {m['status']}\n"
+        
+        msg = strings.get('ADMIN_LIST_HEADER', lang).format(limit=len(members), items=items)
+    else:
+        msg = f"*No {title} Members found.*"
+    
+    await update.message.reply_text(msg, parse_mode="Markdown", reply_markup=keyboards.get_status_menu(lang))
+    return states.ADMIN_STATUS
+
+async def back_to_manage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    return await manage_menu(update, context)
 
 # --- LIST MEMBERS ---
 async def list_members(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
