@@ -39,12 +39,18 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def receive_matric(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     text = update.message.text.strip().upper()
     if text == strings.BTN_CANCEL.upper() or text == "CANCEL": return await cancel(update, context)
+    
+    # Handle Main Menu Buttons if they are clicked
+    if text == strings.BTN_CHECK.upper(): return await check_start(update, context)
+    if text == strings.BTN_HELP.upper(): 
+        await help_command(update, context)
+        return ConversationHandler.END
 
     if not re.match(r'^[A-Z0-9]{6,15}$', text):
         await update.message.reply_text(
             strings.ERR_INVALID_MATRIC, 
             parse_mode="Markdown",
-            reply_markup=keyboards.get_cancel_menu()
+            reply_markup=keyboards.get_main_menu() # Show Main Menu on error
         )
         return states.ASK_MATRIC
     
@@ -60,8 +66,18 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     text = update.message.text.strip()
     if text == strings.BTN_CANCEL or text == "CANCEL": return await cancel(update, context)
 
+    # Handle Main Menu Buttons
+    if text == strings.BTN_CHECK: return await check_start(update, context)
+    if text == strings.BTN_HELP: 
+        await help_command(update, context)
+        return ConversationHandler.END
+
     if not re.match(r'^\d{4}$', text):
-        await update.message.reply_text(strings.ERR_INVALID_IC, parse_mode="Markdown")
+        await update.message.reply_text(
+            strings.ERR_INVALID_IC, 
+            parse_mode="Markdown",
+            reply_markup=keyboards.get_main_menu() # Show Main Menu on error
+        )
         return states.ASK_IC
     
     await update.message.reply_text(strings.PROMPT_LOADING, parse_mode="Markdown")
