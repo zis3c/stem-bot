@@ -95,8 +95,16 @@ async def main():
     
     webhook_path = f"{WEBHOOK_URL}/telegram"
     await application.bot.set_webhook(webhook_path)
-
-    async def telegram_webhook(request):
+    
+    # Set Bot Commands (Suggestions)
+    from telegram import BotCommand
+    commands = [
+        BotCommand("start", "Start the bot"),
+        BotCommand("help", "Get help information"),
+        BotCommand("admin", "Open Admin Dashboard (Admins Only)"),
+        BotCommand("cancel", "Cancel current operation"),
+    ]
+    await application.bot.set_my_commands(commands)
         update_data = await request.json()
         await application.process_update(Update.de_json(update_data, application.bot))
         return web.Response(text="OK")
