@@ -105,6 +105,8 @@ async def main():
         BotCommand("cancel", "Cancel current operation"),
     ]
     await application.bot.set_my_commands(commands)
+
+    async def telegram_webhook(request):
         update_data = await request.json()
         await application.process_update(Update.de_json(update_data, application.bot))
         return web.Response(text="OK")
