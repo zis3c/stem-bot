@@ -144,7 +144,7 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
                         program=db_prog
                     )
                 else:
-                    msg = "**Verification Failed**\nMatric found, but IC digits do not match."
+                    msg = "*Verification Failed*\nMatric found, but IC digits do not match."
             else:
                     msg = "Record found but data is incomplete."
         else:
