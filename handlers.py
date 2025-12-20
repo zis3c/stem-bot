@@ -82,12 +82,10 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
                 db_prog = row_values[5]
                 
                 if db_ic.endswith(user_ic_last4):
-                    msg = (
-                        "🎉 **MEMBERSHIP VERIFIED** 🎉\n\n"
-                        f"👤 **Name:** {db_name}\n"
-                        f"🆔 **Matric:** `{user_matric}`\n"
-                        f"🎓 **Program:** {db_prog}\n\n"
-                        "✅ **Status: ACTIVE**"
+                    msg = strings.VERIFICATION_SUCCESS.format(
+                        name=db_name,
+                        matric=user_matric,
+                        program=db_prog
                     )
                 else:
                     msg = "❌ **Verification Failed**\nMatric found, but IC digits do not match."

@@ -18,6 +18,14 @@ PROMPT_MATRIC = "Step 1/2\n\n📌 Please type your **Matric Number**:\n(Example:
 PROMPT_IC = "✅ Matric: `{matric}`\n\nStep 2/2\n🔑 Now enter the **Last 4 Digits** of your IC:"
 PROMPT_LOADING = "🔄 **Verifying...**"
 
+VERIFICATION_SUCCESS = (
+    "🎉 **MEMBERSHIP VERIFIED** 🎉\n\n"
+    "**Name**: {name}\n"
+    "**Matric**: {matric}\n"
+    "**Program**: {program}\n\n"
+    "✅ **Status: ACTIVE**"
+)
+
 # Errors
 ERR_INVALID_MATRIC = "⚠️ **Invalid Matric Format!**\nPlease try again (e.g. `I24107504`)"
 ERR_INVALID_IC = "⚠️ **Invalid IC!**\nPlease enter exactly 4 digits."
