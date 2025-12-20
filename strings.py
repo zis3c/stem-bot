@@ -31,7 +31,7 @@ ERR_INVALID_MATRIC = "**Invalid Matric Format!**\nPlease try again (e.g. `I24107
 ERR_INVALID_IC = "**Invalid IC!**\nPlease enter exactly 4 digits."
 ERR_DB_CONNECTION = "System Error: Database unavailable."
 ERR_NOT_FOUND = "**Not Found**\nMatric Number not in records."
-ERR_CANCEL = "Operation Cancelled."
+ERR_CANCEL = "Action cancelled. Select an option below to continue."
 ERR_ACCESS_DENIED = "**Access Denied**\nYou are not an admin."
 
 # Admin Strings
