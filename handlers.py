@@ -252,6 +252,15 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return ConversationHandler.END
 
 # --- JOB QUEUE & CALLBACKS ---
+async def check_pending_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Manual trigger to check pending registrations immediately."""
+    user_id = update.effective_user.id
+    if not db.is_admin(user_id): return
+    
+    await update.message.reply_text("🔎 Scanning for pending registrations...")
+    await check_registrations(context)
+    await update.message.reply_text("✅ Scan complete.")
+
 async def check_registrations(context: ContextTypes.DEFAULT_TYPE):
     """Job to check for new unprocessed registrations."""
     try:
