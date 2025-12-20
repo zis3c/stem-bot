@@ -131,7 +131,6 @@ async def main():
     commands = [
         BotCommand("start", "Start the bot"),
         BotCommand("help", "Get help information"),
-        BotCommand("admin", "Open Admin Dashboard (Admins Only)"),
         BotCommand("cancel", "Cancel current operation"),
     ]
     await application.bot.set_my_commands(commands)
