@@ -191,21 +191,41 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
                 db_name = row_values[2] 
                 db_ic = str(row_values[4]).strip().replace(" ", "")
                 db_prog = row_values[5]
-                # Col I (index 8) is Status
-                db_status = str(row_values[8]).strip().title() if len(row_values) > 8 else "Approved" # Default to Approved if missing (legacy data)
+                # Col H (index 7) is Resit, Col I (index 8) is Status
+                db_resit = str(row_values[7]).strip() if len(row_values) > 7 else ""
+                db_status = str(row_values[8]).strip().title() if len(row_values) > 8 else ""
                 
+                # Logic: 
+                # 1. If Status is explicit "Pending" or "Rejected" -> Use that.
+                # 2. If Status is "Approved" -> Approved.
+                # 3. If Status is Empty:
+                #    - If Resit exists -> Pending (New Registration waiting for bot/admin).
+                #    - If Resit empty -> Approved (Legacy/Manual add).
+                
+                final_status = "Approved" # Default
+                
+                if db_status in ["Pending", "Rejected"]:
+                    final_status = db_status
+                elif db_status == "Approved":
+                    final_status = "Approved"
+                else:
+                    # Status is empty or unknown. Check Resit.
+                    if db_resit: 
+                        final_status = "Pending"
+                    else:
+                        final_status = "Approved"
+
                 if db_ic.endswith(user_ic_last4):
-                    if db_status == "Approved" or db_status not in ["Pending", "Rejected", "Approve", "Reject"]: 
-                         # Treating anything NOT explicitly Pending/Rejected as Approved for backward compat
+                    if final_status == "Approved": 
                         msg = strings.get('VERIFICATION_SUCCESS', lang).format(
                             name=db_name,
                             matric=user_matric,
                             program=db_prog,
                             timestamp=db_timestamp
                         )
-                    elif db_status == "Pending":
+                    elif final_status == "Pending":
                         msg = strings.get('STATUS_PENDING', lang)
-                    elif db_status == "Rejected":
+                    elif final_status == "Rejected":
                          msg = strings.get('STATUS_REJECT', lang)
                     else:
                          msg = strings.get('STATUS_PENDING', lang) # Fallback
