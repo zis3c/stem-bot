@@ -40,6 +40,11 @@ async def receive_matric(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     text = update.message.text.strip().upper()
     if text == strings.BTN_CANCEL.upper() or text == "CANCEL": return await cancel(update, context)
     
+    # Handle "Try Again" - just re-prompt
+    if text == strings.BTN_TRY_AGAIN.upper():
+        await update.message.reply_text(strings.PROMPT_MATRIC, parse_mode="Markdown", reply_markup=keyboards.get_cancel_menu())
+        return states.ASK_MATRIC
+
     # Handle Main Menu Buttons if they are clicked
     if text == strings.BTN_CHECK.upper(): return await check_start(update, context)
     if text == strings.BTN_HELP.upper(): 
@@ -50,7 +55,7 @@ async def receive_matric(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         await update.message.reply_text(
             strings.ERR_INVALID_MATRIC, 
             parse_mode="Markdown",
-            reply_markup=keyboards.get_main_menu() # Show Main Menu on error
+            reply_markup=keyboards.get_retry_menu() # Show Retry Menu on error
         )
         return states.ASK_MATRIC
     
@@ -66,6 +71,16 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     text = update.message.text.strip()
     if text == strings.BTN_CANCEL or text == "CANCEL": return await cancel(update, context)
 
+    # Handle "Try Again"
+    if text == strings.BTN_TRY_AGAIN:
+        user_matric = context.user_data.get('matric', 'Unknown')
+        await update.message.reply_text(
+            strings.PROMPT_IC.format(matric=user_matric),
+            parse_mode="Markdown",
+            reply_markup=keyboards.get_cancel_menu()
+        )
+        return states.ASK_IC
+
     # Handle Main Menu Buttons
     if text == strings.BTN_CHECK: return await check_start(update, context)
     if text == strings.BTN_HELP: 
@@ -76,7 +91,7 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         await update.message.reply_text(
             strings.ERR_INVALID_IC, 
             parse_mode="Markdown",
-            reply_markup=keyboards.get_main_menu() # Show Main Menu on error
+            reply_markup=keyboards.get_retry_menu() # Show Retry Menu on error
         )
         return states.ASK_IC
     
@@ -104,9 +119,9 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
                         program=db_prog
                     )
                 else:
-                    msg = "❌ **Verification Failed**\nMatric found, but IC digits do not match."
+                    msg = "**Verification Failed**\nMatric found, but IC digits do not match."
             else:
-                    msg = "⚠️ Record found but data is incomplete."
+                    msg = "Record found but data is incomplete."
         else:
             msg = strings.ERR_NOT_FOUND
                 

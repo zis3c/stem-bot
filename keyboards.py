@@ -14,6 +14,13 @@ def get_cancel_menu():
         one_time_keyboard=True
     )
 
+def get_retry_menu():
+    return ReplyKeyboardMarkup(
+        [[strings.BTN_TRY_AGAIN, strings.BTN_CANCEL]], 
+        resize_keyboard=True, 
+        one_time_keyboard=True
+    )
+
 def get_admin_menu():
     return ReplyKeyboardMarkup(
         [
