@@ -8,6 +8,5 @@
     SEARCH_QUERY,
     BROADCAST_MSG,
     BROADCAST_CONFIRM,
-    ADMIN_STATUS,
     SUPER_MENU
-) = range(11)
+) = range(9)
