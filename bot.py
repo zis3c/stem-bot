@@ -78,6 +78,25 @@ async def main():
         ],
     )
 
+    # Admin Config
+    admin_conv = ConversationHandler(
+        entry_points=[CommandHandler("admin", admin.start)],
+        states={
+            states.ADMIN_MENU: [
+                MessageHandler(filter_admin_add, admin.add_start),
+                MessageHandler(filter_admin_del, admin.del_start),
+                MessageHandler(filter_admin_stats, admin.stats),
+                MessageHandler(filter_admin_exit, admin.exit)
+            ],
+            states.ADD_MATRIC: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_matric)],
+            states.ADD_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_name)],
+            states.ADD_IC: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_ic)],
+            states.ADD_PROG: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_prog)],
+            states.DEL_MATRIC: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.del_matric)],
+        },
+        fallbacks=[CommandHandler("cancel", admin.exit)],
+    )
+
     # General Handlers
     application.add_handler(CommandHandler("start", handlers.start))
     application.add_handler(MessageHandler(filter_help, handlers.help_command))
