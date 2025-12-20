@@ -83,9 +83,15 @@ STRINGS = {
         'BTN_STATUS_VERIFIED': "Verified",
         'BTN_STATUS_PENDING': "Pending",
         'BTN_STATUS_REJECTED': "Rejected",
-        'BTN_ADMIN_CHECK_PENDING': "Check Pending ⏳", # Legacy/Direct check if needed
-        'BTN_ADMIN_ADD': "Add Member",
+        'BTN_STATUS_PENDING': "Pending",
+        'BTN_STATUS_REJECTED': "Rejected",
+        'BTN_ADMIN_CHECK_PENDING': "Check Pending ⏳",
         'BTN_ADMIN_DEL': "Delete Member",
+        
+        'BTN_SA_MAINTENANCE': "Maintenance Mode 🚧",
+        'BTN_SA_ADMINS': "Manage Admins 👮",
+        'BTN_SA_HEALTH': "System Health 🩺",
+        
         'BTN_ADMIN_LIST': "List Members",
         'BTN_ADMIN_SEARCH': "Search Member",
         'BTN_ADMIN_CHECK_PENDING': "Check Pending",

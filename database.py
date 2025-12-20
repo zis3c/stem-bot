@@ -14,6 +14,11 @@ class Database:
         self.google_json = os.getenv("GOOGLE_CREDENTIALS")
         self.admin_ids = self._parse_admin_ids()
         
+        # System Caches
+        self.cached_sheet_admins = [] 
+        self.maintenance_mode = False
+        self.refresh_system_config()
+
     def _parse_admin_ids(self):
         raw = os.getenv("ADMIN_IDS", "")
         ids = set()
@@ -24,7 +29,7 @@ class Database:
                 logger.error("⚠️ Error parsing ADMIN_IDS")
         return ids
 
-    def get_sheet(self):
+    def get_sheet(self, sheet_name="Registrations"):
         try:
             if not self.google_json:
                 logger.error("❌ CRITICAL: GOOGLE_CREDENTIALS missing!")
@@ -39,13 +44,88 @@ class Database:
                  
             creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
             client = gspread.authorize(creds)
-            return client.open_by_key(self.sheet_id).sheet1
+            
+            # Open Sheet
+            sh = client.open_by_key(self.sheet_id)
+            
+            # Handle specific tabs vs default sheet1
+            if sheet_name == "Registrations":
+                 return sh.sheet1
+                 
+            try:
+                return sh.worksheet(sheet_name)
+            except gspread.WorksheetNotFound:
+                # Create if missing (Auto-Healing)
+                ws = sh.add_worksheet(title=sheet_name, rows=100, cols=10)
+                if sheet_name == "system_admins":
+                    ws.append_row(["User ID", "Name", "Added By"])
+                elif sheet_name == "system_config":
+                    ws.append_row(["Key", "Value"])
+                    ws.append_row(["maintenance_mode", "False"])
+                return ws
+                
         except Exception as e:
-            logger.error(f"DB Connection Error: {e}")
+            logger.error(f"DB Connection Error ({sheet_name}): {e}")
             logger.error(traceback.format_exc())
             return None
 
-    def find_member(self, matric):
+    def refresh_system_config(self):
+        """Reloads admins and config from sheet."""
+        try:
+            # 1. Load Admins
+            ws_admins = self.get_sheet("system_admins")
+            if ws_admins:
+                records = ws_admins.get_all_records()
+                self.cached_sheet_admins = [int(r['User ID']) for r in records if str(r['User ID']).isdigit()]
+            
+            # 2. Load Config
+            ws_config = self.get_sheet("system_config")
+            if ws_config:
+                records = ws_config.get_all_records()
+                for r in records:
+                    if r['Key'] == 'maintenance_mode':
+                        self.maintenance_mode = str(r['Value']).lower() == 'true'
+                        
+        except Exception as e:
+            logger.error(f"System Config Load Fail: {e}")
+
+    def is_admin(self, user_id):
+        # Env Admins + Sheet Admins
+        return user_id in self.admin_ids or user_id in self.cached_sheet_admins
+
+    def set_maintenance(self, enabled: bool):
+        try:
+            ws = self.get_sheet("system_config")
+            cell = ws.find("maintenance_mode")
+            ws.update_cell(cell.row, cell.col + 1, str(enabled))
+            self.maintenance_mode = enabled
+            return True
+        except Exception as e:
+            logger.error(f"Set Maint Error: {e}")
+            return False
+
+    def add_admin(self, user_id, name, added_by):
+        try:
+            ws = self.get_sheet("system_admins")
+            ws.append_row([str(user_id), name, added_by])
+            self.refresh_system_config()
+            return True
+        except Exception as e:
+            logger.error(f"Add Admin Error: {e}")
+            return False
+
+    def remove_admin(self, user_id):
+        try:
+            ws = self.get_sheet("system_admins")
+            cell = ws.find(str(user_id))
+            ws.delete_rows(cell.row)
+            self.refresh_system_config()
+            return True
+        except Exception as e:
+            logger.error(f"Del Admin Error: {e}")
+            return False
+
+    def log_user(self, user_id, first_name):
         sheet = self.get_sheet()
         if not sheet: return None, None
         
@@ -56,14 +136,14 @@ class Database:
         return None, None
 
     def get_stats(self):
-        sheet = self.get_sheet()
+        sheet = self.get_sheet("Registrations")
         if sheet:
             # Assumes 1 header row
             return len(sheet.get_all_values()) - 1
         return 0
 
     def add_member(self, name, matric, ic, prog):
-        sheet = self.get_sheet()
+        sheet = self.get_sheet("Registrations")
         if sheet:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             # Columns: Timestamp, Email, Name, Matric, IC, Program, (Phone/Empty), Resit, Status
@@ -74,7 +154,7 @@ class Database:
         return False
 
     def get_members(self, limit=50):
-        sheet = self.get_sheet()
+        sheet = self.get_sheet("Registrations")
         if not sheet: return []
         try:
             # Get all values (skip header)
@@ -86,7 +166,7 @@ class Database:
             return []
 
     def search_members(self, query):
-        sheet = self.get_sheet()
+        sheet = self.get_sheet("Registrations")
         if not sheet: return []
         try:
             all_values = sheet.get_all_values()[1:]
@@ -109,7 +189,7 @@ class Database:
             return []
 
     def delete_member(self, matric):
-        sheet = self.get_sheet()
+        sheet = self.get_sheet("Registrations")
         if sheet:
             cell = sheet.find(matric, in_column=4)
             if cell:
@@ -121,7 +201,7 @@ class Database:
     # --- USER TRACKING FOR BROADCAST ---
     def get_users_sheet(self):
         try:
-             main_sheet = self.get_sheet()
+             main_sheet = self.get_sheet("Registrations")
              if not main_sheet: return None
              
              spreadsheet = main_sheet.spreadsheet
@@ -160,13 +240,12 @@ class Database:
             logger.error(f"Get Users Error: {e}")
             return []
 
-    def is_admin(self, user_id):
-        return user_id in self.admin_ids
+
 
     # --- APPROVAL WORKFLOW ---
     def get_unprocessed_registrations(self):
         """Finds rows where Resit (Col 8) is present but Status (Col 9) is Empty."""
-        sheet = self.get_sheet()
+        sheet = self.get_sheet("Registrations")
         if not sheet: return []
         try:
             all_values = sheet.get_all_values()
@@ -195,7 +274,7 @@ class Database:
 
     def get_members_by_filter(self, status_filter):
         """Get members filtered by Status (Col I)."""
-        sheet = self.get_sheet()
+        sheet = self.get_sheet("Registrations")
         if not sheet: return []
         
         try:
@@ -224,7 +303,7 @@ class Database:
 
     def update_status(self, row_index, status):
         """Updates Column I (9) with status."""
-        sheet = self.get_sheet()
+        sheet = self.get_sheet("Registrations")
         if not sheet: return False
         try:
             # Update Cell (Row, Col 9)

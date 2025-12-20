@@ -32,6 +32,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)
     
     user = update.effective_user
+    
+    # Maintenance Check
+    if db.maintenance_mode and not db.is_admin(user.id):
+        await update.message.reply_text("🚧 *System Under Maintenance*\nPlease try again later.", parse_mode="Markdown")
+        return ConversationHandler.END
+
     # Log user for broadcast
     await update.message.reply_text(
         strings.get('WELCOME_MSG', lang).format(name=user.first_name), 
