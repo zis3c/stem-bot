@@ -66,8 +66,9 @@ class Database:
         sheet = self.get_sheet()
         if sheet:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            # Columns: Timestamp, Email, Name, Matric, IC, Program
-            row = [timestamp, "bot_add", name, matric, ic, prog]
+            # Columns: Timestamp, Email, Name, Matric, IC, Program, (Phone/Empty), Resit, Status
+            # We pad Col G (6) and Col H (7/Resit) with empty strings, and set Col I (8) to "Approved"
+            row = [timestamp, "bot_add", name, matric, ic, prog, "", "", "Approved"]
             sheet.append_row(row)
             return True
         return False
