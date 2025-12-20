@@ -58,7 +58,7 @@ async def list_members(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
                 matric = row[3] if len(row) > 3 else "Unknown"
                 items.append(f"{i}. *{name}* (`{matric}`)")
             
-            msg_text = strings.get('ADMIN_LIST_HEADER', lang).format(limit=len(members), items="\n".join(items))
+            msg_text = strings.get('ADMIN_LIST_HEADER', lang).format(limit=len(members), items="\n\n".join(items))
             await loading.edit_text(msg_text, parse_mode="Markdown")
 
     except Exception as e:
@@ -100,7 +100,7 @@ async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                 prog = row[5] if len(row) > 5 else ""
                 items.append(f"{i}. *{name}* (`{matric}`) - {prog}")
 
-            msg_text = strings.get('ADMIN_SEARCH_RESULT', lang).format(query=query, items="\n".join(items))
+            msg_text = strings.get('ADMIN_SEARCH_RESULT', lang).format(query=query, items="\n\n".join(items))
             await loading.edit_text(msg_text, parse_mode="Markdown")
 
     except Exception as e:
