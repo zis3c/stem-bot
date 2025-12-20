@@ -114,6 +114,7 @@ async def main():
 
     # General Handlers
     application.add_handler(CommandHandler("start", handlers.start))
+    application.add_handler(CommandHandler("settings", handlers.settings_menu))
     application.add_handler(MessageHandler(filter_help, handlers.help_command))
     application.add_handler(MessageHandler(filter_settings, handlers.settings_menu))
     application.add_handler(MessageHandler(filter_clear, handlers.clear_history))
@@ -131,7 +132,7 @@ async def main():
     commands = [
         BotCommand("start", "Start the bot"),
         BotCommand("help", "Get help information"),
-        BotCommand("cancel", "Cancel current operation"),
+        BotCommand("settings", "Open Settings"),
     ]
     await application.bot.set_my_commands(commands)
 
