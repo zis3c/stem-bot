@@ -71,18 +71,12 @@ async def main():
     
     # Admin Filters (Usually Admin is one lang, but we support all just in case)
     filter_admin_manage = build_filter('BTN_ADMIN_MANAGE')
-    filter_admin_add = build_filter('BTN_ADMIN_ADD')
     filter_admin_del = build_filter('BTN_ADMIN_DEL')
     filter_admin_list = build_filter('BTN_ADMIN_LIST')
     filter_admin_search = build_filter('BTN_ADMIN_SEARCH')
     filter_admin_broadcast = build_filter('BTN_ADMIN_BROADCAST')
     filter_admin_stats = build_filter('BTN_ADMIN_STATS')
     filter_admin_check_pending = build_filter('BTN_ADMIN_CHECK_PENDING') # Keeping for backward compat logic if needed
-    
-    filter_admin_status = build_filter('BTN_ADMIN_STATUS')
-    filter_status_verified = build_filter('BTN_STATUS_VERIFIED')
-    filter_status_pending = build_filter('BTN_STATUS_PENDING')
-    filter_status_rejected = build_filter('BTN_STATUS_REJECTED')
     
     filter_admin_exit = build_filter('BTN_ADMIN_EXIT')
 

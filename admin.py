@@ -147,61 +147,6 @@ async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     return states.ADMIN_MANAGE
 
 
-# --- ADD MEMBER FLOW ---
-async def add_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    lang = get_user_lang(context)
-    await update.message.reply_text(strings.get('ADMIN_ADD_MATRIC', lang), parse_mode="Markdown", reply_markup=keyboards.get_cancel_menu(lang))
-    return states.ADD_MATRIC
-
-async def add_matric(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    lang = get_user_lang(context)
-    text = update.message.text.strip().upper()
-    if text in strings.get_all('BTN_CANCEL') or text == "CANCEL": return await back(update, context)
-    
-    context.user_data['new_matric'] = text
-    await update.message.reply_text(strings.get('ADMIN_ADD_NAME', lang), parse_mode="Markdown", reply_markup=keyboards.get_cancel_menu(lang))
-    return states.ADD_NAME
-
-async def add_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    lang = get_user_lang(context)
-    text = update.message.text
-    if text in strings.get_all('BTN_CANCEL'): return await back(update, context)
-    context.user_data['new_name'] = text.upper()
-    await update.message.reply_text(strings.get('ADMIN_ADD_IC', lang), parse_mode="Markdown", reply_markup=keyboards.get_cancel_menu(lang))
-    return states.ADD_IC
-
-async def add_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    lang = get_user_lang(context)
-    text = update.message.text
-    if text in strings.get_all('BTN_CANCEL'): return await back(update, context)
-    context.user_data['new_ic'] = text
-    await update.message.reply_text(strings.get('ADMIN_ADD_PROG', lang), parse_mode="Markdown", reply_markup=keyboards.get_program_menu(lang))
-    return states.ADD_PROG
-
-async def add_prog(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    lang = get_user_lang(context)
-    text = update.message.text
-    if text in strings.get_all('BTN_CANCEL'): return await back(update, context)
-    prog = text.upper()
-    
-    matric = context.user_data['new_matric']
-    name = context.user_data['new_name']
-    ic = context.user_data['new_ic']
-    
-    loading = await update.message.reply_text(strings.get('ADMIN_SAVING', lang), parse_mode="Markdown")
-    
-    try:
-        if db.add_member(name, matric, ic, prog):
-            await loading.edit_text(strings.get('ADMIN_ADD_SUCCESS', lang).format(name=name, matric=matric), parse_mode="Markdown")
-        else:
-             await loading.edit_text(strings.get('ERR_DB_CONNECTION', lang), parse_mode="Markdown")
-    except Exception as e:
-        logger.error(e)
-        await loading.edit_text(strings.get('ERR_DB_CONNECTION', lang), parse_mode="Markdown")
-        
-    await update.message.reply_text(strings.get('BTN_ADMIN_MANAGE', lang), reply_markup=keyboards.get_admin_manage_menu(lang))
-    return states.ADMIN_MANAGE
-
 # --- DELETE MEMBER FLOW ---
 async def del_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)
