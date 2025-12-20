@@ -34,7 +34,7 @@ STRINGS = {
         
         # Buttons
         'BTN_CHECK': "Check Membership",
-        'BTN_HELP': "Help / Info",
+        'BTN_HELP': "Help",
         'BTN_SETTINGS': "Settings",
         'BTN_CANCEL': "Cancel",
         'BTN_TRY_AGAIN': "Try Again",
@@ -69,6 +69,7 @@ STRINGS = {
         'ADMIN_SEARCH_RESULT': "*Search Results* for '{query}':\n\n{items}",
         'ADMIN_SEARCH_EMPTY': "No matches found for '{query}'.",
         
+        'BTN_ADMIN_MANAGE': "Manage Members",
         'BTN_ADMIN_ADD': "Add Member",
         'BTN_ADMIN_DEL': "Delete Member",
         'BTN_ADMIN_LIST': "List Members",
@@ -161,6 +162,7 @@ STRINGS = {
         'ADMIN_SEARCH_RESULT': "*Keputusan Carian* untuk '{query}':\n\n{items}",
         'ADMIN_SEARCH_EMPTY': "Tiada padanan untuk '{query}'.",
         
+        'BTN_ADMIN_MANAGE': "Urus Ahli",
         'BTN_ADMIN_ADD': "Tambah Ahli",
         'BTN_ADMIN_DEL': "Padam Ahli",
         'BTN_ADMIN_LIST': "Senarai Ahli",

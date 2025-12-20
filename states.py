@@ -3,6 +3,7 @@
     ASK_MATRIC,
     ASK_IC,
     ADMIN_MENU,
+    ADMIN_MANAGE,
     ADD_MATRIC,
     ADD_NAME,
     ADD_IC,
@@ -11,4 +12,4 @@
     SEARCH_QUERY,
     BROADCAST_MSG,
     BROADCAST_CONFIRM
-) = range(11)
+) = range(12)

@@ -40,6 +40,26 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         await update.message.reply_text(strings.get('ERR_DB_CONNECTION', lang))
     return states.ADMIN_MENU
 
+# --- MANAGE MEMBERS MENU ---
+async def manage_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
+    await update.message.reply_text(
+        strings.get('BTN_ADMIN_MANAGE', lang), 
+        parse_mode="Markdown", 
+        reply_markup=keyboards.get_admin_manage_menu(lang)
+    )
+    return states.ADMIN_MANAGE
+
+async def back_to_admin(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    # Used for "Back" button inside Manage Menu
+    return await start(update, context)
+
+async def back(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    # Used for "Cancel" inside Add/Del flows -> returns to Manage Menu now
+    lang = get_user_lang(context)
+    await update.message.reply_text(strings.get('ERR_CANCEL', lang), reply_markup=keyboards.get_admin_manage_menu(lang))
+    return states.ADMIN_MANAGE
+
 # --- LIST MEMBERS ---
 async def list_members(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)
@@ -65,7 +85,11 @@ async def list_members(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         logger.error(e)
         await loading.edit_text(strings.get('ERR_DB_CONNECTION', lang))
 
-    return states.ADMIN_MENU
+    except Exception as e:
+        logger.error(e)
+        await loading.edit_text(strings.get('ERR_DB_CONNECTION', lang))
+
+    return states.ADMIN_MANAGE
 
 # --- SEARCH MEMBERS ---
 async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -107,8 +131,8 @@ async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         logger.error(e)
         await loading.edit_text(strings.get('ERR_DB_CONNECTION', lang))
     
-    await update.message.reply_text("Returning...", reply_markup=keyboards.get_admin_menu(lang))
-    return states.ADMIN_MENU
+    await update.message.reply_text("Returning...", reply_markup=keyboards.get_admin_manage_menu(lang))
+    return states.ADMIN_MANAGE
 
 
 # --- ADD MEMBER FLOW ---
@@ -163,8 +187,8 @@ async def add_prog(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         logger.error(e)
         await loading.edit_text(strings.get('ERR_DB_CONNECTION', lang), parse_mode="Markdown")
         
-    await update.message.reply_text("Returning...", reply_markup=keyboards.get_admin_menu(lang))
-    return states.ADMIN_MENU
+    await update.message.reply_text("Returning...", reply_markup=keyboards.get_admin_manage_menu(lang))
+    return states.ADMIN_MANAGE
 
 # --- DELETE MEMBER FLOW ---
 async def del_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -189,8 +213,8 @@ async def del_matric(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         logger.error(e)
         await loading.edit_text(strings.get('ERR_DB_CONNECTION', lang), parse_mode="Markdown")
         
-    await update.message.reply_text("Returning...", reply_markup=keyboards.get_admin_menu(lang))
-    return states.ADMIN_MENU
+    await update.message.reply_text("Returning...", reply_markup=keyboards.get_admin_manage_menu(lang))
+    return states.ADMIN_MANAGE
 
 async def back(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)

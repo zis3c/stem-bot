@@ -68,6 +68,7 @@ async def main():
     filter_lang_ms = build_filter('BTN_LANG_MS')
     
     # Admin Filters (Usually Admin is one lang, but we support all just in case)
+    filter_admin_manage = build_filter('BTN_ADMIN_MANAGE')
     filter_admin_add = build_filter('BTN_ADMIN_ADD')
     filter_admin_del = build_filter('BTN_ADMIN_DEL')
     filter_admin_list = build_filter('BTN_ADMIN_LIST')
@@ -99,13 +100,17 @@ async def main():
         entry_points=[CommandHandler("admin", admin.start)],
         states={
             states.ADMIN_MENU: [
+                MessageHandler(filter_admin_manage, admin.manage_menu),
+                MessageHandler(filter_admin_broadcast, admin.broadcast_start),
+                MessageHandler(filter_admin_stats, admin.stats),
+                MessageHandler(filter_admin_exit, admin.exit)
+            ],
+            states.ADMIN_MANAGE: [
                 MessageHandler(filter_admin_add, admin.add_start),
                 MessageHandler(filter_admin_del, admin.del_start),
                 MessageHandler(filter_admin_list, admin.list_members),
                 MessageHandler(filter_admin_search, admin.search_start),
-                MessageHandler(filter_admin_broadcast, admin.broadcast_start),
-                MessageHandler(filter_admin_stats, admin.stats),
-                MessageHandler(filter_admin_exit, admin.exit)
+                MessageHandler(filter_back, admin.back_to_admin)
             ],
             states.ADD_MATRIC: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_matric)],
             states.ADD_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.add_name)],
