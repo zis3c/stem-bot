@@ -276,6 +276,14 @@ async def check_registrations(context: ContextTypes.DEFAULT_TYPE):
             matric = data[3]
             resit = data[7]
             
+            # Escape Markdown V1 Special Chars: _, *, `, [
+            def escape_md(text):
+                return text.replace('_', '\\_').replace('*', '\\*').replace('`', '\\`').replace('[', '\\[')
+                
+            name = escape_md(name)
+            matric = escape_md(matric)
+            resit = escape_md(resit)
+            
             # Immediately mark Pending to avoid double notification on next poll
             db.update_status(row_idx, "Pending")
             
