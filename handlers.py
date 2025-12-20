@@ -33,16 +33,17 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     
     user = update.effective_user
     # Log user for broadcast
-    try:
-        db.log_user(user.id, user.first_name)
-    except Exception as e:
-        logger.error(f"Log user fail: {e}")
-
     await update.message.reply_text(
         strings.get('WELCOME_MSG', lang).format(name=user.first_name), 
         reply_markup=keyboards.get_main_menu(lang), 
         parse_mode="Markdown"
     )
+
+    # Log user for broadcast (Done after reply to improve speed)
+    try:
+        db.log_user(user.id, user.first_name)
+    except Exception as e:
+        logger.error(f"Log user fail: {e}")
     return ConversationHandler.END
 
 async def settings_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
