@@ -23,6 +23,7 @@ STRINGS = {
             "*Name*: *{name}*\n"
             "*Matric*: *{matric}*\n"
             "*Program*: *{program}*\n\n"
+            "{timestamp}"
         ),
         
         'ERR_INVALID_MATRIC': "*Invalid Matric Format!*\nPlease try again (e.g. `I24107504`)",
@@ -84,7 +85,7 @@ STRINGS = {
         'ADMIN_BROADCAST_PROMPT': "Enter message to broadcast to all users:",
         'ADMIN_BROADCAST_CONFIRM': "Preview:\n\n{msg}\n\n*Send to {count} users?*",
         'ADMIN_BROADCAST_START': "Sending...",
-        'ADMIN_BROADCAST_DONE': "*Broadcast Complete* 📢\n\n✅ Success: {success}\n❌ Blocked/Failed: {failed}",
+        'ADMIN_BROADCAST_DONE': "*Broadcast Complete* 📢\n\nSuccess: {success}\nBlocked/Failed: {failed}",
         
         # Programs
         'BTN_PROG_IT': "DIPLOMA TEKNOLOGI MAKLUMAT",
@@ -116,6 +117,7 @@ STRINGS = {
             "*Nama*: *{name}*\n"
             "*Matrik*: *{matric}*\n"
             "*Program*: *{program}*\n\n"
+            "{timestamp}"
         ),
         
         'ERR_INVALID_MATRIC': "*Format Matrik Tidak Sah!*\nSila cuba lagi (cth. `I24107504`)",

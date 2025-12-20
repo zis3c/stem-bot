@@ -186,7 +186,8 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         
         if row_values:
             if len(row_values) > 5:
-                # Gspread List 0-index values: C=2, E=4, F=5
+                # Gspread List 0-index values: A=0(Timestamp), C=2(Name), E=4(IC), F=5(Program)
+                db_timestamp = row_values[0]
                 db_name = row_values[2] 
                 db_ic = str(row_values[4]).strip().replace(" ", "")
                 db_prog = row_values[5]
@@ -195,7 +196,8 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
                     msg = strings.get('VERIFICATION_SUCCESS', lang).format(
                         name=db_name,
                         matric=user_matric,
-                        program=db_prog
+                        program=db_prog,
+                        timestamp=db_timestamp
                     )
                 else:
                     # Specific localized error construction if needed, or simple string
