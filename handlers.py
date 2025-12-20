@@ -196,9 +196,8 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
                 db_resit = str(row_values[7]).strip() if len(row_values) > 7 else ""
                 db_status = str(row_values[8]).strip().title() if len(row_values) > 8 else ""
                 
-                # Logic: 
                 # 1. If Status is explicit "Pending" or "Rejected" -> Use that.
-                # 2. If Status is "Approved" -> Approved.
+                # 2. If Status is "Approved" or "✓" -> Approved.
                 # 3. If Status is Empty:
                 #    - If Resit exists -> Pending (New Registration waiting for bot/admin).
                 #    - If Resit empty -> Approved (Legacy/Manual add).
@@ -207,7 +206,7 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
                 
                 if db_status in ["Pending", "Rejected"]:
                     final_status = db_status
-                elif db_status == "Approved":
+                elif db_status in ["Approved", "✓"]:
                     final_status = "Approved"
                 else:
                     # Status is empty or unknown. Check Resit.
@@ -285,8 +284,8 @@ async def check_registrations(context: ContextTypes.DEFAULT_TYPE):
             matric = escape_md(matric)
             resit = escape_md(resit)
             
-            # Immediately mark Pending to avoid double notification on next poll
-            db.update_status(row_idx, "Pending")
+            # Immediately mark as Notified/Verified ('✓') to avoid double notification on next poll
+            db.update_status(row_idx, "✓")
             
             # Send to all admins (Text Only, No Buttons)
             admin_ids = db.admin_ids
