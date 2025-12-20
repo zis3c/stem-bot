@@ -132,6 +132,7 @@ async def main():
     application.add_handler(admin_conv)
     application.add_handler(user_conv)
     application.add_handler(CommandHandler("start", handlers.start))
+    application.add_handler(CommandHandler("help", handlers.help_command))
     application.add_handler(CommandHandler("settings", handlers.settings_menu))
     application.add_handler(CommandHandler("check_pending", handlers.check_pending_now)) # Manual Trigger
     
