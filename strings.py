@@ -19,11 +19,10 @@ PROMPT_IC = "✅ Matric: `{matric}`\n\nStep 2/2\n🔑 Now enter the **Last 4 Dig
 PROMPT_LOADING = "🔄 **Verifying...**"
 
 VERIFICATION_SUCCESS = (
-    "🎉 **MEMBERSHIP VERIFIED** 🎉\n\n"
-    "**Name**: {name}\n"
-    "**Matric**: {matric}\n"
-    "**Program**: {program}\n\n"
-    "✅ **Status: ACTIVE**"
+    "*MEMBERSHIP VERIFIED* 🎉\n\n"
+    "*Name*: *{name}*\n"
+    "*Matric*: *{matric}*\n"
+    "*Program*: *{program}*\n\n"
 )
 
 # Errors
