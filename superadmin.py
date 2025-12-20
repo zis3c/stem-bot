@@ -24,7 +24,7 @@ def get_super_menu(lang='EN'):
 # --- START ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user_id = update.effective_user.id
-    if not db.is_admin(user_id): return ConversationHandler.END # Silent fail for non-admins
+    if not db.is_superadmin(user_id): return ConversationHandler.END # Silent fail for non-superadmins
     
     # Sync config fresh
     db.refresh_system_config()

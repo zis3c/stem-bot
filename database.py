@@ -12,21 +12,22 @@ class Database:
     def __init__(self):
         self.sheet_id = os.getenv("SHEET_ID")
         self.google_json = os.getenv("GOOGLE_CREDENTIALS")
-        self.admin_ids = self._parse_admin_ids()
+        self.superadmin_ids = self._parse_ids("SUPERADMIN_IDS")
+        self.admin_ids = self._parse_ids("ADMIN_IDS")
         
         # System Caches
         self.cached_sheet_admins = [] 
         self.maintenance_mode = False
         self.refresh_system_config()
 
-    def _parse_admin_ids(self):
-        raw = os.getenv("ADMIN_IDS", "")
+    def _parse_ids(self, env_key):
+        raw = os.getenv(env_key, "")
         ids = set()
         if raw:
             try:
                 ids = {int(x.strip()) for x in raw.split(",") if x.strip()}
             except ValueError:
-                logger.error("⚠️ Error parsing ADMIN_IDS")
+                logger.error(f"⚠️ Error parsing {env_key}")
         return ids
 
     def get_sheet(self, sheet_name="Registrations"):
@@ -89,9 +90,14 @@ class Database:
         except Exception as e:
             logger.error(f"System Config Load Fail: {e}")
 
+    def is_superadmin(self, user_id):
+        return user_id in self.superadmin_ids
+
     def is_admin(self, user_id):
-        # Env Admins + Sheet Admins
-        return user_id in self.admin_ids or user_id in self.cached_sheet_admins
+        # Superadmins + Env Admins + Sheet Admins
+        return (user_id in self.superadmin_ids or 
+                user_id in self.admin_ids or 
+                user_id in self.cached_sheet_admins)
 
     def set_maintenance(self, enabled: bool):
         try:
