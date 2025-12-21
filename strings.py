@@ -61,9 +61,9 @@ STRINGS = {
         # Admin - Keep English for Admins usually, but good to have structure
         'ADMIN_DASHBOARD': "*Admin Dashboard*\nSelect an action:",
         'ADMIN_STATS': (
-            "Member Statistics\n\n"
-            "Total Members: {total}\n\n"
-            "_Data synced with Google Sheets_"
+            "*Member Statistics*\n\n"
+            "Total Members: {total}\n"
+            "Data synced with Google Sheets"
         ),
         'ADMIN_ADD_MATRIC': "*Add Member*\nEnter Matric Number:",
         'ADMIN_ADD_NAME': "Enter *Full Name*:",
@@ -81,6 +81,8 @@ STRINGS = {
         'ADMIN_SEARCH_PROMPT': "Enter *Name*, *Matric*, or *IC* to search:",
         'ADMIN_SEARCH_RESULT': "*Search Results* for '{query}':\n\n{items}",
         'ADMIN_SEARCH_EMPTY': "No matches found for '{query}'.",
+        'ADMIN_SEARCH_EMPTY': "No matches found for '{query}'.",
+        'BROADCAST_TITLE': "📢 *Admin Announcement*\n\n{msg}",
         
         'BTN_ADMIN_MANAGE': "Manage Members",
         'BTN_ADMIN_STATUS': "Status Members",
@@ -196,9 +198,9 @@ STRINGS = {
         # Admin - Fallback to English often okay, but can translate
         'ADMIN_DASHBOARD': "*Admin Dashboard*\nPilih tindakan:",
         'ADMIN_STATS': (
-            "Statistik Ahli\n\n"
-            "Jumlah Ahli: {total}\n\n"
-            "_Data disegerakkan dengan Google Sheets_"
+            "*Statistik Ahli*\n\n"
+            "Jumlah Ahli: {total}\n"
+            "Data disegerakkan dengan Google Sheets"
         ),
         'ADMIN_ADD_MATRIC': "*Tambah Ahli*\nMasukkan Nombor Matrik:",
         'ADMIN_ADD_NAME': "Masukkan *Nama Penuh*:",
@@ -216,6 +218,8 @@ STRINGS = {
         'ADMIN_SEARCH_PROMPT': "Masukkan *Nama*, *Matrik*, atau *IC* untuk carian:",
         'ADMIN_SEARCH_RESULT': "*Keputusan Carian* untuk '{query}':\n\n{items}",
         'ADMIN_SEARCH_EMPTY': "Tiada padanan untuk '{query}'.",
+        'ADMIN_SEARCH_EMPTY': "Tiada padanan untuk '{query}'.",
+        'BROADCAST_TITLE': "📢 *Pengumuman Admin*\n\n{msg}",
         
         'BTN_ADMIN_MANAGE': "Urus Ahli",
         'BTN_ADMIN_STATUS': "Status Ahli",

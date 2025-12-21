@@ -271,9 +271,11 @@ async def broadcast_send(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     success = 0
     failed = 0
     
+    final_msg = strings.get('BROADCAST_TITLE', lang).format(msg=msg)
+    
     for uid in users:
         try:
-            await context.bot.send_message(chat_id=uid, text=msg)
+            await context.bot.send_message(chat_id=uid, text=final_msg, parse_mode="Markdown")
             success += 1
         except Exception:
             failed += 1
