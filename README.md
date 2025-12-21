@@ -63,6 +63,7 @@ A high-performance, bilingual **Telegram Bot** designed to streamline membership
     *   Share your Google Sheet with the Service Account Email.
     *   Ensure tabs named: `Registrations`, `system_admins`, `system_config`.
     *   **Structure for `Registrations` Sheet** (Important!):
+      
         | Col | Header Name |
         | --- | --- |
         | A | Timestamp |
