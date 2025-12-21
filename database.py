@@ -127,6 +127,10 @@ class Database:
                 user_id in self.admin_ids or 
                 user_id in self.cached_sheet_admins)
 
+    def get_all_admin_ids(self):
+        """Returns a set of ALL admin IDs (Super + Env + Sheet)."""
+        return self.superadmin_ids | self.admin_ids | self.cached_sheet_admins
+
     def set_maintenance(self, enabled: bool):
         try:
             ws = self.get_sheet("system_config")

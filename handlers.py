@@ -292,8 +292,8 @@ async def check_registrations(context: ContextTypes.DEFAULT_TYPE):
         new_regs = db.get_unprocessed_registrations()
         if not new_regs: return
         
-        # Notify Admins
-        admins = db.admin_ids
+        # Notify ALL Admins (Super + Env + Sheet)
+        admins = db.get_all_admin_ids()
         for reg in new_regs:
             row_idx = reg['row']
             data = reg['data']
