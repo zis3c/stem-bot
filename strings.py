@@ -14,7 +14,7 @@ STRINGS = {
             "It connects securely to the official records.\n\n"
             "Dev: @zis3c"
         ),
-        'PROMPT_MATRIC': "Step 1/2\n\nPlease type your *Matric Number*:\n(Example: `I24107504`)",
+        'PROMPT_MATRIC': "Step 1/2\n\nPlease type your *Matric Number*:\n(Example: `I24067510`)",
         'PROMPT_IC': "Matric: `{matric}`\n\nStep 2/2\nNow enter the *Last 4 Digits* of your IC:\n(Example: `********1807`)",
         'PROMPT_LOADING': "*Verifying...*",
         
@@ -26,7 +26,7 @@ STRINGS = {
             "*Register time*: {timestamp}"
         ),
         
-        'ERR_INVALID_MATRIC': "*Invalid Matric Format!*\nPlease try again (e.g. `I24107504`)",
+        'ERR_INVALID_MATRIC': "*Invalid Matric Format!*\nPlease try again (e.g. `I24067510`)",
         'ERR_INVALID_IC': "*Invalid IC!*\nPlease enter exactly 4 digits.",
         'ERR_DB_CONNECTION': "System Error: Database unavailable.",
         'ERR_NOT_FOUND': "*Not Found*\nMatric Number not in records.",
@@ -144,7 +144,7 @@ STRINGS = {
             "Ia bersambung secara selamat ke rekod rasmi.\n\n"
             "Dev: @zis3c"
         ),
-        'PROMPT_MATRIC': "Langkah 1/2\n\nSila taip *Nombor Matrik* anda:\n(Contoh: `I24107504`)",
+        'PROMPT_MATRIC': "Langkah 1/2\n\nSila taip *Nombor Matrik* anda:\n(Contoh: `I24067510`)",
         'PROMPT_IC': "Matrik: `{matric}`\n\nLangkah 2/2\nSekarang masukkan *4 Digit Terakhir* IC anda:\n(Contoh: `********1807`)",
         'PROMPT_LOADING': "*Sedang Semak...*",
         
@@ -156,7 +156,7 @@ STRINGS = {
             "*Masa Daftar*: {timestamp}"
         ),
         
-        'ERR_INVALID_MATRIC': "*Format Matrik Tidak Sah!*\nSila cuba lagi (cth. `I24107504`)",
+        'ERR_INVALID_MATRIC': "*Format Matrik Tidak Sah!*\nSila cuba lagi (cth. `I24067510`)",
         'ERR_INVALID_IC': "*IC Tidak Sah!*\nSila masukkan tepat 4 digit.",
         'ERR_DB_CONNECTION': "Ralat Sistem: Pangkalan data tidak tersedia.",
         'ERR_NOT_FOUND': "*Tidak Dijumpai*\nNombor Matrik tiada dalam rekod.",
