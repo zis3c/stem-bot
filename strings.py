@@ -173,7 +173,7 @@ STRINGS = {
         
         # Buttons
         'BTN_CHECK': "Semak Keahlian",
-        'BTN_HELP': "Bantuan / Info",
+        'BTN_HELP': "Info",
         'BTN_SETTINGS': "Tetapan",
         'BTN_CANCEL': "Batal",
         'BTN_TRY_AGAIN': "Cuba Lagi",
