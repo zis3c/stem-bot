@@ -97,7 +97,7 @@ async def list_admins(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
     admins = db.cached_sheet_admins
     
     if not admins:
-        msg = "_No secondary admins found._"
+        msg = "No secondary admins found."
     else:
         msg = f"*Secondary Admins ({len(admins)}):*\n" + "\n".join([f"`{a}`" for a in admins])
         

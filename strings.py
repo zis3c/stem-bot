@@ -59,7 +59,7 @@ STRINGS = {
         'MSG_SELECT_LANG': "🌐 *Select Language*",
         
         # Admin - Keep English for Admins usually, but good to have structure
-        'ADMIN_DASHBOARD': "*Admin Dashboard*\nSelect an action:",
+        'ADMIN_DASHBOARD': "Admin Dashboard\nSelect an action:",
         'ADMIN_STATS': "*Database Stats*\n\nTotal Members: *{total}*",
         'ADMIN_ADD_MATRIC': "*Add Member*\nEnter Matric Number:",
         'ADMIN_ADD_NAME': "Enter *Full Name*:",
@@ -185,7 +185,7 @@ STRINGS = {
         'MSG_SELECT_LANG': "🌐 *Pilih Bahasa*",
         
         # Admin - Fallback to English often okay, but can translate
-        'ADMIN_DASHBOARD': "*Admin Dashboard*\nPilih tindakan:",
+        'ADMIN_DASHBOARD': "Admin Dashboard\nPilih tindakan:",
         'ADMIN_STATS': "*Statistik Pangkalan Data*\n\nJumlah Ahli: *{total}*",
         'ADMIN_ADD_MATRIC': "*Tambah Ahli*\nMasukkan Nombor Matrik:",
         'ADMIN_ADD_NAME': "Masukkan *Nama Penuh*:",
