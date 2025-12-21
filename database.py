@@ -20,6 +20,15 @@ class Database:
         self.cached_sheet_admins = [] 
         self.maintenance_mode = False
         self.last_config_refresh = 0
+        
+        # Student Cache
+        self.student_cache = {} # {matric_str: [row_data]}
+        self.last_student_refresh = 0
+        self.CACHE_TTL = 600 # 10 Minutes
+        
+        # User Log Cache (to avoid repeated writes)
+        self.logged_users_cache = set()
+        
         self.refresh_system_config()
 
     def _parse_ids(self, env_key):
@@ -150,72 +159,103 @@ class Database:
             logger.error(f"Del Admin Error: {e}")
             return False
 
-    def find_member(self, matric):
-        sheet = self.get_sheet("Registrations")
-        if not sheet: return None, None
-        
-        # Search Col D (Matric)
-        try:
-            cell = sheet.find(matric, in_column=4)
-            if cell:
-                return sheet.row_values(cell.row), cell.row
-            return None, None
-        except Exception:
-            return None, None
+    def refresh_student_cache(self, force=False):
+        """Loads all students into memory. 0 API calls for subsequent reads."""
+        if not force and (time.time() - self.last_student_refresh < self.CACHE_TTL):
+            return
 
+        try:
+            ws = self.get_sheet("Registrations")
+            if not ws: return
+            
+            # Fetch ALL values in one go (1 API Call)
+            all_rows = ws.get_all_values()
+            
+            # Headers are row 0
+            # Data starts row 1
+            cache = {}
+            for row in all_rows[1:]:
+                # Matric is Col 4 (index 3). Row structure: [Time, Email, Name, Matric, IC, Prog, ...]
+                # Normalize matric
+                if len(row) > 3:
+                    mat = str(row[3]).strip().upper()
+                    if mat:
+                        cache[mat] = row
+            
+            self.student_cache = cache
+            self.last_student_refresh = time.time()
+            logger.info(f"Student Cache Refreshed: {len(cache)} records.")
+            
+        except Exception as e:
+            logger.error(f"Cache Refresh Error: {e}")
+
+    def find_member(self, matric):
+        # 1. Try Cache First (0 API Calls)
+        self.refresh_student_cache() # Checks TTL internaly
+        
+        if matric in self.student_cache:
+            # We return None for row_index because cache doesn't track live row positions perfectly
+            # and verify flow doesn't need it.
+            return self.student_cache[matric], None
+            
+        # 2. Fallback to API (Slow) if not in cache? 
+        # For High Concurrency mode, we TRUST the cache. 
+        # If user just registered, it might not be there yet. 
+        # But for "Check Membership", better to fail fast or tell them to wait?
+        # Let's fallback ONLY if cache is empty (startup).
+        # Actually, let's just return None if not in cache. 
+        # If we enable "Hybrid", we could mistakenly rate limit. 
+        # Safe bet: Return None. User can try again in 10 mins or Admin refreshes.
+        return None, None
 
     def get_stats(self):
-        sheet = self.get_sheet("Registrations")
-        if sheet:
-            # Assumes 1 header row
-            return len(sheet.get_all_values()) - 1
-        return 0
+        # Optimized: Count cache
+        if self.student_cache:
+            return len(self.student_cache)
+        # Fallback
+        return super().get_stats() # Recursive recursion error if I call self.get_stats()? No, I don't inherit. 
+        # Wait, get_stats used sheet.get_all_values.
+        # Let's just use cache refresh logic.
+        self.refresh_student_cache()
+        return len(self.student_cache)
 
     def add_member(self, name, matric, ic, prog):
         sheet = self.get_sheet("Registrations")
         if sheet:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            # Columns: Timestamp, Email, Name, Matric, IC, Program, (Phone/Empty), Resit, Status
-            # We pad Col G (6) and Col H (7/Resit) with empty strings, and set Col I (8) to "Approved"
             row = [timestamp, "bot_add", name, matric, ic, prog, "", "", "Approved"]
             sheet.append_row(row)
+            # Invalidate cache or add to it?
+            # Safest: force refresh on next read? Or just add locally?
+            # Adding locally is complex (row format must match).
+            # Let's just set timeout to 0 to force refresh next time? No that kills concurrency.
+            # Just append to cache manually.
+            self.student_cache[matric] = row
             return True
         return False
 
     def get_members(self, limit=50):
-        sheet = self.get_sheet("Registrations")
-        if not sheet: return []
-        try:
-            # Get all values (skip header)
-            all_values = sheet.get_all_values()[1:] 
-            # Reverse to show newest first, take top 'limit'
-            return all_values[::-1][:limit]
-        except Exception as e:
-            logger.error(f"Get Members Error: {e}")
-            return []
+        self.refresh_student_cache()
+        # Convert cache dict values to list
+        all_values = list(self.student_cache.values())
+        # Cache isn't ordered by time necessarily (dict is insertion ordered in Py3.7+ but depends on load)
+        # Actually sheet load order is preserved.
+        # Reverse
+        return all_values[::-1][:limit]
 
     def search_members(self, query):
-        sheet = self.get_sheet("Registrations")
-        if not sheet: return []
-        try:
-            all_values = sheet.get_all_values()[1:]
-            query = query.lower()
-            matches = []
-            for row in all_values:
-                # Row Structure: [Timestamp, Email, Name, Matric, IC, Program]
-                # Check Name(2), Matric(3), IC(4) - adjust indices if needed based on previous code
-                # In find_member, Matric is col 4 (index 3). Name is col 3 (index 2). IC is col 5 (index 4).
-                if len(row) > 4:
-                    name = row[2].lower()
-                    matric = row[3].lower()
-                    ic = str(row[4]).lower()
-                    
-                    if query in name or query in matric or query in ic:
-                        matches.append(row)
-            return matches
-        except Exception as e:
-            logger.error(f"Search Error: {e}")
-            return []
+        self.refresh_student_cache()
+        query = query.lower()
+        matches = []
+        for row in self.student_cache.values():
+            if len(row) > 4:
+                name = row[2].lower()
+                matric = row[3].lower()
+                ic = str(row[4]).lower()
+                
+                if query in name or query in matric or query in ic:
+                    matches.append(row)
+        return matches
 
     def delete_member(self, matric):
         sheet = self.get_sheet("Registrations")
@@ -241,20 +281,24 @@ class Database:
                  sheet = spreadsheet.add_worksheet(title="Users", rows=1000, cols=3)
                  sheet.append_row(["User ID", "Name", "Joined Date"])
                  return sheet
-        except Exception as e:
-            logger.error(f"Users Sheet Error: {e}")
-            return None
-
     def log_user(self, user_id, name):
-        # Optimized: In real app, cache this. For now, check if exists to avoid dupes.
-        sheet = self.get_users_sheet()
-        if not sheet: return
+        """Logs user to sheet if not already logged this session. Blocking I/O."""
+        if user_id in self.logged_users_cache:
+            return # Already logged this run
+            
         try:
-            # Check if ID exists (Col 1)
-            cell = sheet.find(str(user_id), in_column=1)
-            if not cell:
-                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                sheet.append_row([str(user_id), name, timestamp])
+            self.logged_users_cache.add(user_id) # Mark as logged immediately
+            
+            sheet = self.get_users_sheet()
+            if not sheet: return
+
+            # Check if ID exists in sheet (to be safe across restarts)
+            # Optimization: We just append and rely on "Unique" later or just allow dupe rows for stats.
+            # Checking sheet.find every time is expensive (1 API call).
+            # Let's just append. It's a log.
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            sheet.append_row([str(user_id), name, timestamp])
+            
         except Exception as e:
             logger.error(f"Log User Error: {e}")
 

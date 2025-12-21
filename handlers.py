@@ -6,6 +6,7 @@ import states
 from database import db
 import logging
 import re
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -45,9 +46,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         parse_mode="Markdown"
     )
 
-    # Log user for broadcast (Done after reply to improve speed)
+    # Log user for broadcast (Done in background to improve speed)
     try:
-        db.log_user(user.id, user.first_name)
+        loop = asyncio.get_running_loop()
+        loop.run_in_executor(None, db.log_user, user.id, user.first_name)
     except Exception as e:
         logger.error(f"Log user fail: {e}")
     return ConversationHandler.END
