@@ -109,7 +109,7 @@ async def add_admin_start(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     await update.message.reply_text(
         strings.get('PROMPT_SA_ADD', lang),
         parse_mode="Markdown",
-        reply_markup=keyboards.get_cancel(lang)
+        reply_markup=keyboards.get_cancel_menu(lang)
     )
     return states.SUPER_ADD_ID
 
@@ -135,7 +135,7 @@ async def del_admin_start(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     await update.message.reply_text(
         strings.get('PROMPT_SA_DEL', lang),
         parse_mode="Markdown",
-        reply_markup=keyboards.get_cancel(lang)
+        reply_markup=keyboards.get_cancel_menu(lang)
     )
     return states.SUPER_DEL_ID
 

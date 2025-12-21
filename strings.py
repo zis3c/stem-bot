@@ -91,7 +91,7 @@ STRINGS = {
         'BTN_SA_MAINTENANCE': "Maintenance Mode",
         'BTN_SA_ADMINS': "Manage Admins",
         'BTN_SA_HEALTH': "System Health",
-        'BTN_SA_REFRESH': "Refresh Config 🔄",
+        'BTN_SA_REFRESH': "Refresh Config",
         'MSG_CONFIG_REFRESHED': "✅ *Configuration Refreshed!*",
 
         'BTN_SA_ADD_ADMIN': "Add Admin",
@@ -221,7 +221,7 @@ STRINGS = {
         'BTN_SA_MAINTENANCE': "Mod Penyelenggaraan",
         'BTN_SA_ADMINS': "Urus Admin",
         'BTN_SA_HEALTH': "Kesihatan Sistem",
-        'BTN_SA_REFRESH': "Muat Semula Konfigurasi 🔄",
+        'BTN_SA_REFRESH': "Muat Semula Konfigurasi",
 
         'BTN_SA_ADD_ADMIN': "Tambah Admin",
         'BTN_SA_DEL_ADMIN': "Padam Admin",
