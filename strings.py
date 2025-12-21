@@ -22,8 +22,8 @@ STRINGS = {
             "*MEMBERSHIP VERIFIED* 🎉\n\n"
             "*Name*: *{name}*\n"
             "*Matric*: *{matric}*\n"
-            "*Program*: *{program}*\n"
-            "*Register time*: *{timestamp}*"
+            "*Program*: *{program}*\n\n"
+            "Register time: {timestamp}"
         ),
         
         'ERR_INVALID_MATRIC': "*Invalid Matric Format!*\nPlease try again (e.g. `I24107504`)",
