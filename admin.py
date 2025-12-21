@@ -146,6 +146,45 @@ async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     await update.message.reply_text(strings.get('BTN_ADMIN_MANAGE', lang), reply_markup=keyboards.get_admin_manage_menu(lang))
     return states.ADMIN_MANAGE
 
+# --- ADD MEMBER FLOW ---
+async def add_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
+    await update.message.reply_text(strings.get('ADMIN_ADD_START', lang), parse_mode="Markdown", reply_markup=keyboards.get_cancel_menu(lang))
+    return states.ADD_MATRIC
+
+async def add_matric(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
+    matric = update.message.text.strip().upper()
+    if matric in strings.get_all('BTN_CANCEL') or matric == "CANCEL": return await back(update, context)
+
+    context.user_data['add_matric'] = matric
+    await update.message.reply_text(strings.get('ADMIN_ADD_NAME_PROMPT', lang), parse_mode="Markdown", reply_markup=keyboards.get_cancel_menu(lang))
+    return states.ADD_NAME
+
+async def add_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
+    name = update.message.text.strip()
+    if name in strings.get_all('BTN_CANCEL') or name == "CANCEL": return await back(update, context)
+
+    matric = context.user_data.get('add_matric')
+    if not matric: return await back(update, context)
+
+    loading = await update.message.reply_text(strings.get('ADMIN_SEARCHING', lang), parse_mode="Markdown")
+
+    try:
+        success = db.add_member(matric, name)
+        if success:
+            db.log_action(update.effective_user.first_name, "ADD_MEMBER", f"Matric: {matric}, Name: {name}")
+            await loading.edit_text("✅ " + strings.get('ADMIN_ADD_SUCCESS', lang) + f"\n*{name}*", parse_mode="Markdown")
+        else:
+            await loading.edit_text(strings.get('ADMIN_ADD_FAIL', lang), parse_mode="Markdown")
+    except Exception as e:
+        logger.error(e)
+        await loading.edit_text(strings.get('ERR_DB_CONNECTION', lang), parse_mode="Markdown")
+
+    await update.message.reply_text(strings.get('BTN_ADMIN_MANAGE', lang), reply_markup=keyboards.get_admin_manage_menu(lang))
+    return states.ADMIN_MANAGE
+
 
 # --- DELETE MEMBER FLOW ---
 async def del_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -163,6 +202,7 @@ async def del_matric(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
         success, row = db.delete_member(text)
         if success:
+            db.log_action(update.effective_user.first_name, "DELETE_MEMBER", f"Matric: {text} (Row {row[0]})")
             await loading.edit_text(strings.get('ADMIN_DEL_SUCCESS', lang).format(row=row), parse_mode="Markdown")
         else:
             await loading.edit_text(strings.get('ADMIN_DEL_NOT_FOUND', lang), parse_mode="Markdown")
@@ -240,6 +280,8 @@ async def broadcast_send(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         strings.get('ADMIN_BROADCAST_DONE', lang).format(success=success, failed=failed), 
         parse_mode="Markdown"
     )
+    
+    db.log_action(update.effective_user.first_name, "BROADCAST", f"Msg: {msg[:30]}... | Success: {success}/{len(users)}")
     
     await update.message.reply_text(strings.get('ADMIN_DASHBOARD', lang), reply_markup=keyboards.get_admin_menu(lang), parse_mode="Markdown")
     return states.ADMIN_MENU

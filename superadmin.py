@@ -18,6 +18,7 @@ def get_super_menu(lang='EN'):
     return ReplyKeyboardMarkup([
         [strings.get('BTN_SA_MAINTENANCE', lang), strings.get('BTN_SA_REFRESH', lang)],
         [strings.get('BTN_SA_ADMINS', lang), strings.get('BTN_SA_HEALTH', lang)],
+        [strings.get('BTN_SA_LOGS', lang)],
         [strings.get('BTN_SA_EXIT', lang)]
     ], resize_keyboard=True)
 
@@ -74,6 +75,19 @@ async def toggle_maintenance(update: Update, context: ContextTypes.DEFAULT_TYPE)
         await update.message.reply_text(f"Maintenance Mode: *{status}*", parse_mode="Markdown")
     else:
         await update.message.reply_text("❌ Failed to update config.")
+    return states.SUPER_MENU
+
+async def view_logs(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    try:
+        await update.message.reply_document(
+            document=open("admin_actions.log", "rb"),
+            filename="admin_actions.log"
+        )
+    except FileNotFoundError:
+        await update.message.reply_text("📂 Log file is empty or missing.")
+    except Exception as e:
+        logger.error(e)
+        await update.message.reply_text("❌ Error reading logs.")
     return states.SUPER_MENU
 
 # --- ADMIN MANAGEMENT ---
@@ -146,6 +160,8 @@ async def add_admin_save(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             )
         except Exception as e:
             logger.warning(f"Failed to notify new admin {user_id}: {e}")
+            
+        db.log_action(update.effective_user.first_name, "ADD_ADMIN", f"Promoted User {user_id}")
         return states.SUPER_ADMIN_MANAGE
     else:
         await update.message.reply_text("❌ DB Error", reply_markup=get_manage_admins_menu(lang))
@@ -170,6 +186,7 @@ async def del_admin_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         
     user_id = int(text)
     if db.remove_admin(user_id):
+        db.log_action(update.effective_user.first_name, "REMOVE_ADMIN", f"Demoted User {user_id}")
         await update.message.reply_text(strings.get('MSG_SA_DELETED', lang), reply_markup=get_manage_admins_menu(lang))
     else:
         await update.message.reply_text("❌ Not found or Error", reply_markup=get_manage_admins_menu(lang))

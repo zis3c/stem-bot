@@ -319,6 +319,18 @@ class Database:
 
 
 
+    # --- ACTION LOGGING (FILE BASED) ---
+    def log_action(self, name, action, details, role="ADMIN"):
+        """Logs actions to a local file for daily reporting."""
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_entry = f"[{timestamp}] {role}: {name} | ACTION: {action} | {details}\n"
+        
+        try:
+            with open("admin_actions.log", "a", encoding="utf-8") as f:
+                f.write(log_entry)
+        except Exception as e:
+            logger.error(f"Failed to write to log: {e}")
+
     # --- APPROVAL WORKFLOW ---
     def get_unprocessed_registrations(self):
         """Finds rows where Resit (Col 8) is present but Status (Col 9) is Empty."""

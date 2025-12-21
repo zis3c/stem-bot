@@ -2,6 +2,7 @@ import os
 import logging
 import asyncio
 import re
+import datetime
 from aiohttp import web, ClientSession
 from telegram import Update
 from telegram.ext import (
@@ -86,6 +87,7 @@ async def main():
     filter_sa_admins = build_filter('BTN_SA_ADMINS')
     filter_sa_health = build_filter('BTN_SA_HEALTH')
     filter_sa_refresh = build_filter('BTN_SA_REFRESH')
+    filter_sa_logs = build_filter('BTN_SA_LOGS')
     
     # Superadmin Sub-menu Filters
     filter_sa_add = build_filter('BTN_SA_ADD_ADMIN')
@@ -118,7 +120,9 @@ async def main():
                 MessageHandler(filter_sa_maint, superadmin.toggle_maintenance),
                 MessageHandler(filter_sa_health, superadmin.check_health),
                 MessageHandler(filter_sa_admins, superadmin.manage_admins),
+                MessageHandler(filter_sa_admins, superadmin.manage_admins),
                 MessageHandler(filter_sa_refresh, superadmin.refresh_config),
+                MessageHandler(filter_sa_logs, superadmin.view_logs),
                 MessageHandler(filter_sa_exit, superadmin.exit)
             ],
             states.SUPER_ADMIN_MANAGE: [
@@ -184,9 +188,14 @@ async def main():
     application.add_handler(MessageHandler(filter_lang_ms, handlers.set_lang_ms))
     application.add_handler(MessageHandler(filter_back, handlers.start)) # Back goes to main menu
     
+    # Global Logger (Group -1) - Runs for EVERYTHING
+    application.add_handler(MessageHandler(filters.ALL, handlers.log_any_update), group=-1)
+    
     # Job Queue
     if application.job_queue:
         application.job_queue.run_repeating(handlers.check_registrations, interval=60, first=10)
+        # Daily Logs at 00:00 UTC (or server time)
+        application.job_queue.run_daily(handlers.send_daily_logs, time=datetime.time(hour=0, minute=0, second=0))
     
     webhook_path = f"{WEBHOOK_URL}/telegram" if WEBHOOK_URL else None
     

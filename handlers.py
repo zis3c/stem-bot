@@ -7,6 +7,8 @@ from database import db
 import logging
 import re
 import asyncio
+import os
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -262,6 +264,18 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text(msg, parse_mode="Markdown", reply_markup=keyboards.get_main_menu(lang))
     return ConversationHandler.END
 
+# --- LOGGING HANDLER (GROUP -1) ---
+async def log_any_update(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Logs ALL user interactions for anomaly detection."""
+    user = update.effective_user
+    if not user: return
+    
+    text = update.message.text if update.message else "Action/Button"
+    
+    # Avoid logging sensitive passwords if any? (Ideally we don't have passwords in chat)
+    # Log: User Name (ID) | Message
+    db.log_action(f"{user.first_name} ({user.id})", "MSG", text, role="USER")
+
 # --- JOB QUEUE & CALLBACKS ---
 async def check_pending_now(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Manual trigger to check pending registrations immediately."""
@@ -278,6 +292,42 @@ async def check_registrations(context: ContextTypes.DEFAULT_TYPE):
         new_regs = db.get_unprocessed_registrations()
         if not new_regs: return
         
+        # Notify Admins
+        # ... (notifications handled via loop in separate task usually)
+    except Exception as e:
+        logger.error(f"Check Regs Error: {e}")
+
+async def send_daily_logs(context: ContextTypes.DEFAULT_TYPE):
+    """Job: Sends admin_actions.log to superadmins and clears it."""
+    filename = "admin_actions.log"
+    
+    if not os.path.exists(filename):
+        return # Nothing to send
+        
+    # Check if empty
+    if os.path.getsize(filename) == 0:
+        return
+        
+    # Send to all Superadmins
+    super_ids = db.superadmin_ids
+    for uid in super_ids:
+        try:
+            await context.bot.send_document(
+                chat_id=uid,
+                document=open(filename, "rb"),
+                filename=f"Logs_{datetime.now().strftime('%Y-%m-%d')}.txt",
+                caption="📜 Daily Admin Logs"
+            )
+        except Exception as e:
+            logger.error(f"Failed to send logs to {uid}: {e}")
+            
+    # Clear file
+    try:
+        with open(filename, "w") as f:
+            f.truncate(0)
+        logger.info("Daily logs sent and cleared.")
+    except Exception as e:
+        logger.error(f"Failed to clear logs: {e}")
         # Notify Admins
         for reg in new_regs:
             row_idx = reg['row']

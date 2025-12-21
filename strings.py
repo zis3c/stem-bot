@@ -85,14 +85,15 @@ STRINGS = {
         'BTN_STATUS_REJECTED': "Rejected",
         'BTN_STATUS_PENDING': "Pending",
         'BTN_STATUS_REJECTED': "Rejected",
-        'BTN_ADMIN_CHECK_PENDING': "Check Pending ⏳",
+        'BTN_ADMIN_CHECK_PENDING': "Check Pending",
         'BTN_ADMIN_DEL': "Delete Member",
         
         'BTN_SA_MAINTENANCE': "Maintenance Mode",
         'BTN_SA_ADMINS': "Manage Admins",
         'BTN_SA_HEALTH': "System Health",
         'BTN_SA_REFRESH': "Refresh Config",
-        'MSG_CONFIG_REFRESHED': "✅ *Configuration Refreshed!*",
+        'BTN_SA_LOGS': "View Logs",
+        'MSG_CONFIG_REFRESHED': "Configuration Refreshed!",
 
         'BTN_SA_ADD_ADMIN': "Add Admin",
         'BTN_SA_DEL_ADMIN': "Delete Admin",
@@ -226,7 +227,8 @@ STRINGS = {
         'BTN_SA_ADMINS': "Urus Admin",
         'BTN_SA_HEALTH': "Kesihatan Sistem",
         'BTN_SA_REFRESH': "Muat Semula Konfigurasi",
-
+        'BTN_SA_LOGS': "Lihat Log",
+        'MSG_CONFIG_REFRESHED': "Konfigurasi Dikemaskini!",
         'BTN_SA_ADD_ADMIN': "Tambah Admin",
         'BTN_SA_DEL_ADMIN': "Padam Admin",
         'BTN_SA_LIST_ADMIN': "Senarai Admin",
