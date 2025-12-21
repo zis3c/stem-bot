@@ -62,6 +62,18 @@ A high-performance, bilingual **Telegram Bot** designed to streamline membership
 4.  **Setup Google Sheets**
     *   Share your Google Sheet with the Service Account Email.
     *   Ensure tabs named: `Registrations`, `system_admins`, `system_config`.
+    *   **Structure for `Registrations` Sheet** (Important!):
+        | Col | Header Name |
+        | --- | --- |
+        | A | Timestamp |
+        | B | Email Address |
+        | C | NAMA PENUH |
+        | D | NO. MATRIKS |
+        | E | KAD PENGENALAN |
+        | F | PROGRAM PENGAJIAN |
+        | G | SEMESTER |
+        | H | RESIT |
+        | I | STATUS |
 
 ### ▶️ Running Locally (Polling Mode)
 
