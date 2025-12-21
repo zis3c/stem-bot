@@ -125,9 +125,27 @@ async def add_admin_save(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         return states.SUPER_ADD_ID
         
     user_id = int(text)
+    
+    # Check if already admin
+    if db.is_admin(user_id):
+        await update.message.reply_text(
+            strings.get('ERR_SA_ALREADY_ADMIN', lang),
+            reply_markup=get_manage_admins_menu(lang)
+        )
+        return states.SUPER_ADMIN_MANAGE
+
     # Add to sheet
     if db.add_admin(user_id, "Unknown", f"SA:{update.effective_user.id}"):
         await update.message.reply_text(strings.get('MSG_SA_ADDED', lang), reply_markup=get_manage_admins_menu(lang))
+        
+        # Notify the new admin
+        try:
+            await context.bot.send_message(
+                chat_id=user_id, 
+                text=strings.get('MSG_SA_PROMOTED', lang)
+            )
+        except Exception as e:
+            logger.warning(f"Failed to notify new admin {user_id}: {e}")
         return states.SUPER_ADMIN_MANAGE
     else:
         await update.message.reply_text("❌ DB Error", reply_markup=get_manage_admins_menu(lang))

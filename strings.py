@@ -59,7 +59,7 @@ STRINGS = {
         'MSG_SELECT_LANG': "🌐 *Select Language*",
         
         # Admin - Keep English for Admins usually, but good to have structure
-        'ADMIN_DASHBOARD': "Admin Dashboard\nSelect an action:",
+        'ADMIN_DASHBOARD': "*Admin Dashboard*\nSelect an action:",
         'ADMIN_STATS': "*Database Stats*\n\nTotal Members: *{total}*",
         'ADMIN_ADD_MATRIC': "*Add Member*\nEnter Matric Number:",
         'ADMIN_ADD_NAME': "Enter *Full Name*:",
@@ -104,6 +104,9 @@ STRINGS = {
         'MSG_SA_ADDED': "✅ Admin added successfully!",
         'MSG_SA_DELETED': "✅ Admin removed successfully!",
         'ERR_SA_INVALID_ID': "⚠️ Invalid ID format. Must be numeric.",
+
+        'ERR_SA_ALREADY_ADMIN': "⚠️ User is already an Admin.",
+        'MSG_SA_PROMOTED': "🎉 Congratulations! You have been promoted to Admin.",
         
         'BTN_ADMIN_LIST': "List Members",
         'BTN_ADMIN_SEARCH': "Search Member",
@@ -186,7 +189,7 @@ STRINGS = {
         'MSG_SELECT_LANG': "🌐 *Pilih Bahasa*",
         
         # Admin - Fallback to English often okay, but can translate
-        'ADMIN_DASHBOARD': "Admin Dashboard\nPilih tindakan:",
+        'ADMIN_DASHBOARD': "*Admin Dashboard*\nPilih tindakan:",
         'ADMIN_STATS': "*Statistik Pangkalan Data*\n\nJumlah Ahli: *{total}*",
         'ADMIN_ADD_MATRIC': "*Tambah Ahli*\nMasukkan Nombor Matrik:",
         'ADMIN_ADD_NAME': "Masukkan *Nama Penuh*:",
@@ -234,6 +237,9 @@ STRINGS = {
         'MSG_SA_ADDED': "✅ Admin berjaya ditambah!",
         'MSG_SA_DELETED': "✅ Admin berjaya dipadam!",
         'ERR_SA_INVALID_ID': "⚠️ Format ID tidak sah.",
+        
+        'ERR_SA_ALREADY_ADMIN': "⚠️ Pengguna ini sudah menjadi Admin.",
+        'MSG_SA_PROMOTED': "🎉 Tahniah! Anda telah dilantik sebagai Admin.",
         
         'BTN_CONFIRM_YES': "Sahkan Hantar",
         'BTN_CONFIRM_NO': "Batal",
