@@ -213,9 +213,7 @@ class Database:
         if self.student_cache:
             return len(self.student_cache)
         # Fallback
-        return super().get_stats() # Recursive recursion error if I call self.get_stats()? No, I don't inherit. 
-        # Wait, get_stats used sheet.get_all_values.
-        # Let's just use cache refresh logic.
+        # Fallback
         self.refresh_student_cache()
         return len(self.student_cache)
 
