@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+import time  # Imported time
 import gspread
 from google.oauth2.service_account import Credentials
 import traceback
@@ -18,6 +19,7 @@ class Database:
         # System Caches
         self.cached_sheet_admins = [] 
         self.maintenance_mode = False
+        self.last_config_refresh = 0
         self.refresh_system_config()
 
     def _parse_ids(self, env_key):
@@ -70,8 +72,11 @@ class Database:
             logger.error(traceback.format_exc())
             return None
 
-    def refresh_system_config(self):
-        """Reloads admins and config from sheet."""
+    def refresh_system_config(self, force=False):
+        """Reloads admins and config from sheet. Cached for 5 minutes."""
+        if not force and (time.time() - self.last_config_refresh < 300):
+            return
+
         try:
             # 1. Load Admins
             ws_admins = self.get_sheet("system_admins")
@@ -86,6 +91,9 @@ class Database:
                 for r in records:
                     if r['Key'] == 'maintenance_mode':
                         self.maintenance_mode = str(r['Value']).lower() == 'true'
+            
+            self.last_config_refresh = time.time()
+            logger.info("System Config Refreshed (from Sheet)")
                         
         except Exception as e:
             logger.error(f"System Config Load Fail: {e}")

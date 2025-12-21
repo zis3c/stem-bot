@@ -91,6 +91,18 @@ STRINGS = {
         'BTN_SA_MAINTENANCE': "Maintenance Mode",
         'BTN_SA_ADMINS': "Manage Admins",
         'BTN_SA_HEALTH': "System Health",
+        'BTN_SA_REFRESH': "Refresh Config 🔄",
+        'MSG_CONFIG_REFRESHED': "✅ *Configuration Refreshed!*",
+
+        'BTN_SA_ADD_ADMIN': "Add Admin",
+        'BTN_SA_DEL_ADMIN': "Delete Admin",
+        'BTN_SA_LIST_ADMIN': "List Admins",
+        
+        'PROMPT_SA_ADD': "Please reply with the *Telegram ID* (User ID) to add as Admin:",
+        'PROMPT_SA_DEL': "Please reply with the *Telegram ID* to remove:",
+        'MSG_SA_ADDED': "✅ Admin added successfully!",
+        'MSG_SA_DELETED': "✅ Admin removed successfully!",
+        'ERR_SA_INVALID_ID': "⚠️ Invalid ID format. Must be numeric.",
         
         'BTN_ADMIN_LIST': "List Members",
         'BTN_ADMIN_SEARCH': "Search Member",
@@ -209,6 +221,17 @@ STRINGS = {
         'BTN_SA_MAINTENANCE': "Mod Penyelenggaraan",
         'BTN_SA_ADMINS': "Urus Admin",
         'BTN_SA_HEALTH': "Kesihatan Sistem",
+        'BTN_SA_REFRESH': "Muat Semula Konfigurasi 🔄",
+
+        'BTN_SA_ADD_ADMIN': "Tambah Admin",
+        'BTN_SA_DEL_ADMIN': "Padam Admin",
+        'BTN_SA_LIST_ADMIN': "Senarai Admin",
+        
+        'PROMPT_SA_ADD': "Sila balas dengan *ID Telegram* untuk ditambah:",
+        'PROMPT_SA_DEL': "Sila balas dengan *ID Telegram* untuk dipadam:",
+        'MSG_SA_ADDED': "✅ Admin berjaya ditambah!",
+        'MSG_SA_DELETED': "✅ Admin berjaya dipadam!",
+        'ERR_SA_INVALID_ID': "⚠️ Format ID tidak sah.",
         
         'BTN_CONFIRM_YES': "Sahkan Hantar",
         'BTN_CONFIRM_NO': "Batal",

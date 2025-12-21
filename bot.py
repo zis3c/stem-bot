@@ -85,6 +85,12 @@ async def main():
     filter_sa_maint = build_filter('BTN_SA_MAINTENANCE')
     filter_sa_admins = build_filter('BTN_SA_ADMINS')
     filter_sa_health = build_filter('BTN_SA_HEALTH')
+    filter_sa_refresh = build_filter('BTN_SA_REFRESH')
+    
+    # Superadmin Sub-menu Filters
+    filter_sa_add = build_filter('BTN_SA_ADD_ADMIN')
+    filter_sa_list = build_filter('BTN_SA_LIST_ADMIN')
+    filter_sa_del = build_filter('BTN_SA_DEL_ADMIN')
 
     # User Config
     user_conv = ConversationHandler(
@@ -111,7 +117,21 @@ async def main():
                 MessageHandler(filter_sa_maint, superadmin.toggle_maintenance),
                 MessageHandler(filter_sa_health, superadmin.check_health),
                 MessageHandler(filter_sa_admins, superadmin.manage_admins),
+                MessageHandler(filter_sa_refresh, superadmin.refresh_config),
                 MessageHandler(filter_admin_exit, superadmin.exit)
+            ],
+            states.SUPER_ADMIN_MANAGE: [
+                MessageHandler(filter_sa_add, superadmin.add_admin_start),
+                MessageHandler(filter_sa_list, superadmin.list_admins),
+                MessageHandler(filter_sa_del, superadmin.del_admin_start),
+                MessageHandler(filter_back, superadmin.back_to_super),
+                MessageHandler(filter_admin_exit, superadmin.exit)
+            ],
+            states.SUPER_ADD_ID: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND & ~filter_cancel, superadmin.add_admin_save)
+            ],
+            states.SUPER_DEL_ID: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND & ~filter_cancel, superadmin.del_admin_perform)
             ]
         },
         fallbacks=[CommandHandler("cancel", superadmin.exit)]

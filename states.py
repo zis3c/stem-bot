@@ -8,5 +8,8 @@
     SEARCH_QUERY,
     BROADCAST_MSG,
     BROADCAST_CONFIRM,
-    SUPER_MENU
-) = range(9)
+    SUPER_MENU,
+    SUPER_ADMIN_MANAGE,
+    SUPER_ADD_ID,
+    SUPER_DEL_ID
+) = range(13)
