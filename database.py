@@ -281,6 +281,9 @@ class Database:
                 # Update Cache Immediately
                 if matric in self.student_cache:
                     del self.student_cache[matric]
+                
+                # Force full refresh next time to handle duplicates/consistency
+                self.last_student_refresh = 0
                     
                 return True, cell.row
             return False, None
