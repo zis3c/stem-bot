@@ -62,8 +62,6 @@ STRINGS = {
         'ADMIN_DASHBOARD': "*Admin Dashboard*\nSelect an action:",
         'ADMIN_STATS': (
             "📊 *Member Statistics*\n\n"
-            "✅ *Verified Students*: {verified}\n"
-            "⏳ *Pending Approvals*: {pending}\n"
             "👥 *Total Members*: {total}\n\n"
             "_Data synced with Google Sheets_"
         ),
@@ -199,8 +197,6 @@ STRINGS = {
         'ADMIN_DASHBOARD': "*Admin Dashboard*\nPilih tindakan:",
         'ADMIN_STATS': (
             "📊 *Statistik Ahli*\n\n"
-            "✅ *Pelajar Disahkan*: {verified}\n"
-            "⏳ *Menunggu Kelulusan*: {pending}\n"
             "👥 *Jumlah Ahli*: {total}\n\n"
             "_Data disegerakkan dengan Google Sheets_"
         ),

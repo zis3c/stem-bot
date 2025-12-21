@@ -33,8 +33,6 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         data = db.get_stats()
         await update.message.reply_text(
             strings.get('ADMIN_STATS', lang).format(
-                verified=data['verified'], 
-                pending=data['pending'], 
                 total=data['total']
             ), 
             parse_mode="Markdown",

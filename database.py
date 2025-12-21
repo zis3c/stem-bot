@@ -277,6 +277,11 @@ class Database:
             cell = sheet.find(matric, in_column=4)
             if cell:
                 sheet.delete_rows(cell.row)
+                
+                # Update Cache Immediately
+                if matric in self.student_cache:
+                    del self.student_cache[matric]
+                    
                 return True, cell.row
             return False, None
         return None, None
