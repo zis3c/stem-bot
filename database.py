@@ -34,16 +34,27 @@ class Database:
 
     def get_sheet(self, sheet_name="Registrations"):
         try:
-            if not self.google_json:
-                logger.error("❌ CRITICAL: GOOGLE_CREDENTIALS missing!")
-                return None
-                
             scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-            try:
-                creds_dict = json.loads(self.google_json)
-            except json.JSONDecodeError as je:
-                 logger.error(f"❌ JSON Decode Error: {je}")
-                 return None
+            
+            if not self.google_json:
+                # Fallback to local file if env var is missing
+                if os.path.exists("service_account.json"):
+                    with open("service_account.json") as f:
+                        creds_dict = json.load(f)
+                else:
+                    logger.error("❌ CRITICAL: GOOGLE_CREDENTIALS missing!")
+                    return None
+            else:
+                try:
+                    creds_dict = json.loads(self.google_json)
+                except json.JSONDecodeError:
+                     # Fallback to local file on decode error
+                    if os.path.exists("service_account.json"):
+                        with open("service_account.json") as f:
+                            creds_dict = json.load(f)
+                    else:
+                        logger.error("❌ JSON Decode Error in Env")
+                        return None
                  
             creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
             client = gspread.authorize(creds)

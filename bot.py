@@ -188,9 +188,25 @@ async def main():
     if application.job_queue:
         application.job_queue.run_repeating(handlers.check_registrations, interval=60, first=10)
     
-    webhook_path = f"{WEBHOOK_URL}/telegram"
-    await application.bot.set_webhook(webhook_path)
+    webhook_path = f"{WEBHOOK_URL}/telegram" if WEBHOOK_URL else None
     
+    if WEBHOOK_URL:
+        await application.bot.set_webhook(webhook_path)
+    else:
+        # Local Polling
+        logger.info("📡 No WEBHOOK_URL found. Starting Polling...")
+        await application.bot.delete_webhook(drop_pending_updates=True) # Good practice to clear old webhooks
+        # Initialize updater explicitly if not using run_polling
+        # But wait, run_polling handles signals. 
+        # For simplicity in this async structure:
+        # We need to start polling.
+        # Note: application.initialize() initializes the bot, but maybe not updater if not built? 
+        # ApplicationBuilder builds it.
+        # Let's try use standard run_polling if we can? No we have a webserver too.
+        # Fixed:
+        await application.updater.initialize() 
+        await application.updater.start_polling()
+        
     # Set Bot Commands (Suggestions)
     from telegram import BotCommand
     commands = [
