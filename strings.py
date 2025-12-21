@@ -61,8 +61,8 @@ STRINGS = {
         # Admin - Keep English for Admins usually, but good to have structure
         'ADMIN_DASHBOARD': "*Admin Dashboard*\nSelect an action:",
         'ADMIN_STATS': (
-            "📊 *Member Statistics*\n\n"
-            "👥 *Total Members*: {total}\n\n"
+            "Member Statistics\n\n"
+            "Total Members: {total}\n\n"
             "_Data synced with Google Sheets_"
         ),
         'ADMIN_ADD_MATRIC': "*Add Member*\nEnter Matric Number:",
@@ -196,8 +196,8 @@ STRINGS = {
         # Admin - Fallback to English often okay, but can translate
         'ADMIN_DASHBOARD': "*Admin Dashboard*\nPilih tindakan:",
         'ADMIN_STATS': (
-            "📊 *Statistik Ahli*\n\n"
-            "👥 *Jumlah Ahli*: {total}\n\n"
+            "Statistik Ahli\n\n"
+            "Jumlah Ahli: {total}\n\n"
             "_Data disegerakkan dengan Google Sheets_"
         ),
         'ADMIN_ADD_MATRIC': "*Tambah Ahli*\nMasukkan Nombor Matrik:",

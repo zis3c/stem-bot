@@ -293,7 +293,34 @@ async def check_registrations(context: ContextTypes.DEFAULT_TYPE):
         if not new_regs: return
         
         # Notify Admins
-        # ... (notifications handled via loop in separate task usually)
+        admins = db.admin_ids
+        for reg in new_regs:
+            row_idx = reg['row']
+            data = reg['data']
+            # data: [time, email, name, matric, ic, prog, sem, resit, status]
+            name = data[2]
+            matric = data[3]
+            resit_url = data[7]
+            
+            msg = (
+                f"*New Registration* 🔔\n"
+                f"Name: {name}\n"
+                f"Matric: `{matric}`\n"
+                f"Receipt: {resit_url}\n\n"
+                f"Action: /approve_{matric} | /reject_{matric}"
+            )
+            
+            # Send to all admins
+            for admin_id in admins:
+                try:
+                    await context.bot.send_message(chat_id=admin_id, text=msg, parse_mode="Markdown")
+                except Exception as e:
+                    logger.error(f"Failed to notify admin {admin_id}: {e}")
+            
+            # Mark as '✓' (Seen by Bot) to avoid spamming. 
+            # Admin still needs to /approve or /reject later.
+            db.update_status(row_idx, "✓")
+            
     except Exception as e:
         logger.error(f"Check Regs Error: {e}")
 
