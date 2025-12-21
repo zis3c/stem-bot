@@ -86,7 +86,7 @@ def get_manage_admins_menu(lang='EN'):
 async def manage_admins(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)
     await update.message.reply_text(
-        strings.get('ADMIN_DASHBOARD', lang), # Can reuse valid generic title
+        strings.get('BTN_SA_ADMINS', lang), # Use button label as title
         reply_markup=get_manage_admins_menu(lang)
     )
     return states.SUPER_ADMIN_MANAGE
