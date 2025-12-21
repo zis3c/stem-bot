@@ -303,11 +303,10 @@ async def check_registrations(context: ContextTypes.DEFAULT_TYPE):
             resit_url = data[7]
             
             msg = (
-                f"*New Registration* 🔔\n"
+                f"*New Registration 🔔*\n\n"
                 f"Name: {name}\n"
-                f"Matric: `{matric}`\n"
-                f"Receipt: {resit_url}\n\n"
-                f"Action: /approve_{matric} | /reject_{matric}"
+                f"Matric: {matric}\n"
+                f"Receipt: {resit_url}"
             )
             
             # Send to all admins
