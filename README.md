@@ -11,10 +11,12 @@ A high-performance, bilingual **Telegram Bot** designed to streamline membership
 
 *   **⚡ Instant Verification**: Verifies student membership in `< 10ms` using in-memory caching.
 *   **🌍 Bilingual Support**: Seamlessly switch between **English** and **Bahasa Melayu**.
+*   **🔔 Real-time Alerts**: Admins receive instant notifications for new registrations with a direct receipt link.
 *   **🛡️ Robust Admin System**:
-    *   **Admin Dashboard**: Search, Add, Delete, and Broadcast to members.
+    *   **Admin Dashboard**: Search, Add, Delete (Auto-Cache Clear), and Broadcast with "Admin Announcement" title.
     *   **Superadmin Control**: Manage other admins, toggle Maintenance Mode, and monitor system health.
-*   **📊 Google Sheets Backend**: Uses Google Sheets as a database for easy editing and real-time updates.
+*   **📊 Google Sheets Backend**: Uses Google Sheets as a database.
+    *   **Auto-Status**: Bot marks new registrations as '✓' (Seen) to prevent duplicates.
 *   **🚀 High Concurrency**: Optimized with `asyncio` and threaded logging to handle 100+ concurrent requests.
 
 ---
@@ -99,7 +101,8 @@ This bot is configured for auto-deployment on [Render](https://render.com).
 ## 📜 System Logging (New)
 1.  **Global User Tracking**: Logs **every** command/message from all users for anomaly detection.
 2.  **Admin Audit**: Logs sensitive actions (Add/Delete Member, Broadcast).
-3.  **Auto-Cleanup**:
+3.  **Deduplicated User List**: Ensures broadcasts are sent only to unique users, preventing spam.
+4.  **Auto-Cleanup**:
     *   Logs are stored locally in `admin_actions.log`.
     *   Every day at **00:00 UTC**, the bot saves the log file, sends it to Superadmins, and **wipes it clean** to save space.
 
