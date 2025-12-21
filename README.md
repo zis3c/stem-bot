@@ -106,7 +106,7 @@ This bot is configured for auto-deployment on [Render](https://render.com).
 ## 🔒 Security
 
 *   **Role-Based Access**: Strict separation between Users, Admins, and Superadmins.
-*   **Secure Logging**: Audit logs for all admin actions.
+*   **Secure Logging**: Audit logs for all users actions.
 *   **Credential Protection**: `.gitignore` configured to prevent leaking secrets.
 
 ---
