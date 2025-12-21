@@ -133,7 +133,7 @@ class Database:
         try:
             ws = self.get_sheet("system_admins")
             ws.append_row([str(user_id), name, added_by])
-            self.refresh_system_config()
+            self.refresh_system_config(force=True)
             return True
         except Exception as e:
             logger.error(f"Add Admin Error: {e}")
@@ -144,7 +144,7 @@ class Database:
             ws = self.get_sheet("system_admins")
             cell = ws.find(str(user_id))
             ws.delete_rows(cell.row)
-            self.refresh_system_config()
+            self.refresh_system_config(force=True)
             return True
         except Exception as e:
             logger.error(f"Del Admin Error: {e}")
