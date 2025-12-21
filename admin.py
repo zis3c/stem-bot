@@ -30,9 +30,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)
     try:
-        total = db.get_stats()
+        data = db.get_stats()
         await update.message.reply_text(
-            strings.get('ADMIN_STATS', lang).format(total=total), 
+            strings.get('ADMIN_STATS', lang).format(
+                verified=data['verified'], 
+                pending=data['pending'], 
+                total=data['total']
+            ), 
             parse_mode="Markdown",
             reply_markup=keyboards.get_admin_menu(lang)
         )

@@ -60,7 +60,13 @@ STRINGS = {
         
         # Admin - Keep English for Admins usually, but good to have structure
         'ADMIN_DASHBOARD': "*Admin Dashboard*\nSelect an action:",
-        'ADMIN_STATS': "*Database Stats*\n\nTotal Members: *{total}*",
+        'ADMIN_STATS': (
+            "📊 *Member Statistics*\n\n"
+            "✅ *Verified Students*: {verified}\n"
+            "⏳ *Pending Approvals*: {pending}\n"
+            "👥 *Total Members*: {total}\n\n"
+            "_Data synced with Google Sheets_"
+        ),
         'ADMIN_ADD_MATRIC': "*Add Member*\nEnter Matric Number:",
         'ADMIN_ADD_NAME': "Enter *Full Name*:",
         'ADMIN_ADD_IC': "Enter *Full IC Number*:\n(Example: 020512081234)",
@@ -191,7 +197,13 @@ STRINGS = {
         
         # Admin - Fallback to English often okay, but can translate
         'ADMIN_DASHBOARD': "*Admin Dashboard*\nPilih tindakan:",
-        'ADMIN_STATS': "*Statistik Pangkalan Data*\n\nJumlah Ahli: *{total}*",
+        'ADMIN_STATS': (
+            "📊 *Statistik Ahli*\n\n"
+            "✅ *Pelajar Disahkan*: {verified}\n"
+            "⏳ *Menunggu Kelulusan*: {pending}\n"
+            "👥 *Jumlah Ahli*: {total}\n\n"
+            "_Data disegerakkan dengan Google Sheets_"
+        ),
         'ADMIN_ADD_MATRIC': "*Tambah Ahli*\nMasukkan Nombor Matrik:",
         'ADMIN_ADD_NAME': "Masukkan *Nama Penuh*:",
         'ADMIN_ADD_IC': "Masukkan *No Kad Pengenalan Penuh*:\n(Contoh: 020512081234)",

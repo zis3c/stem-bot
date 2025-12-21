@@ -209,13 +209,29 @@ class Database:
         return None, None
 
     def get_stats(self):
-        # Optimized: Count cache
-        if self.student_cache:
-            return len(self.student_cache)
-        # Fallback
-        # Fallback
+        """Returns stats: Total, Verified, Pending."""
         self.refresh_student_cache()
-        return len(self.student_cache)
+        
+        total = 0
+        verified = 0
+        pending = 0
+        
+        for row in self.student_cache.values():
+            total += 1
+            # Row structure: [timestamp, email, name, matric, ic, prog, sem, resit, status]
+            # Status is at index 8. Check length safe.
+            status = row[8].strip().title() if len(row) > 8 else ""
+            
+            if status == "Approved":
+                verified += 1
+            elif not status or status == "Pending":
+                pending += 1
+                
+        return {
+            "total": total,
+            "verified": verified,
+            "pending": pending
+        }
 
     def add_member(self, name, matric, ic, prog):
         sheet = self.get_sheet("Registrations")
