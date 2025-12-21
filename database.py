@@ -129,7 +129,7 @@ class Database:
 
     def get_all_admin_ids(self):
         """Returns a set of ALL admin IDs (Super + Env + Sheet)."""
-        return self.superadmin_ids | self.admin_ids | self.cached_sheet_admins
+        return set(self.superadmin_ids) | set(self.admin_ids) | set(self.cached_sheet_admins)
 
     def set_maintenance(self, enabled: bool):
         try:
