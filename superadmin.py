@@ -18,7 +18,7 @@ def get_super_menu(lang='EN'):
     return ReplyKeyboardMarkup([
         [strings.get('BTN_SA_MAINTENANCE', lang), strings.get('BTN_SA_REFRESH', lang)],
         [strings.get('BTN_SA_ADMINS', lang), strings.get('BTN_SA_HEALTH', lang)],
-        [strings.get('BTN_ADMIN_EXIT', lang)]
+        [strings.get('BTN_SA_EXIT', lang)]
     ], resize_keyboard=True)
 
 # --- START ---
