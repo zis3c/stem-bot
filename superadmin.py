@@ -155,6 +155,14 @@ async def del_admin_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         
     return states.SUPER_ADMIN_MANAGE
 
+async def back_to_manage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
+    await update.message.reply_text(
+        strings.get('ERR_CANCEL', lang),
+        reply_markup=get_manage_admins_menu(lang)
+    )
+    return states.SUPER_ADMIN_MANAGE
+
 async def back_to_super(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)
     await update.message.reply_text(

@@ -129,9 +129,11 @@ async def main():
                 MessageHandler(filter_sa_exit, superadmin.exit)
             ],
             states.SUPER_ADD_ID: [
+                MessageHandler(filter_cancel, superadmin.back_to_manage),
                 MessageHandler(filters.TEXT & ~filters.COMMAND & ~filter_cancel, superadmin.add_admin_save)
             ],
             states.SUPER_DEL_ID: [
+                MessageHandler(filter_cancel, superadmin.back_to_manage),
                 MessageHandler(filters.TEXT & ~filters.COMMAND & ~filter_cancel, superadmin.del_admin_perform)
             ]
         },
