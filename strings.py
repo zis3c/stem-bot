@@ -153,7 +153,7 @@ STRINGS = {
             "*Nama*: *{name}*\n"
             "*Matrik*: *{matric}*\n"
             "*Program*: *{program}*\n\n"
-            "Masa Daftar: {timestamp}"
+            "*Masa Daftar*: {timestamp}"
         ),
         
         'ERR_INVALID_MATRIC': "*Format Matrik Tidak Sah!*\nSila cuba lagi (cth. `I24107504`)",
