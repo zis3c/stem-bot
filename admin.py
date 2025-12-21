@@ -206,7 +206,7 @@ async def del_matric(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     try:
         success, row = db.delete_member(text)
         if success:
-            db.log_action(update.effective_user.first_name, "DELETE_MEMBER", f"Matric: {text} (Row {row[0]})")
+            db.log_action(update.effective_user.first_name, "DELETE_MEMBER", f"Matric: {text} (Row {row})")
             await loading.edit_text(strings.get('ADMIN_DEL_SUCCESS', lang).format(row=row), parse_mode="Markdown")
         else:
             await loading.edit_text(strings.get('ADMIN_DEL_NOT_FOUND', lang), parse_mode="Markdown")
