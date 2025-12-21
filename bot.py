@@ -5,9 +5,9 @@ import re
 from aiohttp import web, ClientSession
 from telegram import Update
 from telegram.ext import (
-    ApplicationBuilder, 
-    CommandHandler, 
-    MessageHandler, 
+    ApplicationBuilder,
+    CommandHandler,
+    MessageHandler,
     ConversationHandler,
     filters,
     ContextTypes,

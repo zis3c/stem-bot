@@ -184,7 +184,9 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         )
         return states.ASK_IC
     
-    loading_msg = await update.message.reply_text(strings.get('PROMPT_LOADING', lang), parse_mode="Markdown")
+    # Optimized: No "Verifying..." message. Cache is instant. 
+    # Sending/Deleting message takes 2 extra API calls (SLOW).
+    # loading_msg = await update.message.reply_text(strings.get('PROMPT_LOADING', lang), parse_mode="Markdown")
     
     user_matric = context.user_data['matric']
     user_ic_last4 = text
@@ -251,10 +253,11 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         logger.error(e)
 
     # AUTO DELETE LOADING MESSAGE
-    try:
-        await loading_msg.delete()
-    except Exception:
-        pass 
+    # AUTO DELETE LOADING MESSAGE (Removed for speed cleanup)
+    # try:
+    #     await loading_msg.delete()
+    # except Exception:
+    #     pass 
 
     await update.message.reply_text(msg, parse_mode="Markdown", reply_markup=keyboards.get_main_menu(lang))
     return ConversationHandler.END
