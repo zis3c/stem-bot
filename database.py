@@ -281,6 +281,10 @@ class Database:
                  sheet = spreadsheet.add_worksheet(title="Users", rows=1000, cols=3)
                  sheet.append_row(["User ID", "Name", "Joined Date"])
                  return sheet
+        except Exception as e:
+            logger.error(f"Users Sheet Error: {e}")
+            return None
+
     def log_user(self, user_id, name):
         """Logs user to sheet if not already logged this session. Blocking I/O."""
         if user_id in self.logged_users_cache:
