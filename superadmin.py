@@ -30,8 +30,19 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     
     if not is_sa: return ConversationHandler.END # Silent fail for non-superadmins
     
-    # Sync config fresh (now cached)
-    db.refresh_system_config()
+    # Sync config in background so UI pops immediately
+    # We rely on cache for immediate display. The refresh happens for NEXT time.
+    # Or we can await loop.run_in_executor(None, db.refresh_system_config) 
+    # But even that awaits. 
+    # FASTEST: Just trigger it and don't wait. Or trust the background job.
+    # Let's trust cache. If it's stale, it updates in background.
+    # For now, let's just make it non-blocking fire-and-forget style or short timeout?
+    # Actually, asyncio.to_thread is good for Py3.9+.
+    # Since we want speed, let's skip the forced refresh here and rely on the background job?
+    # But we don't have a background job for config refresh yet (only check_registrations).
+    # Let's add loop.run_in_executor.
+    loop = asyncio.get_running_loop()
+    loop.run_in_executor(None, db.refresh_system_config)
     
     lang = get_user_lang(context)
     status = "ON" if db.maintenance_mode else "OFF"
