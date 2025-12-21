@@ -23,7 +23,7 @@ STRINGS = {
             "*Name*: *{name}*\n"
             "*Matric*: *{matric}*\n"
             "*Program*: *{program}*\n\n"
-            "Register time: {timestamp}"
+            "*Register time*: {timestamp}"
         ),
         
         'ERR_INVALID_MATRIC': "*Invalid Matric Format!*\nPlease try again (e.g. `I24107504`)",
