@@ -198,15 +198,16 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         row_values, _ = db.find_member(user_matric)
         
         if row_values:
-            if len(row_values) > 5:
-                # Gspread List 0-index values: A=0(Timestamp), C=2(Name), E=4(IC), F=5(Program)
+            if len(row_values) > 9: # Need at least up to IC (Index 9)
+                # Gspread List 0-index values: A=0(Timestamp), C=2(Name), D=3(Matric), E=4(Courses/Prog)
+                # J=9(IC), Q=16(Receipt), R=17(Status)
                 db_timestamp = row_values[0]
                 db_name = row_values[2] 
-                db_ic = str(row_values[4]).strip().replace(" ", "")
-                db_prog = row_values[5]
-                # Col H (index 7) is Resit, Col I (index 8) is Status
-                db_resit = str(row_values[7]).strip() if len(row_values) > 7 else ""
-                db_status = str(row_values[8]).strip().title() if len(row_values) > 8 else ""
+                db_ic = str(row_values[9]).strip().replace(" ", "") # J is 9
+                db_prog = row_values[4] # E is 4
+                # Col Q (index 16) is Receipt, Col R (index 17) is Status
+                db_resit = str(row_values[16]).strip() if len(row_values) > 16 else ""
+                db_status = str(row_values[17]).strip().title() if len(row_values) > 17 else ""
                 
                 # 1. If Status is explicit "Pending" or "Rejected" -> Use that.
                 # 2. If Status is "Approved" or "✓" -> Approved.
@@ -297,10 +298,10 @@ async def check_registrations(context: ContextTypes.DEFAULT_TYPE):
         for reg in new_regs:
             row_idx = reg['row']
             data = reg['data']
-            # data: [time, email, name, matric, ic, prog, sem, resit, status]
+            # data: [time, email, name, matric, courses, ..., ic, ..., receipt(16), status(17)]
             name = data[2]
             matric = data[3]
-            resit_url = data[7]
+            resit_url = data[16] if len(data) > 16 else "No Receipt"
             
             msg = (
                 f"*New Registration 🔔*\n\n"
@@ -358,10 +359,10 @@ async def send_daily_logs(context: ContextTypes.DEFAULT_TYPE):
         for reg in new_regs:
             row_idx = reg['row']
             data = reg['data']
-            # Data: 0=Timestamp, 2=Name, 3=Matric, 7=Resit
+            # Data: 0=Timestamp, 2=Name, 3=Matric, 16=Receipt
             name = data[2]
             matric = data[3]
-            resit = data[7]
+            resit = data[16] if len(data) > 16 else "No Receipt"
             
             # Escape Markdown V1 Special Chars: _, *, `, [
             def escape_md(text):

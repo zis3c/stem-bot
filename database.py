@@ -179,8 +179,10 @@ class Database:
             # Data starts row 1
             cache = {}
             for row in all_rows[1:]:
-                # Matric is Col 4 (index 3). Row structure: [Time, Email, Name, Matric, IC, Prog, ...]
-                # Normalize matric
+                # New Mapping:
+                # A(0)=Time, B=Email, C=Name, D(3)=Matric, E=Courses, ... J(9)=IC, ... Q(16)=Receipt, R(17)=Status
+                
+                # Normalize matric (Col 3)
                 if len(row) > 3:
                     mat = str(row[3]).strip().upper()
                     if mat:
@@ -222,9 +224,8 @@ class Database:
         
         for row in self.student_cache.values():
             total += 1
-            # Row structure: [timestamp, email, name, matric, ic, prog, sem, resit, status]
-            # Status is at index 8. Check length safe.
-            status = row[8].strip().title() if len(row) > 8 else ""
+            # Status is at index 17 (Col R).
+            status = row[17].strip().title() if len(row) > 17 else ""
             
             if status == "Approved":
                 verified += 1
@@ -240,8 +241,19 @@ class Database:
     def add_member(self, name, matric, ic, prog):
         sheet = self.get_sheet("Registrations")
         if sheet:
+        if sheet:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            row = [timestamp, "bot_add", name, matric, ic, prog, "", "", "Approved"]
+            # New 18-col structure
+            # A=Time, B=Email, C=Name, D=Matric, E=Courses, F-I, J=IC, K-Q, R=Status
+            row = [""] * 18
+            row[0] = timestamp
+            row[1] = "bot_add"
+            row[2] = name
+            row[3] = matric
+            row[4] = prog # Courses
+            row[9] = ic   # IC Number
+            row[17] = "Approved" # Status
+            
             sheet.append_row(row)
             # Invalidate cache or add to it?
             # Safest: force refresh on next read? Or just add locally?
@@ -266,10 +278,10 @@ class Database:
         query = query.lower()
         matches = []
         for row in self.student_cache.values():
-            if len(row) > 4:
+            if len(row) > 9:
                 name = row[2].lower()
                 matric = row[3].lower()
-                ic = str(row[4]).lower()
+                ic = str(row[9]).lower() # J is index 9
                 
                 if query in name or query in matric or query in ic:
                     matches.append(row)
@@ -278,6 +290,7 @@ class Database:
     def delete_member(self, matric):
         sheet = self.get_sheet("Registrations")
         if sheet:
+            # Matric is Col D (4)
             cell = sheet.find(matric, in_column=4)
             if cell:
                 sheet.delete_rows(cell.row)
@@ -380,15 +393,14 @@ class Database:
             
             # Start from row 2 (index 1) to skip header
             for i, row in enumerate(all_values[1:], start=2):
-                # Ensure row has enough cols. Gspread might cut off empty trailing cols.
-                # We need Col H (index 7).
-                if len(row) <= 7: continue 
+                # We need Col Q (index 16) for Receipt.
+                if len(row) <= 16: continue 
                 
-                resit = row[7].strip()
-                # Status is Col I (index 8). If row doesn't have index 8, it's empty.
-                status = row[8].strip() if len(row) > 8 else ""
+                receipt = row[16].strip()
+                # Status is Col R (index 17).
+                status = row[17].strip() if len(row) > 17 else ""
                 
-                if resit and not status:
+                if receipt and not status:
                     # Valid registration needing approval
                     unprocessed.append({
                         'row': i,
@@ -408,9 +420,10 @@ class Database:
             rows = sheet.get_all_values()
             filtered = []
             # Skip header (row 1)
+            # Skip header (row 1)
             for i, row in enumerate(rows[1:], start=2):
-                # Ensure row has enough columns (Col I is index 8)
-                status = row[8].strip().title() if len(row) > 8 else "Approved"
+                # Ensure row has enough columns (Col R is index 17)
+                status = row[17].strip().title() if len(row) > 17 else "Approved"
                 # Normalize "Approved"
                 if status not in ["Pending", "Rejected", "Approve", "Reject"]: status = "Approved"
                 
@@ -419,8 +432,8 @@ class Database:
                         'row': i,
                         'name': row[2] if len(row) > 2 else "Unknown",
                         'matric': row[3] if len(row) > 3 else "Unknown",
-                        'ic': row[4] if len(row) > 4 else "Unknown",
-                        'prog': row[5] if len(row) > 5 else "Unknown",
+                        'ic': row[9] if len(row) > 9 else "Unknown", # J=9
+                        'prog': row[4] if len(row) > 4 else "Unknown", # E=4
                         'status': status
                     })
             return filtered
@@ -433,8 +446,8 @@ class Database:
         sheet = self.get_sheet("Registrations")
         if not sheet: return False
         try:
-            # Update Cell (Row, Col 9)
-            sheet.update_cell(row_index, 9, status)
+            # Update Cell (Row, Col 18 (R))
+            sheet.update_cell(row_index, 18, status)
             return True
         except Exception as e:
             logger.error(f"Update Status Error: {e}")

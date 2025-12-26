@@ -135,7 +135,7 @@ async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             for i, row in enumerate(results[:20], 1):
                 name = row[2] if len(row) > 2 else "Unknown"
                 matric = row[3] if len(row) > 3 else "Unknown"
-                prog = row[5] if len(row) > 5 else ""
+                prog = row[4] if len(row) > 4 else ""
                 items.append(f"{i}. *{name}* (`{matric}`) - {prog}")
 
             msg_text = strings.get('ADMIN_SEARCH_RESULT', lang).format(query=query, items="\n\n".join(items))
