@@ -241,7 +241,6 @@ class Database:
     def add_member(self, name, matric, ic, prog):
         sheet = self.get_sheet("Registrations")
         if sheet:
-        if sheet:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             # New 18-col structure
             # A=Time, B=Email, C=Name, D=Matric, E=Courses, F-I, J=IC, K-Q, R=Status
