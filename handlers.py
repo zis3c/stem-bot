@@ -211,22 +211,19 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
                 
                 # 1. If Status is explicit "Pending" or "Rejected" -> Use that.
                 # 2. If Status is "Approved" or "✓" -> Approved.
-                # 3. If Status is Empty:
-                #    - If Resit exists -> Pending (New Registration waiting for bot/admin).
-                #    - If Resit empty -> Approved (Legacy/Manual add).
+                # 3. If Status is Empty -> Pending (Waiting for admin/bot).
                 
-                final_status = "Approved" # Default
+                final_status = "Pending" # Default to Pending for safety
                 
                 if db_status in ["Pending", "Rejected"]:
                     final_status = db_status
                 elif db_status in ["Approved", "✓"]:
                     final_status = "Approved"
                 else:
-                    # Status is empty or unknown. Check Resit.
-                    if db_resit: 
-                        final_status = "Pending"
-                    else:
-                        final_status = "Approved"
+                    # Status is empty or unknown. Check Resit? 
+                    # User says: "if user row didnt have '✓' so it will notified to admin"
+                    # So treat as Pending.
+                    final_status = "Pending"
 
                 if db_ic.endswith(user_ic_last4):
                     if final_status == "Approved": 

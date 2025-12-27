@@ -418,9 +418,15 @@ class Database:
             # Skip header (row 1)
             for i, row in enumerate(rows[1:], start=2):
                 # Ensure row has enough columns (Col R is index 17)
-                status = row[17].strip().title() if len(row) > 17 else "Approved"
-                # Normalize "Approved"
-                if status not in ["Pending", "Rejected", "Approve", "Reject"]: status = "Approved"
+                # Status is Col R (index 17)
+                status = row[17].strip().title() if len(row) > 17 else ""
+                
+                # Normalize '✓' to 'Approved' for filtering
+                if status == "✓": 
+                    status = "Approved"
+                elif status not in ["Pending", "Rejected", "Approved"]:
+                    # If empty or unknown, treat as Pending (Waiting for admin check)
+                    status = "Pending"
                 
                 if status == status_filter:
                     filtered.append({
