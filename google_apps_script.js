@@ -12,7 +12,7 @@
  */
 
 // --- CONFIGURATION ---
-var SHEET_NAME = "Registrations"; // Change if your sheet name is different
+var SHEET_NAME = "STEM DB"; // Updated to match user's actual sheet name
 
 // Column Indices (1-based for getRange, but 0-based for array access usually)
 // A=1, B=2, ...
