@@ -149,7 +149,7 @@ async def add_admin_save(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     text = update.message.text.strip()
     
     if not text.isdigit():
-        await update.message.reply_text(strings.get('ERR_SA_INVALID_ID', lang))
+        await update.message.reply_text(strings.get('ERR_SA_INVALID_ID', lang), parse_mode="Markdown")
         return states.SUPER_ADD_ID
         
     user_id = int(text)
@@ -158,13 +158,14 @@ async def add_admin_save(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if db.is_admin(user_id):
         await update.message.reply_text(
             strings.get('ERR_SA_ALREADY_ADMIN', lang),
+            parse_mode="Markdown",
             reply_markup=get_manage_admins_menu(lang)
         )
         return states.SUPER_ADMIN_MANAGE
 
     # Add to sheet
     if db.add_admin(user_id, "Unknown", f"SA:{update.effective_user.id}"):
-        await update.message.reply_text(strings.get('MSG_SA_ADDED', lang), reply_markup=get_manage_admins_menu(lang))
+        await update.message.reply_text(strings.get('MSG_SA_ADDED', lang), parse_mode="Markdown", reply_markup=get_manage_admins_menu(lang))
         
         # Notify the new admin
         try:
@@ -195,13 +196,13 @@ async def del_admin_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     text = update.message.text.strip()
     
     if not text.isdigit():
-        await update.message.reply_text(strings.get('ERR_SA_INVALID_ID', lang))
+        await update.message.reply_text(strings.get('ERR_SA_INVALID_ID', lang), parse_mode="Markdown")
         return states.SUPER_DEL_ID
         
     user_id = int(text)
     if db.remove_admin(user_id):
         db.log_action(update.effective_user.first_name, "REMOVE_ADMIN", f"Demoted User {user_id}")
-        await update.message.reply_text(strings.get('MSG_SA_DELETED', lang), reply_markup=get_manage_admins_menu(lang))
+        await update.message.reply_text(strings.get('MSG_SA_DELETED', lang), parse_mode="Markdown", reply_markup=get_manage_admins_menu(lang))
     else:
         await update.message.reply_text("❌ Not found or Error", reply_markup=get_manage_admins_menu(lang))
         
