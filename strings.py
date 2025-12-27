@@ -66,11 +66,7 @@ STRINGS = {
             "Total Members: *{total}*\n"
             "Data synced with Google Sheets"
         ),
-        'ADMIN_ADD_MATRIC': "*Add Member*\nEnter Matric Number:",
-        'ADMIN_ADD_NAME': "Enter *Full Name*:",
-        'ADMIN_ADD_IC': "Enter *Full IC Number*:\n(Example: 020512081234)",
-        'ADMIN_ADD_PROG': "Enter *Program Code* (e.g. CS230):",
-        'ADMIN_ADD_SUCCESS': "*Success!*\nAdded {name} ({matric})",
+
         'ADMIN_DEL_START': "*Delete Member*\nEnter Matric Number to delete:",
         'ADMIN_DEL_SUCCESS': "*Deleted*\nRow {row} removed.",
         'ADMIN_DEL_NOT_FOUND': "Matric not found.",
@@ -207,11 +203,7 @@ STRINGS = {
             "Jumlah Ahli: {total}\n"
             "Data disegerakkan dengan Google Sheets"
         ),
-        'ADMIN_ADD_MATRIC': "*Tambah Ahli*\nMasukkan Nombor Matrik:",
-        'ADMIN_ADD_NAME': "Masukkan *Nama Penuh*:",
-        'ADMIN_ADD_IC': "Masukkan *No Kad Pengenalan Penuh*:\n(Contoh: 020512081234)",
-        'ADMIN_ADD_PROG': "Masukkan *Kod Program* (cth: CS230):",
-        'ADMIN_ADD_SUCCESS': "*Berjaya!*\nDitambah {name} ({matric})",
+
         'ADMIN_DEL_START': "*Padam Ahli*\nMasukkan Nombor Matrik untuk dibuang:",
         'ADMIN_DEL_SUCCESS': "*Dipadam*\nBaris {row} dikeluarkan.",
         'ADMIN_DEL_NOT_FOUND': "Matrik tidak dijumpai.",
