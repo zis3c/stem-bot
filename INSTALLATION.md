@@ -142,6 +142,22 @@ The bot relies on a script running inside the Google Sheet to generate IDs and f
 
 ---
 
+## 📅 Step 5c: Monthly Statistics (Optional)
+
+To enable the automatic monthly separator row (e.g., `--- STATISTIK DISEMBER ---`):
+
+1.  In Apps Script, click **Triggers** (alarm clock).
+2.  Click **Add Trigger** (blue button).
+3.  Configure:
+    *   **Function**: `generateMonthlyStats`
+    *   **Deployment**: `Head`
+    *   **Event Source**: `Time-driven`
+    *   **Type**: `Month timer`
+    *   **Select**: `1st` (Day of month) @ `Midnight`.
+4.  Click **Save**.
+
+---
+
 ## ⚙️ Step 6: Environment Variables
 
 Create a file named `.env` in the `stem-bot` folder.

@@ -206,3 +206,66 @@ function setupTrigger() {
 
     Logger.log("Trigger set up successfully!");
 }
+
+/**
+ * MONTHLY STATS GENERATOR
+ * Run this via a Time-Driven Trigger (Monthly, 1st Day).
+ */
+function generateMonthlyStats() {
+    var sheet = getTargetSheet();
+    if (!sheet) return;
+
+    // 1. Determine Previous Month
+    var today = new Date();
+    // Go back to the first day of this month, then subtract 1 hour to get last month
+    var firstDayThisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    var lastMonthDate = new Date(firstDayThisMonth.getTime() - 3600000); // minus 1 hour
+
+    // Get Month Name and Year (e.g., "December 2025")
+    var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var prevMonthName = monthNames[lastMonthDate.getMonth()];
+    var prevYear = lastMonthDate.getFullYear();
+    var statLabel = "--- STATISTIK " + prevMonthName.toUpperCase() + " " + prevYear + " ---";
+
+    // 2. Count Registrations for Previous Month
+    // We scan Col A (Timestamp)
+    var lastRow = sheet.getLastRow();
+    var count = 0;
+
+    if (lastRow > 1) {
+        var timestamps = sheet.getRange(2, 1, lastRow - 1, 1).getValues(); // keys
+
+        for (var i = 0; i < timestamps.length; i++) {
+            var ts = new Date(timestamps[i][0]);
+            if (!isNaN(ts.getTime())) {
+                if (ts.getMonth() === lastMonthDate.getMonth() && ts.getFullYear() === prevYear) {
+                    count++;
+                }
+            }
+        }
+    }
+
+    // 3. Append Summary Row
+    // We need to construct a row with data in specific columns.
+    // Sheet has at least 18 columns. S is 19.
+    // We append a row, then update specific cells to act as a separator.
+
+    // Create an empty array for 19 columns
+    var rowData = new Array(19).fill("");
+
+    // Index 2 = Col C (Name) -> Label
+    rowData[2] = statLabel;
+
+    // Index 18 = Col S (Stat) -> Count
+    // Note: appendRow takes 1-based logic arguments implicitly by position
+    rowData[18] = "Total: " + count;
+
+    sheet.appendRow(rowData);
+
+    // Optional: Style the row (Bold, Grey Background)
+    var newRowIdx = sheet.getLastRow();
+    var fullRange = sheet.getRange(newRowIdx, 1, 1, 19);
+    fullRange.setBackground("#eeeeee").setFontWeight("bold");
+
+    Logger.log("Generated Stats for " + prevMonthName + ": " + count);
+}
