@@ -9,6 +9,14 @@ Use the latest version of the bot to ensure you have the latest security patches
 | 1.0.x   | :white_check_mark: |
 | < 1.0   | :x:                |
 
+## Configuration Security
+
+To protect your API keys and tokens:
+
+*   **Never commit `.env` files**: We have included `.env` in `.gitignore` by default.
+*   **Service Accounts**: Treat your `service_account.json` (Google Credentials) like a password. Do not share it.
+*   **Regenerate Keys**: If you suspect a leak, regenerate your Telegram Token via BotFather and your Google Cloud keys immediately.
+
 ## Reporting a Vulnerability
 
 We take security seriously. If you discover a vulnerability, please follow these steps:

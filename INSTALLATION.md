@@ -113,6 +113,33 @@ This bot uses Google Sheets as a database. You need a Service Account credential
         *   Headers: `Key`, `Value`
         *   Add a row: `maintenance_mode` | `False`
 
+    *   "Run" > "setupTrigger".
+    *   Grant permissions if requested.
+
+    > **Note**: This script handles the `Membership ID` generation and `Date of Entry` formatting automatically.
+
+---
+
+## 📜 Step 5b: Google Apps Script (Automation)
+
+The bot relies on a script running inside the Google Sheet to generate IDs and format dates.
+
+1.  **Open Script Editor**:
+    *   In your Google Sheet, go to **Extensions** > **Apps Script**.
+2.  **Paste Code**:
+    *   Delete any existing code in `Code.gs`.
+    *   Open `google_apps_script.js` from this repository.
+    *   Copy the entire content and paste it into the script editor.
+3.  **Save**:
+    *   Press `Ctrl+S` (or `Cmd+S`) to save the project.
+4.  **Setup Trigger**:
+    *   In the function dropdown (top bar), select `setupTrigger`.
+    *   Click **Run**.
+    *   **Grant Permissions**: Google will ask for permission. Click "Review Permissions" > Choose Account > "Advanced" > "Go to (Project Name) (unsafe)" > "Allow".
+5.  **Verify**:
+    *   Go to the **Triggers** icon (alarm clock) in the left sidebar.
+    *   You should see a trigger for `onFormSubmit`.
+
 ---
 
 ## ⚙️ Step 6: Environment Variables

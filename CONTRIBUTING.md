@@ -26,5 +26,10 @@ Thank you for your interest in contributing! We welcome bug reports, feature req
 - Follow PEP 8 style guidelines.
 - Ensure your code allows for high concurrency (async/await).
 
+### Testing Logic
+When modifying `database.py` or `admin.py`, strictly adhere to the 18-column structure (A-R) of the Google Sheet.
+*   **Google Apps Script**: If you change the logic for ID generation, update `google_apps_script.js` accordingly.
+*   **Verification**: Always verify that "Detailed View" in Admin Search maps correctly to the sheet columns.
+
 ## License
 By contributing, you agree that your contributions will be licensed under the MIT License.

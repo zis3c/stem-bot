@@ -14,9 +14,10 @@ A high-performance, bilingual **Telegram Bot** designed to streamline membership
 *   **🌍 Bilingual Support**: Seamlessly switch between **English** and **Bahasa Melayu**.
 *   **🔔 Real-time Alerts**: Admins receive instant notifications for new registrations with a direct receipt link.
 *   **🛡️ Robust Admin System**:
-    *   **Admin Dashboard**: Search, Add, Delete (Auto-Cache Clear), and Broadcast with "Admin Announcement" title.
+    *   **Dashboard**: Search (Simple/Detail Views), Add/Delete Members, and Broadcast.
+    *   **Advanced Search**: Toggle between **Simple View** (List) and **Detailed View** (Card UI) with full column data.
     *   **Superadmin Control**: Manage other admins, toggle Maintenance Mode, and monitor system health.
-*   **📊 Google Sheets Backend**: Uses Google Sheets as a database.
+*   **📊 Google Sheets Backend**: Uses Google Sheets as a database types.
     *   **Auto-Status**: Bot marks new registrations as '✓' (Seen) to prevent duplicates.
 *   **🚀 High Concurrency**: Optimized with `asyncio` and threaded logging to handle 100+ concurrent requests.
 
@@ -26,6 +27,7 @@ A high-performance, bilingual **Telegram Bot** designed to streamline membership
 
 *   **Framework**: [python-telegram-bot (v20+)](https://github.com/python-telegram-bot/python-telegram-bot)
 *   **Database**: Google Sheets API via [gspread](https://github.com/burnash/gspread)
+*   **Automation**: [Google Apps Script](https://developers.google.com/apps-script) (for server-side sheet logic)
 *   **Concurrency**: Python `asyncio` & `threading`
 *   **Deployment**: Optimized for Render / Docker
 
