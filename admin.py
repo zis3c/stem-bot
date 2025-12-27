@@ -173,8 +173,25 @@ async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                 matric = row[3] if len(row) > 3 else "-"
                 
                 if mode == 'simple':
-                    prog = row[4] if len(row) > 4 else ""
-                    items.append(f"{i}. *{name}* (`{matric}`) - {prog}")
+                    prog = row[4] if len(row) > 4 else "-"
+                    mem_id = row[15] if len(row) > 15 else "-" # P=15 is Membership ID
+                    
+                    # Request:
+                    # 1. 
+                    # Membership id: ...
+                    # Name
+                    # Matric
+                    # Program
+                    # With emojis like detail view
+                    
+                    simple_card = (
+                        f"{i}.\n"
+                        f"🔑 ID: `{mem_id}`\n"
+                        f"👤 *{name}*\n"
+                        f"🆔 `{matric}`\n"
+                        f"🎓 {prog}"
+                    )
+                    items.append(simple_card)
                 else:
                     # Detail View
                     # Map:
