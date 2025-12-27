@@ -325,11 +325,20 @@ async def check_registrations(context: ContextTypes.DEFAULT_TYPE):
             name = data[2]
             matric = data[3]
             resit_url = data[16] if len(data) > 16 else "No Receipt"
+
+            # Escape Markdown special characters to prevent "Can't parse entities" error
+            def escape_md(text):
+                # Legacy Markdown escapes: *, _, `, [
+                if not text: return ""
+                return str(text).replace('_', '\\_').replace('*', '\\*').replace('`', '\\`').replace('[', '\\[')
+
+            safe_name = escape_md(name)
+            safe_matric = escape_md(matric)
             
             msg = (
                 f"*NEW REGISTRATION 🔔*\n\n"
-                f"Name: *{name}*\n"
-                f"Matric: *{matric}*\n"
+                f"Name: *{safe_name}*\n"
+                f"Matric: *{safe_matric}*\n"
                 f"Receipt: {resit_url}"
             )
             
