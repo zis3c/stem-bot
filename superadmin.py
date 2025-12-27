@@ -77,7 +77,7 @@ async def check_health(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         f"*System Health*\n\n"
         f"CPU: *{cpu}%*\n"
         f"RAM: *{ram}%*\n"
-        f"Uptime: ~*{hours}*h *{mins}*m"
+        f"Uptime: ~*{hours}h* *{mins}m*"
     )
     await update.message.reply_text(msg, parse_mode="Markdown")
     return states.SUPER_MENU

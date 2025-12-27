@@ -112,12 +112,12 @@ STRINGS = {
         
         'PROMPT_SA_ADD': "Please reply with the *Telegram ID* (User ID) to add as Admin:",
         'PROMPT_SA_DEL': "Please reply with the *Telegram ID* to remove:",
-        'MSG_SA_ADDED': "✅ Admin added successfully!",
-        'MSG_SA_DELETED': "✅ Admin removed successfully!",
-        'ERR_SA_INVALID_ID': "⚠️ Invalid ID format. Must be numeric.",
+        'MSG_SA_ADDED': "✅ *Admin added successfully!*",
+        'MSG_SA_DELETED': "✅ *Admin removed successfully!*",
+        'ERR_SA_INVALID_ID': "⚠️ *Invalid ID format. Must be numeric.*",
 
-        'ERR_SA_ALREADY_ADMIN': "⚠️ User is already an Admin.",
-        'MSG_SA_PROMOTED': "🎉 Congratulations! You have been promoted to Admin.",
+        'ERR_SA_ALREADY_ADMIN': "⚠️ *User is already an Admin.*",
+        'MSG_SA_PROMOTED': "🎉 *Congratulations! You have been promoted to Admin.*",
         
         'BTN_ADMIN_LIST': "List Members",
         'BTN_ADMIN_SEARCH': "Search Member",
@@ -130,9 +130,9 @@ STRINGS = {
         'BTN_CONFIRM_NO': "Cancel",
         
         'ADMIN_BROADCAST_PROMPT': "Enter message to broadcast to all users:",
-        'ADMIN_BROADCAST_CONFIRM': "Preview:\n\n{msg}\n\n*Send to {count} users?*",
+        'ADMIN_BROADCAST_CONFIRM': "Preview:\n\n{msg}\n\n Send to *{count}* users?",
         'ADMIN_BROADCAST_START': "Sending...",
-        'ADMIN_BROADCAST_DONE': "*Broadcast Complete* 📢\n\nSuccess: {success}\nBlocked/Failed: {failed}",
+        'ADMIN_BROADCAST_DONE': "*Broadcast Complete* 📢\n\nSuccess: *{success}*\nBlocked/Failed: *{failed}*",
         
         # Programs
         'BTN_PROG_IT': "DIPLOMA TEKNOLOGI MAKLUMAT",
