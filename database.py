@@ -178,7 +178,7 @@ class Database:
             # Headers are row 0
             # Data starts row 1
             cache = {}
-            for row in all_rows[1:]:
+            for i, row in enumerate(all_rows[1:], start=2): # Start=2 matches Sheet Row Number
                 # New Mapping:
                 # A(0)=Time, B=Email, C=Name, D(3)=Matric, E=Courses, ... J(9)=IC, ... Q(16)=Receipt, R(17)=Status
                 
@@ -186,7 +186,7 @@ class Database:
                 if len(row) > 3:
                     mat = str(row[3]).strip().upper()
                     if mat:
-                        cache[mat] = row
+                        cache[mat] = (row, i) # Store (Data, RowIndex)
             
             self.student_cache = cache
             self.last_student_refresh = time.time()
@@ -200,9 +200,8 @@ class Database:
         self.refresh_student_cache() # Checks TTL internaly
         
         if matric in self.student_cache:
-            # We return None for row_index because cache doesn't track live row positions perfectly
-            # and verify flow doesn't need it.
-            return self.student_cache[matric], None
+            # Return tuple (row_data, row_index)
+            return self.student_cache[matric]
             
         # 2. Fallback to API (Slow) if not in cache? 
         # For High Concurrency mode, we TRUST the cache. 
@@ -222,7 +221,7 @@ class Database:
         verified = 0
         pending = 0
         
-        for row in self.student_cache.values():
+        for row, _ in self.student_cache.values():
             total += 1
             # Status is at index 17 (Col R).
             status = row[17].strip().title() if len(row) > 17 else ""
@@ -254,19 +253,16 @@ class Database:
             row[17] = "Approved" # Status
             
             sheet.append_row(row)
-            # Invalidate cache or add to it?
-            # Safest: force refresh on next read? Or just add locally?
-            # Adding locally is complex (row format must match).
-            # Let's just set timeout to 0 to force refresh next time? No that kills concurrency.
-            # Just append to cache manually.
-            self.student_cache[matric] = row
+            # Invalidate cache to force reload next time (simplest way to get correct row index)
+            self.last_student_refresh = 0
             return True
         return False
 
     def get_members(self, limit=50):
         self.refresh_student_cache()
-        # Convert cache dict values to list
-        all_values = list(self.student_cache.values())
+        # Convert cache dict values to list of ROWS only
+        # cache values are (row, index)
+        all_values = [row for row, idx in self.student_cache.values()]
         # Cache isn't ordered by time necessarily (dict is insertion ordered in Py3.7+ but depends on load)
         # Actually sheet load order is preserved.
         # Reverse
@@ -276,7 +272,7 @@ class Database:
         self.refresh_student_cache()
         query = query.lower()
         matches = []
-        for row in self.student_cache.values():
+        for row, _ in self.student_cache.values():
             if len(row) > 9:
                 name = row[2].lower()
                 matric = row[3].lower()

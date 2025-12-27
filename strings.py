@@ -19,11 +19,12 @@ STRINGS = {
         'PROMPT_LOADING': "*Verifying...*",
         
         'VERIFICATION_SUCCESS': (
-            "*MEMBERSHIP VERIFIED* 🎉\n\n"
-            "*Name*: *{name}*\n"
-            "*Matric*: *{matric}*\n"
-            "*Program*: *{program}*\n\n"
-            "*Register time*: {timestamp}"
+            "*MEMBERSHIP VERIFIED* 🎉\n"
+            "Membership ID: `{membership_id}`\n\n"
+            "Name: {name}\n"
+            "Matric: {matric}\n"
+            "Program: {program}\n"
+            "Register time: *{date}*"
         ),
         
         'ERR_INVALID_MATRIC': "*Invalid Matric Format!*\nPlease try again (e.g. `I24067510`)",
@@ -156,11 +157,12 @@ STRINGS = {
         'PROMPT_LOADING': "*Sedang Semak...*",
         
         'VERIFICATION_SUCCESS': (
-            "*KEAHLIAN DISAHKAN* 🎉\n\n"
-            "*Nama*: *{name}*\n"
-            "*Matrik*: *{matric}*\n"
-            "*Program*: *{program}*\n\n"
-            "*Masa Daftar*: {timestamp}"
+            "*KEAHLIAN DISAHKAN* 🎉\n"
+            "ID Keahlian: `{membership_id}`\n\n"
+            "Nama: {name}\n"
+            "Matrik: {matric}\n"
+            "Program: {program}\n"
+            "Masa Daftar: *{date}*"
         ),
         
         'ERR_INVALID_MATRIC': "*Format Matrik Tidak Sah!*\nSila cuba lagi (cth. `I24067510`)",

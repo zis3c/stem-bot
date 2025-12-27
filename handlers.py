@@ -195,7 +195,7 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     msg = strings.get('ERR_DB_CONNECTION', lang)
     
     try:
-        row_values, _ = db.find_member(user_matric)
+        row_values, row_index = db.find_member(user_matric)
         
         if row_values:
             if len(row_values) > 9: # Need at least up to IC (Index 9)
@@ -230,11 +230,37 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
                 if db_ic.endswith(user_ic_last4):
                     if final_status == "Approved": 
+                        # Generate Membership ID using Row Index (1-based from sheet, so ID 1 is Row 2)
+                        # We used len(row_values) > 9 check earlier, but row_index comes from find_member
+                        # row_values is now just the list, row_index is the int
+                        
+                        # Calculate ID: Row 2 -> 0001. So ID = Row - 1
+                        mem_id_num = row_index - 1 if row_index else 0
+                        membership_id = f"STEM(25/26){mem_id_num:04d}"
+                        
+                        # Format Date: 12/20/2025 (from db_timestamp)
+                        # db_timestamp is usually "2025-12-20 18:50:22" or similar depending on sheet locale
+                        # Let's try to parse and reformat, or just use date part if space split
+                        date_of_entry = db_timestamp.split(' ')[0]
+                        # If date is YYYY-MM-DD, change to MM/DD/YYYY? User requested 12/20/2025
+                        try:
+                            # Try standard formats
+                            if '-' in date_of_entry:
+                                dt = datetime.strptime(date_of_entry, "%Y-%m-%d")
+                                date_of_entry = dt.strftime("%m/%d/%Y")
+                            elif '/' in date_of_entry:
+                                # Assume it's already MM/DD/YYYY or DD/MM/YYYY. 
+                                # If we can't be sure, send as is.
+                                pass 
+                        except ValueError:
+                            pass # Use raw string if parse fails
+
                         msg = strings.get('VERIFICATION_SUCCESS', lang).format(
+                            membership_id=membership_id,
                             name=db_name,
                             matric=user_matric,
                             program=db_prog,
-                            timestamp=db_timestamp
+                            date=date_of_entry
                         )
                     elif final_status == "Pending":
                         msg = strings.get('STATUS_PENDING', lang)
