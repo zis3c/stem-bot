@@ -17,7 +17,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)
     user_id = update.effective_user.id
     if not db.is_admin(user_id):
-        await update.message.reply_text(strings.get('ERR_ACCESS_DENIED', lang), parse_mode="Markdown")
+        # Security: Silent fail for unauthorized users
         return ConversationHandler.END
     
     await update.message.reply_text(

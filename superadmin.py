@@ -29,7 +29,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     is_sa = db.is_superadmin(user_id)
     logger.info(f"DEBUG: /superadmin attempt by {user_id}. Is SA? {is_sa}. SA List: {db.superadmin_ids}")
     
-    if not is_sa: return ConversationHandler.END # Silent fail for non-superadmins
+    if not is_sa: 
+        # Security: Silent fail for non-superadmins
+        return ConversationHandler.END
     
     # Sync config in background so UI pops immediately
     # We rely on cache for immediate display. The refresh happens for NEXT time.
@@ -73,9 +75,9 @@ async def check_health(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     
     msg = (
         f"*System Health*\n\n"
-        f"CPU: {cpu}%\n"
-        f"RAM: {ram}%\n"
-        f"Uptime: ~{hours}h {mins}m"
+        f"CPU: *{cpu}%*\n"
+        f"RAM: *{ram}%*\n"
+        f"Uptime: ~*{hours}*h *{mins}*m"
     )
     await update.message.reply_text(msg, parse_mode="Markdown")
     return states.SUPER_MENU
