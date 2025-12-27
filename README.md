@@ -10,6 +10,7 @@ A high-performance, bilingual **Telegram Bot** designed to streamline membership
 ## ✨ Key Features
 
 *   **⚡ Instant Verification**: Verifies student membership in `< 10ms` using in-memory caching.
+*   **🆔 Selectable IDs**: Generates unique Membership IDs (e.g., `STEM(25/26)0001`) based on database rows.
 *   **🌍 Bilingual Support**: Seamlessly switch between **English** and **Bahasa Melayu**.
 *   **🔔 Real-time Alerts**: Admins receive instant notifications for new registrations with a direct receipt link.
 *   **🛡️ Robust Admin System**:
@@ -39,6 +40,10 @@ A high-performance, bilingual **Telegram Bot** designed to streamline membership
 3.  Google Cloud Service Account (for Sheets API)
 
 ### 📥 Installation
+
+> **[📖 Click here for the DETAILED INSTALLATION GUIDE (Step-by-Step)](INSTALLATION.md)**
+
+For a quick setup:
 
 1.  **Clone the repository**
     ```bash

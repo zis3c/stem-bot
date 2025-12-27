@@ -21,9 +21,9 @@ STRINGS = {
         'VERIFICATION_SUCCESS': (
             "*MEMBERSHIP VERIFIED* 🎉\n"
             "Membership ID: `{membership_id}`\n\n"
-            "Name: {name}\n"
-            "Matric: {matric}\n"
-            "Program: {program}\n"
+            "Name: *{name}*\n"
+            "Matric: *{matric}*\n"
+            "Program: *{program}*\n"
             "Register time: *{date}*"
         ),
         
