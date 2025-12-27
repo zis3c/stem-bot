@@ -86,11 +86,12 @@ async def list_members(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
             await loading.edit_text(strings.get('ADMIN_LIST_EMPTY', lang), parse_mode="Markdown")
         else:
             items = []
+            def esc(t): return str(t).replace('_', '\\_').replace('*', '\\*').replace('`', '\\`').replace('[', '\\[')
             for i, row in enumerate(members, 1):
                 # row[2]=Name, row[3]=Matric
                 name = row[2] if len(row) > 2 else "Unknown"
                 matric = row[3] if len(row) > 3 else "Unknown"
-                items.append(f"{i}. *{name}* (`{matric}`)")
+                items.append(f"{i}. *{esc(name)}* (`{esc(matric)}`)")
             
             msg_text = strings.get('ADMIN_LIST_HEADER', lang).format(limit=len(members), items="\n\n".join(items))
             await loading.edit_text(msg_text, parse_mode="Markdown")
@@ -176,30 +177,25 @@ async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                     prog = row[4] if len(row) > 4 else "-"
                     mem_id = row[15] if len(row) > 15 else "-" # P=15 is Membership ID
                     
-                    # Request:
-                    # 1. 
-                    # Membership id: ...
-                    # Name
-                    # Matric
-                    # Program
-                    # With emojis like detail view
-                    
+                    # Local escape helper (duplicated for scope safety or move it up - moving it up is better but hard with replace tool constraints)
+                    # Use simple replace here since function is defined lower down
+                    def esc(t): return str(t).replace('_', '\\_').replace('*', '\\*').replace('`', '\\`').replace('[', '\\[')
+
                     simple_card = (
                         f"{i}.\n"
-                        f"🔑 ID: `{mem_id}`\n"
-                        f"👤 *{name}*\n"
-                        f"🆔 `{matric}`\n"
-                        f"🎓 {prog}"
+                        f"🔑 ID: `{esc(mem_id)}`\n"
+                        f"👤 *{esc(name)}*\n"
+                        f"🆔 `{esc(matric)}`\n"
+                        f"🎓 {esc(prog)}"
                     )
                     items.append(simple_card)
                 else:
-                    # Detail View
-                    # Map:
-                    # C=Name(2), D=Matric(3), E=Prog(4), F=Sem(5), G=Phone(6), H=PersonalEmail(7), I=UsasEmail(8)
-                    # J=IC(9), K=Bday(10), L=BirthPlace(11), M=Address(12), N=EntryDate(13), O=Minute(14)
-                    # P=ID(15), Q=Receipt(16), R=Status(17)
-                    
-                    def safe_get(idx): return row[idx] if len(row) > idx else "-"
+
+                    def escape_md(text):
+                        """Escape special characters for Telegram Markdown (Legacy)"""
+                        return str(text).replace('_', '\\_').replace('*', '\\*').replace('`', '\\`').replace('[', '\\[')
+
+                    def safe_get(idx): return escape_md(row[idx] if len(row) > idx else "-")
                     
                     detail_card = (
                         f"👤 *{safe_get(2)}*\n" # C Name
