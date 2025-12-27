@@ -88,7 +88,7 @@ function processRow(sheet, rowIdx) {
     // User req: '12/19/2025' (MM/DD/YYYY usually or DD/MM/YYYY depending on region)
     // Let's stick to generic YYYY-MM-DD or standard Date object which Sheets handles well.
     // Actually user example '12/19/2025' is MM/DD/YYYY.
-    var dateEntry = Utilities.formatDate(dateObj, Session.getScriptTimeZone(), "MM/dd/yyyy");
+    var dateEntry = Utilities.formatDate(dateObj, Session.getScriptTimeZone(), "dd/MM/yy");
 
     // 3. Automate USAS Email (Col I) - Index 8
     // Source: Matric (Col D) - Index 3
