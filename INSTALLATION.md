@@ -95,8 +95,18 @@ This bot uses Google Sheets as a database. You need a Service Account credential
 
 4.  **Create Required Tabs**:
     *   **Tab 1 Name**: `Registrations`
-        *   Row 1 Headers: `Timestamp`, `Email Address`, `NAMA PENUH`, `NO. MATRIKS`, `KAD PENGENALAN`, `PROGRAM PENGAJIAN`, `SEMESTER`, `RESIT`, `STATUS`
-        *   (Note: The bot uses column indexes, so header names are for your reference, but order matters).
+    *   **Structure for `Registrations` Sheet** (Important!):
+        *   The bot communicates up to **Column R (18)**. Ensure your sheet has at least 18 columns.
+        *   **Key Columns**:
+            *   `Col A` (Timestamp)
+            *   `Col C` (Name)
+            *   `Col D` (Matric)
+            *   `Col E` (Program)
+            *   `Col J` (IC Number)
+            *   `Col N` (Date of Entry)
+            *   `Col P` (Membership ID)
+            *   `Col Q` (Receipt)
+            *   `Col R` (Status)
     *   **Tab 2 Name**: `system_admins`
         *   Headers: `User ID`, `Name`, `Added By`
     *   **Tab 3 Name**: `system_config`

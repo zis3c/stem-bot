@@ -71,17 +71,19 @@ For a quick setup:
     *   Ensure tabs named: `Registrations`, `system_admins`, `system_config`.
     *   **Structure for `Registrations` Sheet** (Important!):
       
-        | Col | Header Name |
-        | --- | --- |
-        | A | Timestamp |
-        | B | Email Address |
-        | C | NAMA PENUH |
-        | D | NO. MATRIKS |
-        | E | KAD PENGENALAN |
-        | F | PROGRAM PENGAJIAN |
-        | G | SEMESTER |
-        | H | RESIT |
-        | I | STATUS |
+        | Col | Header Name | Key Usage |
+        | --- | --- | --- |
+        | A | Timestamp | System Time |
+        | B | Email Address | User Email |
+        | C | NAMA PENUH | Member Name |
+        | D | NO. MATRIKS | **Search Key** |
+        | E | PROGRAM PENGAJIAN | Program Code |
+        | I | USAS Email | Auto-generated |
+        | J | KAD PENGENALAN | IC Number |
+        | N | Date of Entry | Formatted Date |
+        | P | Membership ID | Stem ID |
+        | Q | RESIT | Receipt URL |
+        | R | STATUS | `Approved`/`Pending` |
 
 ### ▶️ Running Locally (Polling Mode)
 
