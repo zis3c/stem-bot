@@ -57,7 +57,6 @@ def get_admin_manage_menu(lang='EN'):
             [strings.get('BTN_ADMIN_LIST', lang), strings.get('BTN_ADMIN_SEARCH', lang)],
             [strings.get('BTN_BACK', lang)]
         ],
-        ],
         resize_keyboard=True
     )
 
