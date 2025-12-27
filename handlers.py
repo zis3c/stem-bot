@@ -326,20 +326,31 @@ async def check_registrations(context: ContextTypes.DEFAULT_TYPE):
             matric = data[3]
             resit_url = data[16] if len(data) > 16 else "No Receipt"
 
-            # Escape Markdown special characters to prevent "Can't parse entities" error
+            # Legacy Markdown escapes: *, _, `, [
             def escape_md(text):
-                # Legacy Markdown escapes: *, _, `, [
                 if not text: return ""
                 return str(text).replace('_', '\\_').replace('*', '\\*').replace('`', '\\`').replace('[', '\\[')
 
             safe_name = escape_md(name)
             safe_matric = escape_md(matric)
             
+            # Handle Receipt URL (often contains underscores)
+            if resit_url and resit_url.startswith("http"):
+                # Format as link: [View Receipt](url)
+                # Note: Brackets in URL might break this, but rare in Google Drive/Forms. 
+                # We do NOT escape the URL itself for the link target in legacy mode usually, 
+                # but standard markdown implies the link text is safe.
+                # However, to be extra safe against broken parsing, we can just escape the display text if not a link.
+                # Let's try formatting it as a markdown link 100% of time for URLs.
+                receipt_display = f"[View Receipt]({resit_url})"
+            else:
+                receipt_display = escape_md(resit_url)
+            
             msg = (
                 f"*NEW REGISTRATION 🔔*\n\n"
                 f"Name: *{safe_name}*\n"
                 f"Matric: *{safe_matric}*\n"
-                f"Receipt: {resit_url}"
+                f"Receipt: {receipt_display}"
             )
             
             # Send to all admins
