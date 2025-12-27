@@ -63,7 +63,7 @@ STRINGS = {
         'ADMIN_DASHBOARD': "*Admin Dashboard*\nSelect an action:",
         'ADMIN_STATS': (
             "*Member Statistics*\n\n"
-            "Total Members: {total}\n"
+            "Total Members: *{total}*\n"
             "Data synced with Google Sheets"
         ),
         'ADMIN_ADD_MATRIC': "*Add Member*\nEnter Matric Number:",

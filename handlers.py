@@ -327,9 +327,9 @@ async def check_registrations(context: ContextTypes.DEFAULT_TYPE):
             resit_url = data[16] if len(data) > 16 else "No Receipt"
             
             msg = (
-                f"*New Registration 🔔*\n\n"
-                f"Name: {name}\n"
-                f"Matric: {matric}\n"
+                f"*NEW REGISTRATION 🔔*\n\n"
+                f"Name: *{name}*\n"
+                f"Matric: *{matric}*\n"
                 f"Receipt: {resit_url}"
             )
             
