@@ -415,7 +415,6 @@ class Database:
             rows = sheet.get_all_values()
             filtered = []
             # Skip header (row 1)
-            # Skip header (row 1)
             for i, row in enumerate(rows[1:], start=2):
                 # Ensure row has enough columns (Col R is index 17)
                 # Status is Col R (index 17)
