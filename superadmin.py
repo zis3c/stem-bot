@@ -171,7 +171,8 @@ async def add_admin_save(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         try:
             await context.bot.send_message(
                 chat_id=user_id, 
-                text=strings.get('MSG_SA_PROMOTED', lang)
+                text=strings.get('MSG_SA_PROMOTED', lang),
+                parse_mode="Markdown"
             )
         except Exception as e:
             logger.warning(f"Failed to notify new admin {user_id}: {e}")
