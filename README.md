@@ -83,7 +83,7 @@ For a quick setup:
         | N | Date of Entry | Formatted Date |
         | P | Membership ID | Stem ID |
         | Q | RESIT | Receipt URL |
-        | R | STATUS | `Approved`/`Pending` |
+        | R | STATUS | '✓' |
 
 ### ▶️ Running Locally (Polling Mode)
 
