@@ -8,3 +8,4 @@ venv/
 service_account.json
 *.log
 proposeSTEM/
+columnDB.txt
