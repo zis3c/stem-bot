@@ -92,7 +92,7 @@ function processRow(sheet, rowIdx) {
 
     // 3. Automate USAS Email (Col I) - Index 8
     // Source: Matric (Col D) - Index 3
-    var matricRaw = String(valueqs[3]).trim();
+    var matricRaw = String(values[3]).trim();
     var matric = matricRaw.toUpperCase();
     var usasEmail = "";
     if (matric) {
