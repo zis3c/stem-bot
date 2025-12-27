@@ -164,6 +164,7 @@ async def main():
                 CommandHandler("admin", admin.back_to_admin) # Refresh to main admin
             ],
             states.DEL_MATRIC: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.del_matric)],
+            states.SEARCH_MODE: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.receive_search_mode)],
             states.SEARCH_QUERY: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.search_perform)],
             states.BROADCAST_MSG: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.broadcast_confirm)],
             states.BROADCAST_CONFIRM: [MessageHandler(filters.TEXT & ~filters.COMMAND, admin.broadcast_send)],

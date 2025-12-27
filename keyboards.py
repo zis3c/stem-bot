@@ -58,6 +58,19 @@ def get_admin_manage_menu(lang='EN'):
             [strings.get('BTN_BACK', lang)]
         ],
         resize_keyboard=True
+        ],
+        resize_keyboard=True
+    )
+
+def get_search_mode_menu(lang='EN'):
+    return ReplyKeyboardMarkup(
+        [
+            [strings.get('BTN_SEARCH_SIMPLE', lang)],
+            [strings.get('BTN_SEARCH_DETAIL', lang)],
+            [strings.get('BTN_CANCEL', lang)]
+        ],
+        resize_keyboard=True,
+        one_time_keyboard=True
     )
 
 def get_confirm_menu(lang='EN'):

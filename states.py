@@ -5,6 +5,7 @@
     ADMIN_MENU,
     ADMIN_MANAGE,
     DEL_MATRIC,
+    SEARCH_MODE,
     SEARCH_QUERY,
     BROADCAST_MSG,
     BROADCAST_CONFIRM,
@@ -12,4 +13,4 @@
     SUPER_ADMIN_MANAGE,
     SUPER_ADD_ID,
     SUPER_DEL_ID
-) = range(12)
+) = range(13)

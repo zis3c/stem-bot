@@ -109,8 +109,39 @@ async def list_members(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)
     await update.message.reply_text(
-        strings.get('ADMIN_SEARCH_PROMPT', lang), 
+        strings.get('ADMIN_SEARCH_MODE_PROMPT', lang), 
         parse_mode="Markdown", 
+        reply_markup=keyboards.get_search_mode_menu(lang)
+    )
+    return states.SEARCH_MODE
+
+async def receive_search_mode(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    lang = get_user_lang(context)
+    text = update.message.text.strip()
+    
+    if text in strings.get_all('BTN_CANCEL') or text == "CANCEL": 
+        return await back(update, context)
+
+    # Determine mode
+    mode = "simple"
+    if text in strings.get_all('BTN_SEARCH_DETAIL'):
+        mode = "detail"
+    elif text in strings.get_all('BTN_SEARCH_SIMPLE'):
+        mode = "simple"
+    else:
+        # Invalid selection? Just default to simple or ask again.
+        # Let's ask again for robustness
+        await update.message.reply_text(
+            strings.get('ADMIN_SEARCH_MODE_PROMPT', lang), 
+            reply_markup=keyboards.get_search_mode_menu(lang)
+        )
+        return states.SEARCH_MODE
+        
+    context.user_data['search_mode'] = mode
+    
+    await update.message.reply_text(
+        strings.get('ADMIN_SEARCH_PROMPT', lang),
+        parse_mode="Markdown",
         reply_markup=keyboards.get_cancel_menu(lang)
     )
     return states.SEARCH_QUERY
@@ -118,6 +149,7 @@ async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)
     query = update.message.text.strip()
+    mode = context.user_data.get('search_mode', 'simple')
     
     if query in strings.get_all('BTN_CANCEL') or query == "CANCEL": 
         return await back(update, context)
@@ -131,14 +163,46 @@ async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             await loading.edit_text(strings.get('ADMIN_SEARCH_EMPTY', lang).format(query=query), parse_mode="Markdown")
         else:
             items = []
-            # Limit results to avoid overflow if query is too broad
-            for i, row in enumerate(results[:20], 1):
-                name = row[2] if len(row) > 2 else "Unknown"
-                matric = row[3] if len(row) > 3 else "Unknown"
-                prog = row[4] if len(row) > 4 else ""
-                items.append(f"{i}. *{name}* (`{matric}`) - {prog}")
+            limit = 20 if mode == 'simple' else 5
+            
+            for i, row in enumerate(results[:limit], 1):
+                # row indexes: A=0, B=1, ...
+                # C=2 (Name), D=3 (Matric), E=4 (Prog), I=8 (USAS Email), J=9 (IC), N=13 (Date), P=15 (ID), Q=16 (Receipt), R=17 (Status)
+                
+                name = row[2] if len(row) > 2 else "-"
+                matric = row[3] if len(row) > 3 else "-"
+                
+                if mode == 'simple':
+                    prog = row[4] if len(row) > 4 else ""
+                    items.append(f"{i}. *{name}* (`{matric}`) - {prog}")
+                else:
+                    # Detail View
+                    # Map:
+                    # C=Name(2), D=Matric(3), E=Prog(4), F=Sem(5), G=Phone(6), H=PersonalEmail(7), I=UsasEmail(8)
+                    # J=IC(9), K=Bday(10), L=BirthPlace(11), M=Address(12), N=EntryDate(13), O=Minute(14)
+                    # P=ID(15), Q=Receipt(16), R=Status(17)
+                    
+                    def safe_get(idx): return row[idx] if len(row) > idx else "-"
+                    
+                    detail_card = (
+                        f"👤 *{safe_get(2)}*\n" # C Name
+                        f"🆔 `{safe_get(3)}`\n" # D Matric
+                        f"🎓 Prog: {safe_get(4)} | Sem: {safe_get(5)}\n" # E, F
+                        f"📞 {safe_get(6)}\n" # G Phone
+                        f"📧 {safe_get(7)}\n" # H Personal Email
+                        f"🏫 {safe_get(8)}\n" # I USAS Email
+                        f"🪪 IC: {safe_get(9)}\n" # J IC
+                        f"🎂 {safe_get(10)} ({safe_get(11)})\n" # K Birthday, L Place
+                        f"🏠 {safe_get(12)}\n" # M Address
+                        f"📅 Entry: {safe_get(13)}\n" # N Date Entry
+                        f"⏱️ Min: {safe_get(14)}\n" # O Minute
+                        f"🔑 ID: `{safe_get(15)}`\n" # P Membership ID
+                        f"🧾 Receipt: {safe_get(16)}\n" # Q Receipt
+                        f"✅ Status: {safe_get(17)}\n" # R Status
+                    )
+                    items.append(detail_card)
 
-            msg_text = strings.get('ADMIN_SEARCH_RESULT', lang).format(query=query, items="\n\n".join(items))
+            msg_text = strings.get('ADMIN_SEARCH_RESULT', lang).format(mode=mode.upper(), query=query, items="\n\n".join(items))
             await loading.edit_text(msg_text, parse_mode="Markdown")
 
     except Exception as e:
