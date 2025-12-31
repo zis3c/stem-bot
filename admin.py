@@ -214,6 +214,7 @@ async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                         f"📅 Entry: {safe_get(13)}\n" # N Date Entry
                         f"⏱️ Min: {safe_get(14)}\n" # O Minute
                         f"🔑 ID: `{safe_get(15)}`\n" # P Membership ID
+                        f"📄 Proof: {safe_get(16)}\n" # Q Receipt Proof (Index 16)
                         f"🧾 Invoice: `{safe_get(19)}`\n" # T Invoice No (Index 19)
                         f"📎 Receipt: {receipt_display}\n" # S Receipt URL (Index 18)
                         f"✅ Status: {safe_get(17)}\n" # R Status
