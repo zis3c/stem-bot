@@ -234,13 +234,19 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
                         # If date is YYYY-MM-DD, change to MM/DD/YYYY? User requested 12/20/2025
                         try:
                             # Try standard formats
+                            dt = None
                             if '-' in date_of_entry:
                                 dt = datetime.strptime(date_of_entry, "%Y-%m-%d")
-                                date_of_entry = dt.strftime("%m/%d/%Y")
                             elif '/' in date_of_entry:
-                                # Assume it's already MM/DD/YYYY or DD/MM/YYYY. 
-                                # If we can't be sure, send as is.
-                                pass 
+                                # Often Sheets gives MM/DD/YYYY. Try parsing that.
+                                try:
+                                    dt = datetime.strptime(date_of_entry, "%m/%d/%Y")
+                                except ValueError:
+                                     # If that fails, try DD/MM/YYYY
+                                    dt = datetime.strptime(date_of_entry, "%d/%m/%Y")
+                            
+                            if dt:
+                                date_of_entry = dt.strftime("%d/%m/%y") # DD/MM/YY Format
                         except ValueError:
                             pass # Use raw string if parse fails
 
