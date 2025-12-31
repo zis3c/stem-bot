@@ -40,10 +40,50 @@ var LOGO_FILE_ID = PropertiesService.getScriptProperties().getProperty("LOGO_FIL
 function setupSecrets() {
     var props = PropertiesService.getScriptProperties();
     props.setProperties({
-        "RECEIPT_FOLDER_ID": "PASTE_YOUR_FOLDER_ID_HERE", // Paste ID, Run once, then Delete this line
-        "LOGO_FILE_ID": "PASTE_YOUR_LOGO_ID_HERE"       // Paste ID, Run once, then Delete this line
+        "RECEIPT_FOLDER_ID": "1FmcTnwaVBS7wEvTGy75UCiIc3wYYOzkb", // YOUR FOLDER ID
+        "LOGO_FILE_ID": "1a-7seaR1SGQ_xfC_PtmCsHGukcE_qjbD"       // YOUR LOGO ID
     });
     Logger.log("✅ Secrets saved successfully! You can now remove them from this function.");
+}
+
+/**
+ * DEBUG CONFIGURATION
+ * Run this to check if your secrets are saved correctly.
+ */
+function debugConfiguration() {
+    var props = PropertiesService.getScriptProperties();
+    var folderId = props.getProperty("RECEIPT_FOLDER_ID");
+    var logoId = props.getProperty("LOGO_FILE_ID");
+
+    Logger.log("--- CONFIG CHECK ---");
+    Logger.log("Folder ID: " + (folderId ? "✅ Found (" + folderId + ")" : "❌ MISSING"));
+    Logger.log("Logo ID:   " + (logoId ? "✅ Found (" + logoId + ")" : "❌ MISSING"));
+
+    if (logoId) {
+        var b64 = getEncodedLogo(logoId);
+        Logger.log("Logo Fetch Test: " + (b64 ? "✅ Success (Length: " + b64.length + ")" : "❌ Failed to fetch/encode"));
+    }
+    Logger.log("--------------------");
+}
+
+/**
+ * Helper: Fetch Image from Drive and convert to Base64 for embedding
+ */
+function getEncodedLogo(fileId) {
+    if (!fileId || fileId === "PASTE_YOUR_LOGO_ID_HERE") {
+        Logger.log("⚠️ Logo File ID is missing or placeholder.");
+        return null;
+    }
+    try {
+        var file = DriveApp.getFileById(fileId);
+        var blob = file.getBlob();
+        var b64 = Utilities.base64Encode(blob.getBytes());
+        Logger.log("✅ Logo encoded successfully. Size: " + b64.length);
+        return "data:" + blob.getContentType() + ";base64," + b64;
+    } catch (e) {
+        Logger.log("⚠️ Could not fetch logo: " + e.toString());
+        return null;
+    }
 }
 
 /**
@@ -405,9 +445,9 @@ function createPdfHtml(name, matric, memberId, date, invoiceNo, receiptNo, logoB
             .meta-label { font-size: 12px; color: ${textLabel}; font-weight: 600; text-transform: uppercase; }
             .meta-value { font-size: 14px; color: ${textValue}; font-weight: 500; }
 
-            .bill-to { margin-bottom: 30px; }
-            .bill-label { font-size: 12px; color: ${textLabel}; font-weight: 600; text-transform: uppercase; margin-bottom: 5px; }
-            .bill-name { font-size: 18px; font-weight: 700; color: ${textHeader}; }
+            .bill-to { margin-bottom: 40px; } 
+            .bill-label { font-size: 12px; color: ${textLabel}; font-weight: 600; text-transform: uppercase; margin-bottom: 25px; } /* Wide spacing */
+            .bill-name { font-size: 18px; font-weight: 700; color: ${textHeader}; margin-bottom: 2px; line-height: 1.2; } /* Tight spacing */
             
             /* The Grid Table */
             .main-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; }
@@ -417,40 +457,42 @@ function createPdfHtml(name, matric, memberId, date, invoiceNo, receiptNo, logoB
             .total-row td { font-weight: 700; background-color: #fbfffe; }
             .total-val { color: ${accentColor}; }
 
-            .footer { margin-top: 50px; text-align: center; font-size: 12px; color: ${textLabel}; }
+            .terms-box { margin-top: 15px; width: 100%; box-sizing: border-box; background: #f9f9f9; padding: 20px; border-radius: 8px; font-size: 11px; color: #666; line-height: 1.6; border: 1px solid #eee; }
+
+            .footer { margin-top: 30px; text-align: center; font-size: 10px; color: ${textLabel}; }
         </style>
     </head>
     <body>
         <div class="header">
             ${logoHtml}
-            <span class="title">Official Receipt</span>
+            <span class="title">Official Receipt STEM USAS</span>
         </div>
 
         <table width="100%">
             <tr>
-                <td width="60%">
+                <td width="60%" style="vertical-align: top;">
                     <div class="bill-to">
                         <div class="bill-label">Billed To</div>
                         <div class="bill-name">${name}</div>
                         <div class="meta-value">${matric}</div>
                     </div>
                 </td>
-                <td width="40%" align="right">
-                    <table class="meta-table" style="text-align: right;">
+                <td width="40%" align="right" style="vertical-align: top;">
+                    <table class="meta-table" style="text-align: right; border-collapse: collapse;">
                         <tr>
-                            <td class="meta-label">Date</td>
+                            <td class="meta-label" style="padding-bottom: 2px;">Date</td>
                         </tr>
                         <tr>
-                             <td class="meta-value" style="padding-bottom: 10px;">${date}</td>
+                             <td class="meta-value" style="padding-bottom: 20px;">${date}</td>
                         </tr>
                         <tr>
-                            <td class="meta-label">Membership ID</td>
+                            <td class="meta-label" style="padding-bottom: 2px;">Membership ID</td>
                         </tr>
                         <tr>
-                             <td class="meta-value" style="padding-bottom: 10px;">${receiptNo}</td>
+                             <td class="meta-value" style="padding-bottom: 20px;">${receiptNo}</td>
                         </tr>
                         <tr>
-                            <td class="meta-label">Invoice</td>
+                            <td class="meta-label" style="padding-bottom: 2px;">Invoice</td>
                         </tr>
                          <tr>
                              <td class="meta-value">${invoiceNo}</td>
@@ -483,11 +525,30 @@ function createPdfHtml(name, matric, memberId, date, invoiceNo, receiptNo, logoB
             </tbody>
         </table>
 
+         <!-- Bottom Section: Privileges Box -->
+        <div class="terms-box">
+            <b style="color: #1d1d1f; text-transform: uppercase;">Membership Privileges</b><br>
+            • Priority Event Access guarantees early registration and secured spots for all STEM USAS workshops and events.<br>
+            • AGM Voting Rights grant the power to elect leadership and influence association policies.<br>
+            • Exclusive Perks include access to limited-edition merchandise and special discounts on paid programs.<br>
+        </div>
+
+        <div class="terms-box" style="margin-top: 15px;">
+            <b style="color: #1d1d1f; text-transform: uppercase;">Check Your Status</b><br>
+            Join our Official Telegram Bot to verify your eligibility and access your digital ID card.<br>
+            🔗 <b>Link:</b> <a href="https://t.me/steminmyheartbot" style="color: #012951; text-decoration: none;">https://t.me/steminmyheartbot</a>
+        </div>
+
+        <div class="terms-box" style="margin-top: 15px; border-left: 4px solid #f7c525;">
+            <b style="color: #1d1d1f; text-transform: uppercase;">Membership Regulation</b><br>
+            Please note that under HEP USAS regulations, student membership is valid for one (1) academic session only. 
+            <b>Members are required to renew their membership annually</b> to maintain active status and privileges.
+        </div>
+
         <div class="footer">
-            Computer Generated Receipt • STEM USAS • zis3c
-            <div style="margin-top: 20px; font-size: 10px; color: #999; line-height: 1.5; border-top: 1px solid #eee; padding-top: 10px;">
-                <b>Disclaimer:</b> Please retain this receipt for your records. Contact STEM Association for any disputes.<br><br>
-                <b>Zero Tolerance Policy:</b> Falsifying payment proof or this receipt is a serious offense. Any attempts at fraud will lead to immediate disqualification and a formal report to the Student Affairs Department (HEP) for unethical behavior.
+            STEM USAS • zis3c • Computer Generated Receipt
+            <div style="margin-top: 15px; font-size: 9px; color: #aaa; line-height: 1.4; border-top: 1px solid #eee; padding-top: 10px;">
+                <b>IMPORTANT:</b> Keep for records. Fraud/Falsification is a serious offense leading to disqualification and reporting to Student Affairs (HEP).
             </div>
         </div>
     </body>
