@@ -65,7 +65,7 @@ async def main():
     filter_help = build_filter('BTN_HELP')
     filter_settings = build_filter('BTN_SETTINGS')
     filter_languages = build_filter('BTN_LANGUAGES')
-    filter_clear = build_filter('BTN_CLEAR_HISTORY')
+
     filter_back = build_filter('BTN_BACK')
     filter_cancel = build_filter('BTN_CANCEL')
     filter_lang_en = build_filter('BTN_LANG_EN')
@@ -141,7 +141,8 @@ async def main():
                 MessageHandler(filters.TEXT & ~filters.COMMAND & ~filter_cancel, superadmin.del_admin_perform)
             ]
         },
-        fallbacks=[CommandHandler("cancel", superadmin.exit)]
+        fallbacks=[CommandHandler("cancel", superadmin.exit)],
+        allow_reentry=True
     )
 
     # Admin Config
@@ -184,7 +185,7 @@ async def main():
     application.add_handler(MessageHandler(filter_help, handlers.help_command))
     application.add_handler(MessageHandler(filter_settings, handlers.settings_menu))
     application.add_handler(MessageHandler(filter_languages, handlers.languages_menu))
-    application.add_handler(MessageHandler(filter_clear, handlers.clear_history))
+
     application.add_handler(MessageHandler(filter_lang_en, handlers.set_lang_en))
     application.add_handler(MessageHandler(filter_lang_ms, handlers.set_lang_ms))
     application.add_handler(MessageHandler(filter_back, handlers.start)) # Back goes to main menu

@@ -14,7 +14,6 @@ def get_settings_menu(lang='EN'):
     return ReplyKeyboardMarkup(
         [
             [strings.get('BTN_LANGUAGES', lang)],
-            [strings.get('BTN_CLEAR_HISTORY', lang)], 
             [strings.get('BTN_BACK', lang)]
         ],
         resize_keyboard=True

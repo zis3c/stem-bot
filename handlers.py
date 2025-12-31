@@ -92,15 +92,7 @@ async def set_lang_ms(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
     )
     return ConversationHandler.END
 
-async def clear_history(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    lang = get_user_lang(context)
-    # Clear everything EXCEPT the language setting
-    current_lang = context.user_data.get('lang', 'EN')
-    context.user_data.clear()
-    context.user_data['lang'] = current_lang
-    
-    await update.message.reply_text(strings.get('MSG_HISTORY_CLEARED', lang))
-    return await start(update, context)
+
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     lang = get_user_lang(context)

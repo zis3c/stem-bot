@@ -50,8 +50,7 @@ STRINGS = {
         'BTN_TRY_AGAIN': "Try Again",
         'BTN_BACK': "Back",
         
-        'BTN_CLEAR_HISTORY': "Clear Chat History",
-        'MSG_HISTORY_CLEARED': "Chat history cleared (session reset).",
+
         
         'BTN_LANGUAGES': "Languages",
         'BTN_LANG_EN': "🇬🇧 English",
@@ -187,8 +186,7 @@ STRINGS = {
         'BTN_TRY_AGAIN': "Cuba Lagi",
         'BTN_BACK': "Kembali",
         
-        'BTN_CLEAR_HISTORY': "Padam Sejarah Sembang",
-        'MSG_HISTORY_CLEARED': "Sejarah sembang dipadam (sesi reset).",
+
         
         'BTN_LANGUAGES': "Bahasa",
         'BTN_LANG_EN': "🇬🇧 English",
