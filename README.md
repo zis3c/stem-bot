@@ -81,19 +81,19 @@ For a quick setup:
     *   Ensure tabs named: `Registrations`, `system_admins`, `system_config`.
     *   **Structure for `Registrations` Sheet** (Important!):
       
-        | Col | Header Name | Key Usage |
-        | --- | --- | --- |
-        | A | Timestamp | System Time |
-        | B | Email Address | User Email |
-        | C | NAMA PENUH | Member Name |
-        | D | NO. MATRIKS | **Search Key** |
-        | E | PROGRAM PENGAJIAN | Program Code |
-        | I | USAS Email | Auto-generated |
-        | J | KAD PENGENALAN | IC Number |
-        | N | Date of Entry | Formatted Date |
-        | P | Membership ID | Stem ID |
-        | Q | RESIT | Receipt URL |
-        | R | STATUS | '✓' |
+        | Col | Field | Col | Field |
+        | :--- | :--- | :--- | :--- |
+        | **A** | Timestamp | **L** | Birth Place |
+        | **B** | Email | **M** | Address |
+        | **C** | Name | **N** | Date of Entry |
+        | **D** | Matric | **O** | Minute No |
+        | **E** | Courses | **P** | Membership ID |
+        | **F** | Semester | **Q** | Receipt Proof |
+        | **G** | Phone | **R** | Status |
+        | **H** | Personal Email | **S** | Payment Receipt |
+        | **I** | USAS Email | **T** | Invoice No |
+        | **J** | IC No | **U** | Statistic |
+        | **K** | Birthday | | |
 
 ### ▶️ Running Locally (Polling Mode)
 

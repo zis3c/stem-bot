@@ -96,8 +96,7 @@ This bot uses Google Sheets as a database. You need a Service Account credential
 4.  **Create Required Tabs**:
     *   **Tab 1 Name**: `Registrations`
     *   **Structure for `Registrations` Sheet** (Important!):
-### 3. Google Sheet Setup
- Ensure your sheet has the following columns (Order is critical):
+        Ensure your sheet has the following columns (Order is critical):
 
 | Col | Field |
 | :--- | :--- |
