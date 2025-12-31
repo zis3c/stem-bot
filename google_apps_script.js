@@ -27,8 +27,24 @@ var COL_RECEIPT_URL = 19;   // S (Payment Receipt)
 var COL_INVOICE_NO = 20;    // T (Invoice No)
 
 var FEE_AMOUNT = "RM10.00"; // Fixed Fee
-var RECEIPT_FOLDER_ID = "1FmcTnwaVBS7wEvTGy75UCiIc3wYYOzkb"; // Confirmed User Folder ID
-var LOGO_FILE_ID = "1a-7seaR1SGQ_xfC_PtmCsHGukcE_qjbD"; // Confirmed User Logo ID
+
+// Secrets managed via Script Properties (File > Project Properties > Script Properties)
+// Or run the 'setupSecrets' function once below.
+var RECEIPT_FOLDER_ID = PropertiesService.getScriptProperties().getProperty("RECEIPT_FOLDER_ID");
+var LOGO_FILE_ID = PropertiesService.getScriptProperties().getProperty("LOGO_FILE_ID");
+
+/**
+ * ONE-TIME SETUP: Run this function once to save your secrets.
+ * Then delete the specific values from this code if sharing.
+ */
+function setupSecrets() {
+    var props = PropertiesService.getScriptProperties();
+    props.setProperties({
+        "RECEIPT_FOLDER_ID": "1FmcTnwaVBS7wEvTGy75UCiIc3wYYOzkb", // YOUR FOLDER ID
+        "LOGO_FILE_ID": "1a-7seaR1SGQ_xfC_PtmCsHGukcE_qjbD"       // YOUR LOGO ID
+    });
+    Logger.log("✅ Secrets saved successfully! You can now remove them from this function.");
+}
 
 /**
  * Triggered automatically on form submit.
