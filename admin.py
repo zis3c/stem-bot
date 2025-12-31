@@ -197,9 +197,17 @@ async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
                     def safe_get(idx): return escape_md(row[idx] if len(row) > idx else "-")
                     
-                    # Special handler for URL to avoid breaking it with escapes
+                    # Special handler for Receipt URL (Col S - Index 18)
                     raw_receipt = row[18] if len(row) > 18 else "-"
                     receipt_display = f"[Download PDF]({raw_receipt})" if raw_receipt.startswith("http") else escape_md(raw_receipt)
+
+                    # Special handler for Proof URL (Col Q - Index 16)
+                    # Convert drive 'open' links to 'download' links for better UX
+                    raw_proof = row[16] if len(row) > 16 else "-"
+                    if "drive.google.com" in raw_proof and "id=" in raw_proof:
+                        raw_proof = raw_proof.replace("open?", "uc?export=download&")
+                    
+                    proof_display = f"[Proof PDF]({raw_proof})" if raw_proof.startswith("http") else escape_md(raw_proof)
 
                     detail_card = (
                         f"👤 *{safe_get(2)}*\n" # C Name
@@ -214,7 +222,7 @@ async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                         f"📅 Entry: {safe_get(13)}\n" # N Date Entry
                         f"⏱️ Min: {safe_get(14)}\n" # O Minute
                         f"🔑 ID: `{safe_get(15)}`\n" # P Membership ID
-                        f"📄 Proof: {safe_get(16)}\n" # Q Receipt Proof (Index 16)
+                        f"📄 Proof: {proof_display}\n" # Q Receipt Proof (Index 16)
                         f"🧾 Invoice: `{safe_get(19)}`\n" # T Invoice No (Index 19)
                         f"📎 Receipt: {receipt_display}\n" # S Receipt URL (Index 18)
                         f"✅ Status: {safe_get(17)}\n" # R Status
