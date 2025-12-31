@@ -7,12 +7,20 @@
 
 A high-performance, bilingual **Telegram Bot** designed to streamline membership verification and management for student organizations. Built for speed, security, and scalability.
 
-## ✨ Key Features
+## ✨ Features
 
-*   **⚡ Instant Verification**: Verifies student membership in `< 10ms` using in-memory caching.
-*   **🆔 Selectable IDs**: Generates unique Membership IDs (e.g., `STEM(25/26)0001`) based on database rows.
-*   **🌍 Bilingual Support**: Seamlessly switch between **English** and **Bahasa Melayu**.
-*   **🔔 Real-time Alerts**: Admins receive instant notifications for new registrations with a direct receipt link.
+- **Instant Verification**: Checks student membership status via Matric Number & IC.
+- **Automated Registration**:
+  - Auto-generates **USAS Email**.
+  - Auto-generates **Membership ID** (`STEM(YY/YY)XXXX`).
+  - Auto-calculates **Session** based on Date of Entry.
+  - **Payment Receipts**: Auto-sends PDF receipts via Email (Hosted on Drive).
+- **Admin Dashboard**:
+  - Manage Admins & Members.
+  - **Detailed View**: View Status, Proof, Invoice ID, and Receipt Link.
+  - Approve/Reject new registrations.
+  - Broadcast messages to all users.
+  - View Monthly Statistics.
 *   **🛡️ Robust Admin System**:
     *   **Dashboard**: Search (Simple/Detail Views), Add/Delete Members, and Broadcast.
     *   **Advanced Search**: Toggle between **Simple View** (List) and **Detailed View** (Card UI) with full column data.

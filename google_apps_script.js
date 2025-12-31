@@ -591,12 +591,12 @@ function generateMonthlyStats() {
         }
     }
 
-    var rowData = new Array(19).fill("");
+    var rowData = new Array(21).fill("");
     rowData[2] = statLabel; // Col C
-    rowData[18] = "Total: " + count; // Col S
+    rowData[20] = "Total: " + count; // Col U (Statistic)
 
     sheet.appendRow(rowData);
     var newRowIdx = sheet.getLastRow();
-    sheet.getRange(newRowIdx, 1, 1, 19).setBackground("#eeeeee").setFontWeight("bold");
+    sheet.getRange(newRowIdx, 1, 1, 21).setBackground("#eeeeee").setFontWeight("bold");
     Logger.log("Generated Stats for " + prevMonthName + ": " + count);
 }

@@ -96,17 +96,32 @@ This bot uses Google Sheets as a database. You need a Service Account credential
 4.  **Create Required Tabs**:
     *   **Tab 1 Name**: `Registrations`
     *   **Structure for `Registrations` Sheet** (Important!):
-        *   The bot communicates up to **Column R (18)**. Ensure your sheet has at least 18 columns.
-        *   **Key Columns**:
-            *   `Col A` (Timestamp)
-            *   `Col C` (Name)
-            *   `Col D` (Matric)
-            *   `Col E` (Program)
-            *   `Col J` (IC Number)
-            *   `Col N` (Date of Entry)
-            *   `Col P` (Membership ID)
-            *   `Col Q` (Receipt)
-            *   `Col R` (Status)
+### 3. Google Sheet Setup
+ Ensure your sheet has the following columns (Order is critical):
+
+| Col | Field |
+| :--- | :--- |
+| **A** | Timestamp |
+| **B** | Email Address |
+| **C** | Name |
+| **D** | Matrics Number |
+| **E** | Courses |
+| **F** | Semester |
+| **G** | Phone Number |
+| **H** | Personal Email |
+| **I** | USAS Email |
+| **J** | IC Number |
+| **K** | Birthday |
+| **L** | Birth Place |
+| **M** | Address |
+| **N** | Date of Entry |
+| **O** | Minute Number |
+| **P** | Membership Number |
+| **Q** | Receipt Proof |
+| **R** | Status |
+| **S** | Payment Receipt |
+| **T** | Invoice No |
+| **U** | Statistic |
     *   **Tab 2 Name**: `system_admins`
         *   Headers: `User ID`, `Name`, `Added By`
     *   **Tab 3 Name**: `system_config`
