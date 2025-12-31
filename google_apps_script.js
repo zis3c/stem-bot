@@ -40,8 +40,8 @@ var LOGO_FILE_ID = PropertiesService.getScriptProperties().getProperty("LOGO_FIL
 function setupSecrets() {
     var props = PropertiesService.getScriptProperties();
     props.setProperties({
-        "RECEIPT_FOLDER_ID": "1FmcTnwaVBS7wEvTGy75UCiIc3wYYOzkb", // YOUR FOLDER ID
-        "LOGO_FILE_ID": "1a-7seaR1SGQ_xfC_PtmCsHGukcE_qjbD"       // YOUR LOGO ID
+        "RECEIPT_FOLDER_ID": "PASTE_YOUR_FOLDER_ID_HERE", // Paste ID, Run once, then Delete this line
+        "LOGO_FILE_ID": "PASTE_YOUR_LOGO_ID_HERE"       // Paste ID, Run once, then Delete this line
     });
     Logger.log("✅ Secrets saved successfully! You can now remove them from this function.");
 }
