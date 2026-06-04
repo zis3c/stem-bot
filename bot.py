@@ -57,6 +57,7 @@ logger = logging.getLogger(__name__)
 KL_TZ = ZoneInfo("Asia/Kuala_Lumpur")
 DAILY_LOG_HOUR = int(os.getenv("DAILY_LOG_HOUR", "8"))
 DAILY_LOG_MINUTE = int(os.getenv("DAILY_LOG_MINUTE", "0"))
+DAILY_LOG_GRACE_MINUTES = int(os.getenv("DAILY_LOG_GRACE_MINUTES", "30"))
 WEBHOOK_ERROR_ALERT_MAX_AGE_SECONDS = int(
     os.getenv("WEBHOOK_ERROR_ALERT_MAX_AGE_SECONDS", "300")
 )
@@ -224,14 +225,20 @@ async def maintenance_loop(application):
                     cooldown_seconds=900,
                 )
 
-            # Only allow daily log dispatch from 08:00 onward (KL time).
-            if now_kl.hour >= 8:
+            # Only allow fallback daily log dispatch in a short morning grace window.
+            scheduled_minutes = (DAILY_LOG_HOUR * 60) + DAILY_LOG_MINUTE
+            now_minutes = (now_kl.hour * 60) + now_kl.minute
+            within_daily_log_grace = (
+                DAILY_LOG_GRACE_MINUTES > 0
+                and scheduled_minutes <= now_minutes < (scheduled_minutes + DAILY_LOG_GRACE_MINUTES)
+            )
+            if within_daily_log_grace:
                 report_date = (now_kl.date() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
                 last_date = await asyncio.to_thread(db.get_last_maintenance)
 
                 if report_date != last_date:
                     logger.info(
-                        "Daily log report due. Last run: %s, Target: %s",
+                        "Daily log report due during grace window. Last run: %s, Target: %s",
                         last_date,
                         report_date,
                     )
