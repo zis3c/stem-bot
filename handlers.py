@@ -1301,13 +1301,14 @@ async def review_back_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     )
 
 async def send_daily_logs(context: ContextTypes.DEFAULT_TYPE):
-    """Send only yesterday's logs (KL time), once per report day."""
+    """Send pending daily logs up to yesterday (KL time)."""
     if _DAILY_LOG_LOCK.locked():
         return
 
     async with _DAILY_LOG_LOCK:
         target_date = (datetime.now(KL_TZ).date() - timedelta(days=1)).strftime("%Y-%m-%d")
-        if await run_db_call(db.get_last_maintenance) == target_date:
+        last_maintenance = await run_db_call(db.get_last_maintenance)
+        if last_maintenance == target_date:
             return
         if not db.superadmin_ids:
             logger.warning("Daily log job skipped: SUPERADMIN_IDS is not configured.")
@@ -1315,6 +1316,7 @@ async def send_daily_logs(context: ContextTypes.DEFAULT_TYPE):
 
         filename = ACTIVITY_LOG_PATH
         if not os.path.exists(filename):
+            logger.info("Daily log skipped for %s: %s is missing.", target_date, filename)
             await run_db_call(db.update_last_maintenance, target_date)
             return
 
@@ -1329,45 +1331,67 @@ async def send_daily_logs(context: ContextTypes.DEFAULT_TYPE):
             await run_db_call(db.update_last_maintenance, target_date)
             return
 
-        report_lines = []
+        lines_by_date = {}
         keep_lines = []
         for line in lines:
             match = LOG_DATE_RE.match(line)
-            if match and match.group(1) == target_date:
-                report_lines.append(line)
+            if not match:
+                keep_lines.append(line)
+                continue
+            line_date = match.group(1)
+            if line_date <= target_date:
+                lines_by_date.setdefault(line_date, []).append(line)
             else:
                 keep_lines.append(line)
 
-        # Nothing from yesterday: mark processed so it won't keep retrying.
-        if not report_lines:
+        pending_dates = sorted(
+            report_date
+            for report_date in lines_by_date
+            if last_maintenance < report_date <= target_date
+        )
+
+        # Nothing pending: mark up to yesterday so the scheduler can move on.
+        if not pending_dates:
             await run_db_call(db.update_last_maintenance, target_date)
             return
 
-        report_content = "".join(report_lines)
-        report_name = f"Logs_{target_date}.txt"
-        sent_count = 0
-        for uid in db.superadmin_ids:
-            try:
-                payload = BytesIO(report_content.encode("utf-8"))
-                payload.name = report_name
-                await context.bot.send_document(
-                    chat_id=uid,
-                    document=payload,
-                    filename=report_name,
-                    caption="📜 Daily Admin Logs"
-                )
-                sent_count += 1
-            except Exception as e:
-                logger.error(f"Failed to send logs to {uid}: {e}")
+        sent_dates = []
+        for report_date in pending_dates:
+            report_content = "".join(lines_by_date[report_date])
+            report_name = f"Logs_{report_date}.txt"
+            sent_count = 0
+            for uid in db.superadmin_ids:
+                try:
+                    payload = BytesIO(report_content.encode("utf-8"))
+                    payload.name = report_name
+                    await context.bot.send_document(
+                        chat_id=uid,
+                        document=payload,
+                        filename=report_name,
+                        caption="Daily Admin Logs",
+                    )
+                    sent_count += 1
+                except Exception as e:
+                    logger.error(f"Failed to send logs to {uid}: {e}")
 
-        # Keep logs if nobody received them (retry next run).
-        if sent_count == 0:
+            # Keep logs if nobody received them so next run can retry.
+            if sent_count == 0:
+                logger.warning("Daily logs not delivered for %s. Will retry later.", report_date)
+                break
+
+            sent_dates.append(report_date)
+
+        if not sent_dates:
             return
 
         try:
+            sent_dates_set = set(sent_dates)
             with open(filename, "w", encoding="utf-8") as f:
                 f.writelines(keep_lines)
-            await run_db_call(db.update_last_maintenance, target_date)
-            logger.info(f"Daily logs sent for {target_date}.")
+                for report_date in pending_dates:
+                    if report_date not in sent_dates_set:
+                        f.writelines(lines_by_date[report_date])
+            await run_db_call(db.update_last_maintenance, sent_dates[-1])
+            logger.info("Daily logs sent for: %s", ", ".join(sent_dates))
         except Exception as e:
             logger.error(f"Failed to rotate activity.log: {e}")
