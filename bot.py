@@ -210,7 +210,7 @@ async def maintenance_loop(application):
                     await send_superadmin_alert(
                         application.bot,
                         "sheets_connectivity_issue",
-                        "*Sheets/API Error*\nCould not access `Registrations` sheet.",
+                        "*Sheets/API Error*\nCould not access the main registrations sheet.",
                         cooldown_seconds=900,
                     )
             except Exception as e:

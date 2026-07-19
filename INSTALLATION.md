@@ -76,6 +76,8 @@ Column order must match the bot and Apps Script:
 | T | Invoice No |
 | U | Statistic |
 
+If you rename this tab, set `REGISTRATIONS_SHEET_NAME` to the new name.
+
 ### `system_admins`
 
 Headers:
@@ -246,6 +248,7 @@ journalctl -u stem-telebot -n 100 --no-pager
 
 - Google Sheets permission errors:
 - Ensure service account has Editor access to the sheet.
+- Confirm `REGISTRATIONS_SHEET_NAME` matches the main tab name, default `STEM DB`.
 
 - Bot starts but no pending alerts:
 - Confirm main sheet tab name is exactly `STEM DB`.

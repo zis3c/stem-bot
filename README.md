@@ -80,6 +80,7 @@ A high-performance, bilingual Telegram bot built for the STEM USAS student organ
 **Google Sheets:**
 - `SHEET_ID` - The unique ID of the STEM Google Spreadsheet
 - `GOOGLE_CREDENTIALS` - (Optional) JSON string of your service account key
+- `REGISTRATIONS_SHEET_NAME` - Main sheet tab name for registrations data, default `STEM DB`
 
 **Access Control:**
 - `SUPERADMIN_IDS` - Comma-separated Telegram IDs for Superadmins
@@ -163,6 +164,7 @@ STEM-Telebot/
 
 - **Bot not responding**: Check if the `TELEGRAM_TOKEN` is correct.
 - **Sheets Error**: Ensure the service account email has **Editor** access to the sheet.
+- **Sheet Name**: Confirm `REGISTRATIONS_SHEET_NAME` matches the main data tab, default `STEM DB`.
 - **Admin Access**: Verify your ID is in `ADMIN_IDS` or `SUPERADMIN_IDS`.
 - **Service Fails**: Check logs using `journalctl -u stem-telebot -n 100`.
 

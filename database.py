@@ -33,6 +33,7 @@ class Database:
     def __init__(self):
         self.sheet_id = os.getenv("SHEET_ID")
         self.google_json = os.getenv("GOOGLE_CREDENTIALS")
+        self.registrations_sheet_name = os.getenv("REGISTRATIONS_SHEET_NAME", "STEM DB").strip() or "STEM DB"
         self.superadmin_ids = self._parse_ids("SUPERADMIN_IDS")
         self.admin_ids = self._parse_ids("ADMIN_IDS")
         
@@ -96,6 +97,10 @@ class Database:
     def get_sheet(self, sheet_name="Registrations"):
         try:
             scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
+
+            if not self.sheet_id:
+                logger.error("❌ CRITICAL: SHEET_ID missing!")
+                return None
             
             if not self.google_json:
                 # Fallback to local file if env var is missing
@@ -123,9 +128,35 @@ class Database:
             # Open Sheet
             sh = client.open_by_key(self.sheet_id)
             
-            # Handle specific tabs vs default sheet1
+            # Main registrations tab is name-based, with legacy fallback to sheet1.
             if sheet_name == "Registrations":
-                 return sh.sheet1
+                try:
+                    return sh.worksheet(self.registrations_sheet_name)
+                except gspread.WorksheetNotFound:
+                    if self.registrations_sheet_name != "Registrations":
+                        try:
+                            return sh.worksheet("Registrations")
+                        except gspread.WorksheetNotFound:
+                            pass
+
+                    try:
+                        if sh.worksheets():
+                            legacy_sheet = sh.sheet1
+                            logger.warning(
+                                "Registrations sheet '%s' not found, falling back to first tab '%s'.",
+                                self.registrations_sheet_name,
+                                legacy_sheet.title,
+                            )
+                            return legacy_sheet
+                    except Exception:
+                        pass
+
+                    logger.error(
+                        "Registrations sheet missing. Expected tab '%s' in spreadsheet %s.",
+                        self.registrations_sheet_name,
+                        self.sheet_id,
+                    )
+                    return None
                  
             try:
                 return sh.worksheet(sheet_name)
