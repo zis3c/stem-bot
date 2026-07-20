@@ -61,6 +61,9 @@ DAILY_LOG_GRACE_MINUTES = int(os.getenv("DAILY_LOG_GRACE_MINUTES", "30"))
 WEBHOOK_ERROR_ALERT_MAX_AGE_SECONDS = int(
     os.getenv("WEBHOOK_ERROR_ALERT_MAX_AGE_SECONDS", "300")
 )
+SHEETS_HEALTH_FAILURE_THRESHOLD = max(
+    1, int(os.getenv("SHEETS_HEALTH_FAILURE_THRESHOLD", "3"))
+)
 
 
 # --- SELF PINGER (KEEP ALIVE) ---
@@ -207,23 +210,51 @@ async def maintenance_loop(application):
             try:
                 sheet_ok = await asyncio.to_thread(db.get_sheet, "Registrations")
                 if not sheet_ok:
+                    failures = application.bot_data.get("sheets_health_failures", 0) + 1
+                    application.bot_data["sheets_health_failures"] = failures
+                    logger.warning(
+                        "Sheets connectivity check failed (%s/%s): main registrations sheet unavailable.",
+                        failures,
+                        SHEETS_HEALTH_FAILURE_THRESHOLD,
+                    )
+                    if failures >= SHEETS_HEALTH_FAILURE_THRESHOLD:
+                        await send_superadmin_alert(
+                            application.bot,
+                            "sheets_connectivity_issue",
+                            (
+                                "*Sheets/API Error*\n"
+                                "Could not access the main registrations sheet "
+                                f"after {failures} consecutive checks."
+                            ),
+                            cooldown_seconds=900,
+                        )
+                else:
+                    failures = application.bot_data.pop("sheets_health_failures", 0)
+                    if failures:
+                        logger.info(
+                            "Sheets connectivity recovered after %s failed check(s).",
+                            failures,
+                        )
+            except Exception as e:
+                failures = application.bot_data.get("sheets_health_failures", 0) + 1
+                application.bot_data["sheets_health_failures"] = failures
+                logger.error(
+                    "Sheets connectivity check error (%s/%s): %s",
+                    failures,
+                    SHEETS_HEALTH_FAILURE_THRESHOLD,
+                    e,
+                )
+                if failures >= SHEETS_HEALTH_FAILURE_THRESHOLD:
                     await send_superadmin_alert(
                         application.bot,
-                        "sheets_connectivity_issue",
-                        "*Sheets/API Error*\nCould not access the main registrations sheet.",
+                        "sheets_connectivity_check_error",
+                        (
+                            "*Sheets/API Check Failed*\n"
+                            f"Failed after {failures} consecutive checks.\n"
+                            "Error: `INC-SHEET`"
+                        ),
                         cooldown_seconds=900,
                     )
-            except Exception as e:
-                logger.error("Sheets connectivity check failed: %s", e)
-                await send_superadmin_alert(
-                    application.bot,
-                    "sheets_connectivity_check_error",
-                    (
-                        "*Sheets/API Check Failed*\n"
-                        "Error: `INC-SHEET`"
-                    ),
-                    cooldown_seconds=900,
-                )
 
             # Only allow fallback daily log dispatch in a short morning grace window.
             scheduled_minutes = (DAILY_LOG_HOUR * 60) + DAILY_LOG_MINUTE
