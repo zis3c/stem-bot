@@ -120,18 +120,30 @@ Ensure you have set the following GitHub Secrets:
 
 ```text
 STEM-Telebot/
-|- bot.py                # Main entrypoint, polling/webhook bootstrap
-|- handlers.py           # Core user flows (Verification, Registration, Logs)
-|- admin.py              # Admin panel actions (Search, Broadcast, Stats)
-|- superadmin.py         # Superadmin controls (Maint, Health, Admin management)
-|- database.py           # Google Sheets API wrapper and activity logging
-|- keyboards.py          # Reply/Inline keyboard layouts
-|- strings.py            # User-facing text (EN/MS)
-|- states.py             # Conversation flow state constants
-|- demographic_stats_template.py # Web demographic dashboard HTML template
-|- membership_card_template.py   # Web membership card HTML template
-|- google_apps_script.js # Optional sheet automation helper
-`- requirements.txt      # Project dependencies
+|- .github/
+|  `- workflows/
+|     |- deploy-digitalocean.yml   # GitHub Actions deploy workflow
+|     `- security-audit.yml        # GitHub Actions pip-audit workflow
+|- admin.py                        # Admin panel actions
+|- AUTO_DEPLOY.md                  # DigitalOcean deploy guide
+|- bot.py                          # Main entrypoint, polling/webhook bootstrap
+|- CONTRIBUTING.md                 # Contribution guide
+|- database.py                     # Google Sheets API wrapper and activity logging
+|- demographic_stats_template.py   # Web demographic dashboard HTML template
+|- google_apps_script.js           # Apps Script helper for Sheets automation
+|- handlers.py                     # Core user flows
+|- INSTALLATION.md                 # Full install and setup guide
+|- keyboards.py                    # Reply and inline keyboard layouts
+|- membership_card_template.py      # Web membership card HTML template
+|- README.md                       # Project overview
+|- requirements.txt                # Project dependencies
+|- SECURITY.md                     # Security policy
+|- security_utils.py               # Input and security event helpers
+|- states.py                       # Conversation flow state constants
+|- stats_web.py                    # Web stats page helpers
+|- strings.py                      # User-facing text in EN and MS
+|- superadmin.py                   # Superadmin controls
+`- STEM Bot Manual Guide.pdf       # User manual
 ```
 
 ## Web UI Templates
@@ -173,6 +185,7 @@ STEM-Telebot/
 - [AUTO_DEPLOY.md](AUTO_DEPLOY.md)
 - [INSTALLATION.md](INSTALLATION.md)
 - [CONTRIBUTING.md](CONTRIBUTING.md)
+- [SECURITY.md](SECURITY.md)
 - [LICENSE](LICENSE)
 
 <center>Built with 🔥 by <b>@zis3c</b></center>

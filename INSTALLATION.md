@@ -187,7 +187,7 @@ sudo apt update
 sudo apt install -y python3 python3-venv python3-pip git
 sudo mkdir -p /opt/stem-telebot
 sudo chown "$USER":"$USER" /opt/stem-telebot
-git clone --depth 1 --branch main https://github.com/zis3c/STEM-Telebot /opt/stem-telebot
+git clone --depth 1 --branch main https://github.com/zis3c/STEM-Telebot.git /opt/stem-telebot
 cd /opt/stem-telebot
 python3 -m venv .venv
 source .venv/bin/activate

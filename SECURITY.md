@@ -29,4 +29,4 @@ We will acknowledge your report within 48 hours and work on a fix.
 
 ## Web Template Safety
 
-Web report pages are rendered through template modules (membership_card_template.py and demographic_stats_template.py). Keep user-supplied values escaped/sanitized before rendering HTML.
+Web report pages are rendered through template modules (`membership_card_template.py` and `demographic_stats_template.py`). Keep user-supplied values escaped or sanitized before rendering HTML.

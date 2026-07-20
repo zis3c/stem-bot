@@ -1,11 +1,11 @@
-# Contributing to Eligible STEM Bot
+# Contributing to STEM Telebot
 
 Thank you for your interest in contributing! We welcome bug reports, feature requests, and pull requests.
 
 ## How to Contribute
 
 ### 1. Reporting Bugs
-- Check the [Issues](https://github.com/zis3c/stem-bot/issues) tab to see if the bug has already been reported.
+- Check the [Issues](https://github.com/zis3c/STEM-Telebot/issues) tab to see if the bug has already been reported.
 - If not, open a new issue with a clear title and description.
 - Include steps to reproduce the bug.
 
@@ -38,6 +38,6 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 When updating web output pages, edit template modules instead of putting large HTML blocks in `bot.py`:
 
-- membership_card_template.py (membership card page)
-- demographic_stats_template.py (demographic stats page)
+- `membership_card_template.py` (membership card page)
+- `demographic_stats_template.py` (demographic stats page)
 

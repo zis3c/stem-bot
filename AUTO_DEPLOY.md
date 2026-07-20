@@ -1,4 +1,4 @@
-# Auto Deploy To DigitalOcean
+# Auto Deploy to DigitalOcean
 
 This repository uses GitHub Actions to deploy automatically to a DigitalOcean Droplet on every push to `main`.
 
