@@ -669,6 +669,10 @@ async def main():
         await application.initialize()
         await application.start()
 
+        # Warm the member cache before the bot starts serving user checks.
+        # This avoids the first / Check Membership after a restart from blocking on Google Sheets.
+        await asyncio.to_thread(admin.db.refresh_student_cache, True)
+
         if WEBHOOK_URL:
             if not WEBHOOK_SECRET:
                 raise RuntimeError(

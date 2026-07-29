@@ -46,6 +46,8 @@ class Database:
         self.student_cache = {} # {matric_str: [row_data]}
         self.last_student_refresh = 0
         self.CACHE_TTL = 600 # 10 Minutes
+        self._student_refresh_lock = threading.Lock()
+        self._student_refresh_in_progress = False
         
         # User Log Cache (to avoid repeated writes)
         self.logged_users_cache = set()
@@ -277,23 +279,36 @@ class Database:
         except Exception as e:
             logger.error(f"Cache Refresh Error: {e}")
 
+    def _start_student_cache_refresh(self):
+        """Refresh the student cache in the background if it is stale."""
+        with self._student_refresh_lock:
+            if self._student_refresh_in_progress:
+                return False
+            self._student_refresh_in_progress = True
+
+        def _worker():
+            try:
+                self.refresh_student_cache(force=True)
+            finally:
+                with self._student_refresh_lock:
+                    self._student_refresh_in_progress = False
+
+        threading.Thread(target=_worker, daemon=True).start()
+        return True
+
     def find_member(self, matric):
-        # 1. Try Cache First (0 API Calls)
-        self.refresh_student_cache() # Checks TTL internaly
-        
-        if matric in self.student_cache:
-            # Return tuple (row_data, row_index)
-            return self.student_cache[matric]
-            
-        # 2. Fallback to API (Slow) if not in cache? 
-        # For High Concurrency mode, we TRUST the cache. 
-        # If user just registered, it might not be there yet. 
-        # But for "Check Membership", better to fail fast or tell them to wait?
-        # Let's fallback ONLY if cache is empty (startup).
-        # Actually, let's just return None if not in cache. 
-        # If we enable "Hybrid", we could mistakenly rate limit. 
-        # Safe bet: Return None. User can try again in 10 mins or Admin refreshes.
-        return None, None
+        matric = str(matric).strip().upper()
+
+        # Serve the current cache immediately when we already have data.
+        # If it is stale, refresh in the background so users do not wait on Sheets.
+        if self.student_cache:
+            if time.time() - self.last_student_refresh >= self.CACHE_TTL:
+                self._start_student_cache_refresh()
+            return self.student_cache.get(matric, (None, None))
+
+        # Cold start only: block once to build the initial cache.
+        self.refresh_student_cache(force=True)
+        return self.student_cache.get(matric, (None, None))
 
     def _parse_sheet_date(self, raw_value):
         """Parse common sheet date/time formats into datetime."""
