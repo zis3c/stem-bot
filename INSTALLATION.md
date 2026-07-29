@@ -130,6 +130,7 @@ Required:
 Optional/recommended:
 
 - `WEBHOOK_URL` (set only if running Telegram webhook mode)
+- `PUBLIC_BASE_URL` (set for membership and demographic web links)
 - `TELEGRAM_WEBHOOK_SECRET`
 - `GOOGLE_CREDENTIALS` (if not using local `service_account.json`)
 - rate-limit and security env values from `README.md`
@@ -206,6 +207,7 @@ Minimum production keys:
 - `SHEET_ID`
 - `SUPERADMIN_IDS`
 - `ADMIN_IDS`
+- `PUBLIC_BASE_URL`
 - `APPS_SCRIPT_WEBHOOK_URL`
 - `APPS_SCRIPT_WEBHOOK_TOKEN`
 

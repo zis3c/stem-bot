@@ -72,6 +72,7 @@ A high-performance, bilingual Telegram bot built for the STEM USAS student organ
 - `TELEGRAM_TOKEN` - Bot token from [@BotFather](https://t.me/BotFather)
 - `PORT` - Local health endpoint port (default `10000`)
 - `WEBHOOK_URL` - Optional (leave empty for polling mode)
+- `PUBLIC_BASE_URL` - Public HTTPS origin for membership and demographic report links
 - `TELEGRAM_WEBHOOK_SECRET` - Required when `WEBHOOK_URL` is enabled
 - `TELEGRAM_WEBHOOK_IP_VALIDATE` - Validate source IP for webhook (`true`/`false`, default `false`)
 - `TRUST_PROXY_HOPS` - Trusted reverse-proxy hop count for `X-Forwarded-For` parsing (default `1`)

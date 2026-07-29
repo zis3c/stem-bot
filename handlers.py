@@ -51,6 +51,14 @@ APPS_SCRIPT_WEBHOOK_URL = os.getenv("APPS_SCRIPT_WEBHOOK_URL", "").strip()
 APPS_SCRIPT_ADMIN_TOKEN = os.getenv("APPS_SCRIPT_ADMIN_TOKEN", "").strip()
 
 
+def _public_base_url() -> str:
+    # Public web origin for shareable cards and reports.
+    return (
+        os.getenv("PUBLIC_BASE_URL", "").rstrip("/")
+        or os.getenv("WEBHOOK_URL", "").rstrip("/")
+    )
+
+
 def _global_rate_guard(user_id: int, scope: str):
     key = f"{scope}:{user_id}"
     ok, retry = RATE_LIMITER.check(key, GLOBAL_RATE_WINDOW_SEC, GLOBAL_RATE_MAX_REQ)
@@ -656,7 +664,7 @@ async def receive_ic(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
                                     register_date=register_date,
                                     expired_date=expired_date
                                 )
-                                base_url = os.getenv("WEBHOOK_URL", "").rstrip("/")
+                                base_url = _public_base_url()
                                 if base_url:
                                     profile_payload = {
                                         "membership_id": membership_id,

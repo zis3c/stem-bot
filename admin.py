@@ -23,6 +23,15 @@ MAX_INPUT_LEN_BROADCAST = int(os.getenv("MAX_INPUT_LEN_BROADCAST", "2000"))
 BROADCAST_MAX_RECIPIENTS = int(os.getenv("BROADCAST_MAX_RECIPIENTS", "5000"))
 BROADCAST_MSGS_PER_SEC = float(os.getenv("BROADCAST_MSGS_PER_SEC", "12"))
 
+
+def _public_base_url() -> str:
+    # Public web origin for shareable cards and reports.
+    return (
+        os.getenv("PUBLIC_BASE_URL", "").rstrip("/")
+        or os.getenv("WEBHOOK_URL", "").rstrip("/")
+    )
+
+
 # Helper to get lang (Admins might use local too)
 def get_user_lang(context: ContextTypes.DEFAULT_TYPE):
     return context.user_data.get('lang', strings.DEFAULT_LANG)
@@ -213,10 +222,10 @@ async def stats_demographic(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         data = await run_db_call(db.get_stats)
         now_kl = datetime.now(KL_TZ)
         stats_month_year = now_kl.strftime("%B %Y")
-        base_url = os.getenv("WEBHOOK_URL", "").rstrip("/")
+        base_url = _public_base_url()
         if not base_url:
             await update.message.reply_text(
-                "Demographic web report is unavailable because `WEBHOOK_URL` is not configured.",
+                "Demographic web report is unavailable because `PUBLIC_BASE_URL` or `WEBHOOK_URL` is not configured.",
                 reply_markup=keyboards.get_admin_stats_menu(lang),
             )
             return states.ADMIN_STATS_MENU
