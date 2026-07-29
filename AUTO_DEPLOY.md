@@ -1,9 +1,9 @@
-# Auto Deploy to DigitalOcean
+# Auto Deploy to Tencent
 
-This repository uses GitHub Actions to deploy automatically to a DigitalOcean Droplet on every push to `main`.
+This repository uses GitHub Actions to deploy automatically to a Tencent Lighthouse on every push to `main`.
 
 Workflow file:
-- `.github/workflows/deploy-digitalocean.yml`
+- `.github/workflows/deploy-tencent.yml`
 
 ## How It Works
 
@@ -16,11 +16,11 @@ Workflow file:
 
 Add these in `Settings` -> `Secrets and variables` -> `Actions`:
 
-- `DROPLET_HOST`: droplet public IP (example `203.0.113.10`)
-- `DROPLET_USER`: SSH user (recommended `deploy`)
-- `DROPLET_SSH_KEY`: private SSH key for `DROPLET_USER`
+- `TENCENT_HOST`: server public IP (example `129.226.152.121`)
+- `TENCENT_USER`: SSH user (recommended `deploy`)
+- `TENCENT_SSH_KEY`: private SSH key for `TENCENT_USER`
 
-## Droplet Requirements
+## Server Requirements
 
 - App path exists: `/opt/stem-telebot`
 - Virtual environment exists: `/opt/stem-telebot/.venv`
@@ -35,9 +35,9 @@ sudo chmod 440 /etc/sudoers.d/deploy-stem-telebot
 sudo visudo -cf /etc/sudoers.d/deploy-stem-telebot
 ```
 
-## Install Public Key On Droplet
+## Install Public Key On Server
 
-Add the public key that matches `DROPLET_SSH_KEY`:
+Add the public key that matches `TENCENT_SSH_KEY`:
 
 ```bash
 install -d -m 700 -o deploy -g deploy /home/deploy/.ssh
@@ -59,13 +59,13 @@ journalctl -u stem-telebot -n 100 --no-pager
 ## Troubleshooting
 
 - `missing server host`
-  - `DROPLET_HOST` secret is missing or empty.
+- `TENCENT_HOST` secret is missing or empty.
 
 - `ssh.ParsePrivateKey: ssh: no key found`
-  - `DROPLET_SSH_KEY` is not a valid private key block.
+- `TENCENT_SSH_KEY` is not a valid private key block.
 
 - `unable to authenticate, attempted methods [none publickey]`
-  - Public key is not installed for `DROPLET_USER` on droplet.
+- Public key is not installed for `TENCENT_USER` on server.
 
 - `sudo: a password is required`
   - Sudoers rule is missing or does not match exact command arguments.

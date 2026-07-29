@@ -95,9 +95,9 @@ A high-performance, bilingual Telegram bot built for the STEM USAS student organ
 - `BROADCAST_MAX_RECIPIENTS` - Hard cap recipients per broadcast run (default `5000`)
 - `BROADCAST_MSGS_PER_SEC` - Broadcast send throttle in messages/sec (default `12`)
 
-## Deploy to DigitalOcean (Recommended)
+## Deploy to Tencent (Recommended)
 
-This project is optimized for deployment on a DigitalOcean Droplet using `systemd`.
+This project is optimized for deployment on a Tencent Lighthouse using `systemd`.
 
 1. Clone the repo and install dependencies.
 2. Configure `.env` and `service_account.json`.
@@ -110,11 +110,11 @@ This project is optimized for deployment on a DigitalOcean Droplet using `system
 
 ## Auto Deploy (GitHub Actions)
 
-Push to `main` triggers `.github/workflows/deploy-digitalocean.yml`.
+Push to `main` triggers `.github/workflows/deploy-tencent.yml`.
 Ensure you have set the following GitHub Secrets:
-- `DROPLET_HOST`
-- `DROPLET_USER` (e.g., `deploy`)
-- `DROPLET_SSH_KEY`
+- `TENCENT_HOST`
+- `TENCENT_USER` (e.g., `deploy`)
+- `TENCENT_SSH_KEY`
 
 ## Project Structure
 
@@ -122,10 +122,10 @@ Ensure you have set the following GitHub Secrets:
 STEM-Telebot/
 |- .github/
 |  `- workflows/
-|     |- deploy-digitalocean.yml   # GitHub Actions deploy workflow
+|     |- deploy-tencent.yml        # GitHub Actions deploy workflow
 |     `- security-audit.yml        # GitHub Actions pip-audit workflow
 |- admin.py                        # Admin panel actions
-|- AUTO_DEPLOY.md                  # DigitalOcean deploy guide
+|- AUTO_DEPLOY.md                  # Tencent deploy guide
 |- bot.py                          # Main entrypoint, polling/webhook bootstrap
 |- CONTRIBUTING.md                 # Contribution guide
 |- database.py                     # Google Sheets API wrapper and activity logging
