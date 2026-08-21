@@ -9,7 +9,7 @@
 ![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)
 
 <div align="center">
-  <img src="preview.jpg" alt="STEM Telebot Preview" width="200">
+  <img src="preview.PNG" alt="STEM Telebot Preview" width="200">
 </div>
 
 🔗 **Try it live:** [**@stemusasbot**](https://t.me/stemusasbot) · 🎥 **Video tutorial:** [**Watch on YouTube**](https://www.youtube.com/watch?v=PAk9x6VrDkE&pp=ygUfaG93IHRvIHVzZSBTVEVNQm90IGluIHRlbGVncmFtIA%3D%3D)
