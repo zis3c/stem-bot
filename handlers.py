@@ -7,6 +7,7 @@ import states
 from database import ACTIVITY_LOG_PATH, db
 import stats_web
 import logging
+import hashlib
 import re
 import asyncio
 import os
@@ -37,6 +38,8 @@ _verif_user_state = {}
 _verif_matric_state = {}
 _alert_last_sent = {}
 _pending_alert_cache = {}
+_review_message_refs = {}
+_review_message_lock = asyncio.Lock()
 
 ALERT_COOLDOWN_SECONDS = int(os.getenv("ALERT_COOLDOWN_SECONDS", "900"))
 ALERT_QUEUE_COOLDOWN_SECONDS = int(os.getenv("ALERT_QUEUE_COOLDOWN_SECONDS", "1800"))
@@ -95,6 +98,117 @@ def _post_apps_script_action(action: str, row_idx: int):
         return {"ok": False, "error": f"http_{e.code}", "details": body}
     except Exception as e:
         return {"ok": False, "error": str(e)}
+
+
+def build_review_token(row_values) -> str:
+    """Build a short token that identifies one specific registration submission."""
+    fields = [
+        str(row_values[idx]).strip() if len(row_values) > idx else ""
+        for idx in (0, 2, 3, 16)
+    ]
+    raw = "\x1f".join(fields)
+    return hashlib.blake2s(raw.encode("utf-8"), digest_size=4).hexdigest()
+
+
+def _parse_review_callback_data(data: str, expected_action: str):
+    parts = str(data or "").split(":")
+    if len(parts) != 4:
+        return None
+
+    action, row_raw, matric, token = parts
+    if action != expected_action:
+        return None
+
+    try:
+        row_idx = int(row_raw)
+    except Exception:
+        return None
+
+    return row_idx, str(matric).strip().upper(), str(token).strip()
+
+
+async def _get_verified_review_row(row_idx: int, matric: str, expected_token: str):
+    row_values, current_row = await run_db_call(db.get_member_by_row_or_matric, row_idx, matric)
+    if not row_values:
+        return None, None, "record_not_found"
+
+    current_token = build_review_token(row_values)
+    if current_token != str(expected_token).strip():
+        return row_values, current_row, "stale_submission"
+
+    return row_values, current_row, None
+
+
+async def _mark_stale_review_message(query):
+    await query.edit_message_text("This submission is no longer current. Refresh the admin queue.")
+
+
+async def register_review_message(review_token: str, chat_id: int, message_id: int):
+    token = str(review_token).strip()
+    if not token:
+        return
+
+    ref = {"chat_id": int(chat_id), "message_id": int(message_id)}
+    async with _review_message_lock:
+        refs = _review_message_refs.setdefault(token, [])
+        if ref not in refs:
+            refs.append(ref)
+
+
+async def _pop_review_message_refs(review_token: str):
+    token = str(review_token).strip()
+    if not token:
+        return []
+
+    async with _review_message_lock:
+        return _review_message_refs.pop(token, [])
+
+
+def _format_review_final_text(action: str, matric: str, actor_name: str, already: bool = False) -> str:
+    safe_matric = _escape_md(matric)
+    safe_actor = _escape_md(actor_name or "Admin")
+    if action == "approve":
+        title = "✅ Already Approved" if already else "✅ Approved"
+        return (
+            f"{title}\n"
+            f"Matric: `{safe_matric}`\n"
+            f"By: *{safe_actor}*"
+        )
+    if action == "reject":
+        title = "🚫 Already Rejected" if already else "🚫 Rejected"
+        return (
+            f"{title}\n"
+            f"Matric: `{safe_matric}`\n"
+            f"By: *{safe_actor}*"
+        )
+    return (
+        f"✅ Updated\n"
+        f"Matric: `{safe_matric}`\n"
+        f"By: *{safe_actor}*"
+    )
+
+
+async def _finalize_review_cards(context: ContextTypes.DEFAULT_TYPE, review_token: str, action: str, matric: str, actor_name: str, primary_chat_id: int, primary_message_id: int):
+    refs = await _pop_review_message_refs(review_token)
+    if not refs:
+        return
+
+    primary_text = _format_review_final_text(action, matric, actor_name, already=False)
+    secondary_text = _format_review_final_text(action, matric, actor_name, already=True)
+
+    for ref in refs:
+        try:
+            is_primary = ref["chat_id"] == primary_chat_id and ref["message_id"] == primary_message_id
+            text = primary_text if is_primary else secondary_text
+            await context.bot.edit_message_text(
+                chat_id=ref["chat_id"],
+                message_id=ref["message_id"],
+                text=text,
+                parse_mode="Markdown",
+                reply_markup=None,
+            )
+        except Exception:
+            continue
 
 
 async def _delete_message_job(context: ContextTypes.DEFAULT_TYPE):
@@ -886,17 +1000,19 @@ async def check_registrations(context: ContextTypes.DEFAULT_TYPE):
                 f"Receipt: {receipt_display}"
             )
             
-            review_keyboard = keyboards.get_admin_review_keyboard(row_idx, matric, "EN")
+            review_token = build_review_token(data)
+            review_keyboard = keyboards.get_admin_review_keyboard(row_idx, matric, review_token, "EN")
 
             # Send to all admins
             for admin_id in admins:
                 try:
-                    await context.bot.send_message(
+                    sent = await context.bot.send_message(
                         chat_id=admin_id,
                         text=msg,
                         parse_mode="Markdown",
                         reply_markup=review_keyboard
                     )
+                    await register_review_message(review_token, sent.chat_id, sent.message_id)
                 except Exception as e:
                     logger.error(f"Failed to notify admin {admin_id}: {e}")
             _pending_alert_cache[cache_key] = now_ts
@@ -938,17 +1054,21 @@ async def review_accept_callback(update: Update, context: ContextTypes.DEFAULT_T
         await query.answer("Admins only.", show_alert=True)
         return
 
-    try:
-        _, row_raw, matric = query.data.split(":", 2)
-        row_idx = int(row_raw)
-    except Exception:
+    parsed = _parse_review_callback_data(query.data, "review_accept")
+    if not parsed:
         await query.edit_message_text("Invalid action payload.")
+        return
+    row_idx, matric, review_token = parsed
+
+    row_values, _, stale_reason = await _get_verified_review_row(row_idx, matric, review_token)
+    if stale_reason:
+        await _mark_stale_review_message(query)
         return
 
     await query.edit_message_text(
         f"Confirm accept for *{_escape_md(matric)}*?",
         parse_mode="Markdown",
-        reply_markup=keyboards.get_admin_confirm_keyboard("accept", row_idx, matric, lang)
+        reply_markup=keyboards.get_admin_confirm_keyboard("accept", row_idx, matric, review_token, lang)
     )
 
 async def review_reject_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -960,17 +1080,21 @@ async def review_reject_callback(update: Update, context: ContextTypes.DEFAULT_T
         await query.answer("Admins only.", show_alert=True)
         return
 
-    try:
-        _, row_raw, matric = query.data.split(":", 2)
-        row_idx = int(row_raw)
-    except Exception:
+    parsed = _parse_review_callback_data(query.data, "review_reject")
+    if not parsed:
         await query.edit_message_text("Invalid action payload.")
+        return
+    row_idx, matric, review_token = parsed
+
+    row_values, _, stale_reason = await _get_verified_review_row(row_idx, matric, review_token)
+    if stale_reason:
+        await _mark_stale_review_message(query)
         return
 
     await query.edit_message_text(
         f"Confirm reject for *{_escape_md(matric)}*?\nThis will remove the record from database.",
         parse_mode="Markdown",
-        reply_markup=keyboards.get_admin_confirm_keyboard("reject", row_idx, matric, lang)
+        reply_markup=keyboards.get_admin_confirm_keyboard("reject", row_idx, matric, review_token, lang)
     )
 
 
@@ -983,16 +1107,18 @@ async def review_renew_callback(update: Update, context: ContextTypes.DEFAULT_TY
         await query.answer("Admins only.", show_alert=True)
         return
 
-    try:
-        _, row_raw, matric = query.data.split(":", 2)
-        row_idx = int(row_raw)
-    except Exception:
+    parsed = _parse_review_callback_data(query.data, "review_renew")
+    if not parsed:
         await query.edit_message_text("Invalid action payload.")
         return
+    row_idx, matric, review_token = parsed
 
-    row_values, _ = await run_db_call(db.get_member_by_row_or_matric, row_idx, matric)
-    if not row_values:
+    row_values, _, stale_reason = await _get_verified_review_row(row_idx, matric, review_token)
+    if stale_reason == "record_not_found":
         await query.edit_message_text("Record not found.")
+        return
+    if stale_reason:
+        await _mark_stale_review_message(query)
         return
 
     if not _row_is_expired(row_values):
@@ -1002,7 +1128,7 @@ async def review_renew_callback(update: Update, context: ContextTypes.DEFAULT_TY
     await query.edit_message_text(
         f"Confirm renewal (+1 year) for *{_escape_md(matric)}*?",
         parse_mode="Markdown",
-        reply_markup=keyboards.get_admin_confirm_keyboard("renew", row_idx, matric, lang)
+        reply_markup=keyboards.get_admin_confirm_keyboard("renew", row_idx, matric, review_token, lang)
     )
 
 async def review_do_accept_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -1013,11 +1139,15 @@ async def review_do_accept_callback(update: Update, context: ContextTypes.DEFAUL
         await query.answer("Admins only.", show_alert=True)
         return
 
-    try:
-        _, row_raw, matric = query.data.split(":", 2)
-        row_idx = int(row_raw)
-    except Exception:
+    parsed = _parse_review_callback_data(query.data, "review_do_accept")
+    if not parsed:
         await query.edit_message_text("Invalid action payload.")
+        return
+    row_idx, matric, review_token = parsed
+
+    row_values, _, stale_reason = await _get_verified_review_row(row_idx, matric, review_token)
+    if stale_reason:
+        await _mark_stale_review_message(query)
         return
 
     await query.edit_message_text(
@@ -1042,19 +1172,15 @@ async def review_do_accept_callback(update: Update, context: ContextTypes.DEFAUL
             ),
             parse_mode="Markdown"
         )
-        admins = await run_db_call(db.get_all_admin_ids)
-        notice = (
-            f"✅ *Already Approved*\n"
-            f"Matric: `{_escape_md(matric)}`\n"
-            f"By: *{actor_name}*"
+        await _finalize_review_cards(
+            context,
+            review_token,
+            "approve",
+            matric,
+            actor_name,
+            query.message.chat_id,
+            query.message.message_id,
         )
-        for admin_id in admins:
-            if admin_id == query.from_user.id:
-                continue
-            try:
-                await context.bot.send_message(chat_id=admin_id, text=notice, parse_mode="Markdown")
-            except Exception:
-                pass
     else:
         err = _escape_md(result.get("error", "unknown"))
         await query.edit_message_text(
@@ -1070,11 +1196,15 @@ async def review_do_reject_callback(update: Update, context: ContextTypes.DEFAUL
         await query.answer("Admins only.", show_alert=True)
         return
 
-    try:
-        _, row_raw, matric = query.data.split(":", 2)
-        row_idx = int(row_raw)
-    except Exception:
+    parsed = _parse_review_callback_data(query.data, "review_do_reject")
+    if not parsed:
         await query.edit_message_text("Invalid action payload.")
+        return
+    row_idx, matric, review_token = parsed
+
+    row_values, _, stale_reason = await _get_verified_review_row(row_idx, matric, review_token)
+    if stale_reason:
+        await _mark_stale_review_message(query)
         return
 
     result = await run_db_call(_post_apps_script_action, "reject", row_idx)
@@ -1095,19 +1225,15 @@ async def review_do_reject_callback(update: Update, context: ContextTypes.DEFAUL
             ),
             parse_mode="Markdown"
         )
-        admins = await run_db_call(db.get_all_admin_ids)
-        notice = (
-            f"🚫 *Already Rejected*\n"
-            f"Matric: `{_escape_md(matric)}`\n"
-            f"By: *{actor_name}*"
+        await _finalize_review_cards(
+            context,
+            review_token,
+            "reject",
+            matric,
+            actor_name,
+            query.message.chat_id,
+            query.message.message_id,
         )
-        for admin_id in admins:
-            if admin_id == query.from_user.id:
-                continue
-            try:
-                await context.bot.send_message(chat_id=admin_id, text=notice, parse_mode="Markdown")
-            except Exception:
-                pass
     else:
         err = _escape_md(result.get("error", "unknown"))
         await query.edit_message_text(
@@ -1124,11 +1250,15 @@ async def review_do_renew_callback(update: Update, context: ContextTypes.DEFAULT
         await query.answer("Admins only.", show_alert=True)
         return
 
-    try:
-        _, row_raw, matric = query.data.split(":", 2)
-        row_idx = int(row_raw)
-    except Exception:
+    parsed = _parse_review_callback_data(query.data, "review_do_renew")
+    if not parsed:
         await query.edit_message_text("Invalid action payload.")
+        return
+    row_idx, matric, review_token = parsed
+
+    _, _, stale_reason = await _get_verified_review_row(row_idx, matric, review_token)
+    if stale_reason:
+        await _mark_stale_review_message(query)
         return
 
     result = await run_db_call(db.renew_membership_by_row_or_matric, row_idx, matric)
@@ -1160,22 +1290,24 @@ async def review_cancel_callback(update: Update, context: ContextTypes.DEFAULT_T
     query = update.callback_query
     await query.answer("Action cancelled.")
     lang = get_user_lang(context)
-    try:
-        _, row_raw, matric = query.data.split(":", 2)
-        row_idx = int(row_raw)
-    except Exception:
+    parsed = _parse_review_callback_data(query.data, "review_cancel")
+    if not parsed:
         await query.edit_message_text("Action cancelled.")
         return
+    row_idx, matric, review_token = parsed
 
-    row_values, _ = await run_db_call(db.get_member_by_row_or_matric, row_idx, matric)
-    if not row_values:
+    row_values, _, stale_reason = await _get_verified_review_row(row_idx, matric, review_token)
+    if stale_reason == "record_not_found":
         await query.edit_message_text("Action cancelled. Record not found anymore.")
+        return
+    if stale_reason:
+        await _mark_stale_review_message(query)
         return
 
     await query.edit_message_text(
         _build_review_summary(row_values),
         parse_mode="Markdown",
-        reply_markup=keyboards.get_admin_review_keyboard(row_idx, matric, lang, show_renew=_row_is_expired(row_values))
+        reply_markup=keyboards.get_admin_review_keyboard(row_idx, matric, review_token, lang, show_renew=_row_is_expired(row_values))
     )
 
 async def review_detail_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -1187,16 +1319,18 @@ async def review_detail_callback(update: Update, context: ContextTypes.DEFAULT_T
         await query.answer("Admins only.", show_alert=True)
         return
 
-    try:
-        _, row_raw, matric = query.data.split(":", 2)
-        row_idx = int(row_raw)
-    except Exception:
+    parsed = _parse_review_callback_data(query.data, "review_detail")
+    if not parsed:
         await query.answer("Invalid detail payload.", show_alert=True)
         return
+    row_idx, matric, review_token = parsed
 
-    row_values, _ = await run_db_call(db.get_member_by_row_or_matric, row_idx, matric)
-    if not row_values:
+    row_values, _, stale_reason = await _get_verified_review_row(row_idx, matric, review_token)
+    if stale_reason == "record_not_found":
         await query.answer("Record not found.", show_alert=True)
+        return
+    if stale_reason:
+        await _mark_stale_review_message(query)
         return
 
     # Enrich pending-detail output with latest cached row for the same matric,
@@ -1278,7 +1412,7 @@ async def review_detail_callback(update: Update, context: ContextTypes.DEFAULT_T
     await query.edit_message_text(
         details_text,
         parse_mode="Markdown",
-        reply_markup=keyboards.get_admin_review_detail_keyboard(row_idx, matric, lang, show_renew=_row_is_expired(row_values))
+        reply_markup=keyboards.get_admin_review_detail_keyboard(row_idx, matric, review_token, lang, show_renew=_row_is_expired(row_values))
     )
 
 async def review_back_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -1290,22 +1424,24 @@ async def review_back_callback(update: Update, context: ContextTypes.DEFAULT_TYP
         await query.answer("Admins only.", show_alert=True)
         return
 
-    try:
-        _, row_raw, matric = query.data.split(":", 2)
-        row_idx = int(row_raw)
-    except Exception:
+    parsed = _parse_review_callback_data(query.data, "review_back")
+    if not parsed:
         await query.edit_message_text("Invalid action payload.")
         return
+    row_idx, matric, review_token = parsed
 
-    row_values, _ = await run_db_call(db.get_member_by_row_or_matric, row_idx, matric)
-    if not row_values:
+    row_values, _, stale_reason = await _get_verified_review_row(row_idx, matric, review_token)
+    if stale_reason == "record_not_found":
         await query.edit_message_text("Record not found.")
+        return
+    if stale_reason:
+        await _mark_stale_review_message(query)
         return
 
     await query.edit_message_text(
         _build_review_summary(row_values),
         parse_mode="Markdown",
-        reply_markup=keyboards.get_admin_review_keyboard(row_idx, matric, lang, show_renew=_row_is_expired(row_values))
+        reply_markup=keyboards.get_admin_review_keyboard(row_idx, matric, review_token, lang, show_renew=_row_is_expired(row_values))
     )
 
 async def send_daily_logs(context: ContextTypes.DEFAULT_TYPE):

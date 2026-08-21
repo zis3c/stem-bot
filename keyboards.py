@@ -60,23 +60,24 @@ def get_help_back_inline_keyboard(lang='EN'):
         [[InlineKeyboardButton(strings.get('BTN_BACK', lang), callback_data="help_back")]]
     )
 
-def get_admin_review_keyboard(row_idx, matric, lang='EN', show_renew=False):
+def get_admin_review_keyboard(row_idx, matric, review_token, lang='EN', show_renew=False):
     safe_matric = str(matric).strip().upper()
+    safe_token = str(review_token).strip()
     rows = [
         [
             InlineKeyboardButton(
                 strings.get('BTN_VIEW_DETAILS', lang),
-                callback_data=f"review_detail:{row_idx}:{safe_matric}",
+                callback_data=f"review_detail:{row_idx}:{safe_matric}:{safe_token}",
             ),
         ],
         [
             InlineKeyboardButton(
                 strings.get('BTN_APPROVE', lang),
-                callback_data=f"review_accept:{row_idx}:{safe_matric}",
+                callback_data=f"review_accept:{row_idx}:{safe_matric}:{safe_token}",
             ),
             InlineKeyboardButton(
                 strings.get('BTN_REJECT', lang),
-                callback_data=f"review_reject:{row_idx}:{safe_matric}",
+                callback_data=f"review_reject:{row_idx}:{safe_matric}:{safe_token}",
             ),
         ],
     ]
@@ -85,29 +86,30 @@ def get_admin_review_keyboard(row_idx, matric, lang='EN', show_renew=False):
             [
                 InlineKeyboardButton(
                     strings.get('BTN_RENEW', lang),
-                    callback_data=f"review_renew:{row_idx}:{safe_matric}",
+                    callback_data=f"review_renew:{row_idx}:{safe_matric}:{safe_token}",
                 ),
             ]
         )
     return InlineKeyboardMarkup(rows)
 
-def get_admin_review_detail_keyboard(row_idx, matric, lang='EN', show_renew=False):
+def get_admin_review_detail_keyboard(row_idx, matric, review_token, lang='EN', show_renew=False):
     safe_matric = str(matric).strip().upper()
+    safe_token = str(review_token).strip()
     rows = [
         [
             InlineKeyboardButton(
                 strings.get('BTN_BACK', lang),
-                callback_data=f"review_back:{row_idx}:{safe_matric}",
+                callback_data=f"review_back:{row_idx}:{safe_matric}:{safe_token}",
             ),
         ],
         [
             InlineKeyboardButton(
                 strings.get('BTN_APPROVE', lang),
-                callback_data=f"review_accept:{row_idx}:{safe_matric}",
+                callback_data=f"review_accept:{row_idx}:{safe_matric}:{safe_token}",
             ),
             InlineKeyboardButton(
                 strings.get('BTN_REJECT', lang),
-                callback_data=f"review_reject:{row_idx}:{safe_matric}",
+                callback_data=f"review_reject:{row_idx}:{safe_matric}:{safe_token}",
             ),
         ],
     ]
@@ -116,38 +118,40 @@ def get_admin_review_detail_keyboard(row_idx, matric, lang='EN', show_renew=Fals
             [
                 InlineKeyboardButton(
                     strings.get('BTN_RENEW', lang),
-                    callback_data=f"review_renew:{row_idx}:{safe_matric}",
+                    callback_data=f"review_renew:{row_idx}:{safe_matric}:{safe_token}",
                 ),
             ]
         )
     return InlineKeyboardMarkup(rows)
 
-def get_admin_renew_keyboard(row_idx, matric, lang='EN'):
+def get_admin_renew_keyboard(row_idx, matric, review_token, lang='EN'):
     safe_matric = str(matric).strip().upper()
+    safe_token = str(review_token).strip()
     return InlineKeyboardMarkup(
         [
             [
                 InlineKeyboardButton(
                     strings.get('BTN_RENEW', lang),
-                    callback_data=f"review_renew:{row_idx}:{safe_matric}",
+                    callback_data=f"review_renew:{row_idx}:{safe_matric}:{safe_token}",
                 ),
             ]
         ]
     )
 
-def get_admin_confirm_keyboard(action, row_idx, matric, lang='EN'):
+def get_admin_confirm_keyboard(action, row_idx, matric, review_token, lang='EN'):
     safe_action = str(action).strip().lower()
     safe_matric = str(matric).strip().upper()
+    safe_token = str(review_token).strip()
     return InlineKeyboardMarkup(
         [
             [
                 InlineKeyboardButton(
                     strings.get('BTN_CONFIRM_ACTION', lang),
-                    callback_data=f"review_do_{safe_action}:{row_idx}:{safe_matric}",
+                    callback_data=f"review_do_{safe_action}:{row_idx}:{safe_matric}:{safe_token}",
                 ),
                 InlineKeyboardButton(
                     strings.get('BTN_CANCEL_ACTION', lang),
-                    callback_data=f"review_cancel:{row_idx}:{safe_matric}",
+                    callback_data=f"review_cancel:{row_idx}:{safe_matric}:{safe_token}",
                 ),
             ]
         ]

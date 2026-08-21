@@ -326,6 +326,8 @@ async def check_pending_click(update: Update, context: ContextTypes.DEFAULT_TYPE
             row, _ = await run_db_call(db.get_member_by_row_or_matric, row_idx, matric)
 
             if row:
+                review_token = handlers.build_review_token(row)
+
                 def escape_md(text):
                     return str(text).replace('_', '\\_').replace('*', '\\*').replace('`', '\\`').replace('[', '\\[')
 
@@ -366,11 +368,12 @@ async def check_pending_click(update: Update, context: ContextTypes.DEFAULT_TYPE
                     f"\u2705 Status: *Pending*"
                 )
 
-            await update.message.reply_text(
+            sent = await update.message.reply_text(
                 detail_card,
                 parse_mode="Markdown",
-                reply_markup=keyboards.get_admin_review_keyboard(row_idx, matric, lang)
+                reply_markup=keyboards.get_admin_review_keyboard(row_idx, matric, review_token, lang)
             )
+            await handlers.register_review_message(review_token, sent.chat_id, sent.message_id)
 
         await update.message.reply_text(
             strings.get('ADMIN_DASHBOARD', lang),
@@ -581,6 +584,7 @@ async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                         "text": detail_card,
                         "row_idx": row_idx,
                         "matric": str(matric).strip().upper(),
+                        "review_token": handlers.build_review_token(row),
                         "show_renew": _is_row_expired(row),
                     })
 
@@ -597,7 +601,7 @@ async def search_perform(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                 for card in detail_cards:
                     reply_markup = None
                     if card["show_renew"] and card["row_idx"]:
-                        reply_markup = keyboards.get_admin_renew_keyboard(card["row_idx"], card["matric"], lang)
+                        reply_markup = keyboards.get_admin_renew_keyboard(card["row_idx"], card["matric"], card["review_token"], lang)
                     await update.message.reply_text(
                         card["text"],
                         parse_mode="Markdown",
