@@ -183,6 +183,7 @@ STEM-Telebot/
 
 ## Additional Docs
 
+- [How to use STEM Bot video tutorial](https://www.youtube.com/watch?v=PAk9x6VrDkE&pp=ygUfaG93IHRvIHVzZSBTVEVNQm90IGluIHRlbGVncmFtIA%3D%3D)
 - [AUTO_DEPLOY.md](AUTO_DEPLOY.md)
 - [INSTALLATION.md](INSTALLATION.md)
 - [CONTRIBUTING.md](CONTRIBUTING.md)
