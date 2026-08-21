@@ -8,6 +8,12 @@
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)
 ![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)
 
+<div align="center">
+  <img src="preview.png" alt="STEM Telebot Preview" width="320">
+</div>
+
+🔗 **Try it live:** [**@stemusasbot**](https://t.me/stemusasbot) · 🎥 **Video tutorial:** [**Watch on YouTube**](https://www.youtube.com/watch?v=PAk9x6VrDkE&pp=ygUfaG93IHRvIHVzZSBTVEVNQm90IGluIHRlbGVncmFtIA%3D%3D)
+
 A high-performance, bilingual Telegram bot built for the STEM USAS student organization. It simplifies membership verification and provides administrative tools to manage the student registry via Google Sheets.
 
 > [!NOTE]
@@ -183,7 +189,6 @@ STEM-Telebot/
 
 ## Additional Docs
 
-- [How to use STEM Bot video tutorial](https://www.youtube.com/watch?v=PAk9x6VrDkE&pp=ygUfaG93IHRvIHVzZSBTVEVNQm90IGluIHRlbGVncmFtIA%3D%3D)
 - [AUTO_DEPLOY.md](AUTO_DEPLOY.md)
 - [INSTALLATION.md](INSTALLATION.md)
 - [CONTRIBUTING.md](CONTRIBUTING.md)
